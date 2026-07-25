@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import mailer
+from . import demo, mailer
 from .config import config
 from .db import criar_esquema
 from .deps import responder_template
@@ -22,6 +22,8 @@ _ultimo_flush = 0.0
 @asynccontextmanager
 async def ciclo_de_vida(app: FastAPI):
     criar_esquema()
+    if config.modo_demo:
+        demo.preparar()
     yield
 
 

@@ -52,6 +52,30 @@ python -m pytest tests/ -q                      # 71 testes, SQLite
 DATABASE_URL="postgres://..." python -m pytest  # mesma suíte, Postgres
 ```
 
+## Subir online em 2 minutos
+
+[**→ Importar na Vercel**](https://vercel.com/new/import?s=https://github.com/adrieldrummer/python-telegram-bot)
+(branch `claude/cakto-course-platform-xfepzk`)
+
+O primeiro deploy funciona **sem configurar nada**: sem `DATABASE_URL` a
+plataforma entra em *modo demonstração* — sobe com as contas de teste e uma
+tarja amarela avisando que os dados somem a cada reinício. É o suficiente para
+navegar e mostrar para alguém.
+
+Para virar produto de verdade, cadastre as variáveis abaixo em
+**Settings → Environment Variables** e faça *Redeploy*:
+
+```
+DATABASE_URL   = postgresql://postgres.<ref>:<senha>@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
+DB_SCHEMA      = mapa_aprovacao
+SECRET_KEY     = <python -c "import secrets; print(secrets.token_urlsafe(48))">
+COOKIE_SEGURO  = true
+APP_URL        = https://seu-projeto.vercel.app
+```
+
+O banco já está criado e com as contas de teste dentro — detalhes e a lista
+completa de variáveis em [`docs/VERCEL.md`](docs/VERCEL.md).
+
 ## Arquitetura
 
 ```

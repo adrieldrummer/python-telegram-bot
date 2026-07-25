@@ -31,6 +31,18 @@ postgresql://postgres.rsqenkjerdjlwrzbneys:SUA_SENHA@aws-0-sa-east-1.pooler.supa
 A senha é a do banco (definida na criação do projeto). Se você não a tem,
 gere outra em **Database → Reset database password**.
 
+## 1b. Prefere ver funcionando antes de configurar?
+
+Faça o deploy sem nenhuma variável de ambiente. Sem `DATABASE_URL`, a
+plataforma entra em **modo demonstração**: o banco vai para `/tmp`, as contas
+de teste são criadas automaticamente no boot e uma tarja amarela avisa que os
+dados somem a cada reinício. Tudo funciona — jornada, questões, caderno de
+erros, simulados, admin —, só não persiste.
+
+Assim que você cadastrar `DATABASE_URL`, o modo demonstração desaparece
+sozinho e nada é criado automaticamente: as contas passam a nascer só da
+compra na Cakto ou da liberação manual no painel.
+
 ## 2. Importar o repositório
 
 1. Acesse <https://vercel.com/new>

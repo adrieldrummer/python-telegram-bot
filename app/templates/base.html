@@ -13,6 +13,12 @@
   {% block cabecalho %}{% endblock %}
 </head>
 <body>
+{% if config.modo_demo %}
+<div style="background:#f0a92b;color:#0b1b33;text-align:center;padding:.5rem 1rem;font-size:.84rem;font-weight:700">
+  MODO DEMONSTRAÇÃO — sem banco configurado, os dados somem a cada reinício.
+  Contas de teste: admin@teste.com / admin1234 · aluno@teste.com / aluno1234
+</div>
+{% endif %}
 {% block topo %}
 <header class="topo">
   <div class="container topo-interno">

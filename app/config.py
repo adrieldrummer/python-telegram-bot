@@ -40,6 +40,22 @@ def _int(nome: str, padrao: int) -> int:
         return padrao
 
 
+def _caminho_do_banco() -> Path:
+    """Onde fica o arquivo SQLite.
+
+    Em hospedagem serverless o projeto é somente leitura: a única pasta
+    gravável é /tmp. Isso mantém o primeiro deploy funcionando mesmo antes de
+    o Postgres estar configurado (modo demonstração).
+    """
+    bruto = os.getenv("BANCO_CAMINHO", "")
+    if bruto:
+        caminho = Path(bruto)
+        return caminho if caminho.is_absolute() else RAIZ / caminho
+    if os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
+        return Path("/tmp/mapa-demo.db")
+    return RAIZ / "dados" / "plataforma.db"
+
+
 @dataclass(frozen=True)
 class Config:
     # Produto
@@ -62,11 +78,7 @@ class Config:
     ).strip()
     # schema do Postgres (permite conviver com outros produtos no mesmo banco)
     db_schema: str = os.getenv("DB_SCHEMA", "public").strip() or "public"
-    banco_caminho: Path = field(
-        default_factory=lambda: (RAIZ / os.getenv("BANCO_CAMINHO", "dados/plataforma.db"))
-        if not os.path.isabs(os.getenv("BANCO_CAMINHO", "dados/plataforma.db"))
-        else Path(os.getenv("BANCO_CAMINHO", "dados/plataforma.db"))
-    )
+    banco_caminho: Path = field(default_factory=lambda: _caminho_do_banco())
 
     # E-mail
     smtp_host: str = os.getenv("SMTP_HOST", "")
@@ -87,6 +99,21 @@ class Config:
     jornada_drip_diario: bool = _bool("JORNADA_DRIP_DIARIO", True)
     custo_chave_antecipacao: int = _int("CUSTO_CHAVE_ANTECIPACAO", 250)
     meta_acerto_missao: int = _int("META_ACERTO_MISSAO", 60)
+
+    @property
+    def serverless(self) -> bool:
+        """True quando roda em plataforma sem disco persistente (Vercel/Lambda)."""
+        return bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+
+    @property
+    def modo_demo(self) -> bool:
+        """Serverless sem Postgres: sobe, funciona, mas zera a cada reinício.
+
+        Serve para o primeiro deploy funcionar antes de você configurar o
+        banco. Assim que `DATABASE_URL` existir, o modo demonstração some
+        sozinho e os dados passam a persistir.
+        """
+        return self.serverless and not self.database_url
 
     @property
     def smtp_configurado(self) -> bool:
