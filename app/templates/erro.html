@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }} — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao centro">
+  <div style="font-size:3rem">{{ '🔒' if codigo == 403 else '🧭' }}</div>
+  <h1>{{ titulo }}</h1>
+  <p class="suave">{{ mensagem or 'Confira o endereço ou volte para o início.' }}</p>
+  <a class="btn btn-principal mt-2" href="{{ '/painel' if aluno else '/' }}">Voltar</a>
+</section>
+{% endblock %}

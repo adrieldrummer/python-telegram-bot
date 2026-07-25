@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block titulo %}Relatório — {{ atual.nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <a href="/simulados" class="suave" style="font-size:.85rem">← voltar para simulados</a>
+  <div class="flex-entre mt-1 mb-3">
+    <div>
+      <h1 class="mb-1">{{ atual.nome }}</h1>
+      <p class="suave mb-0">Autópsia do simulado — leia na ordem: matéria, tempo, categoria de erro.</p>
+    </div>
+    <div class="cartao centro" style="min-width:170px">
+      <div class="valor" style="font-size:2.3rem;font-weight:800">{{ atual.pct }}%</div>
+      <div class="rotulo apagado" style="font-size:.75rem">{{ atual.acertos }}/{{ atual.total }} · {{ atual.duracao_min }} min</div>
+    </div>
+  </div>
+
+  <div class="grade grade-2">
+    <div class="cartao">
+      <h3>Desempenho por matéria</h3>
+      {% for materia_id, dados in atual.relatorio.por_materia.items() %}
+      <div class="mb-2">
+        <div class="flex-entre" style="font-size:.9rem">
+          <span>{{ materias[materia_id].nome if materia_id in materias else materia_id }}</span>
+          <span class="mono suave">{{ dados.acertos }}/{{ dados.total }} · {{ dados.pct }}% · {{ dados.tempo_medio }}s/questão</span>
+        </div>
+        <div class="barra barra-fina mt-1">
+          <span style="width:{{ dados.pct }}%;background:{{ materias[materia_id].cor if materia_id in materias else '#888' }}"></span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="pilha">
+      <div class="cartao">
+        <h3>Leitura do resultado</h3>
+        {% set piores = atual.relatorio.por_materia.items()|list|sort(attribute='1.pct') %}
+        <ul class="checklist">
+          {% if piores %}
+          <li>Matéria que mais tirou pontos: <strong>{{ materias[piores[0][0]].nome if piores[0][0] in materias else piores[0][0] }}</strong> ({{ piores[0][1].pct }}%). Ela é o alvo do próximo bloco.</li>
+          {% endif %}
+          <li>Tempo médio geral: <strong>{{ atual.relatorio.tempo_medio }}s por questão</strong>. Acima de 90s indica leitura lenta ou insegurança no tema.</li>
+          <li>Classifique os erros no Caderno: falta de conteúdo, pegadinha ou desatenção — cada um pede um remédio diferente.</li>
+        </ul>
+        <a class="btn btn-principal btn-pequeno mt-2" href="/erros">Abrir Caderno de Erros</a>
+      </div>
+
+      {% if anteriores %}
+      <div class="cartao">
+        <h3>Comparação</h3>
+        <table class="tabela">
+          <tbody>
+            {% for a in anteriores %}
+            <tr>
+              <td class="suave">{{ a.nome }}</td>
+              <td class="mono">{{ a.pct }}%</td>
+              <td class="apagado">{{ a.finalizado_em[:10] }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td class="negrito">{{ atual.nome }} (atual)</td>
+              <td class="mono negrito">{{ atual.pct }}%</td>
+              <td class="apagado">{{ atual.finalizado_em[:10] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

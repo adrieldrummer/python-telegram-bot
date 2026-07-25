@@ -1,0 +1,97 @@
+{% extends "admin/base_admin.html" %}
+{% block titulo %}Admin — {{ config.app_nome }}{% endblock %}
+{% block titulo_admin %}Visão geral{% endblock %}
+
+{% block admin %}
+<div class="grade grade-4 mb-3">
+  <div class="cartao metrica"><div class="valor">{{ totais.alunos }}</div><div class="rotulo">Alunos</div></div>
+  <div class="cartao metrica"><div class="valor">{{ totais.ativos }}</div><div class="rotulo">Ativos</div></div>
+  <div class="cartao metrica"><div class="valor">{{ totais.pendentes }}</div><div class="rotulo">Aguardando ativação</div></div>
+  <div class="cartao metrica"><div class="valor">{{ totais.suspensos }}</div><div class="rotulo">Suspensos</div></div>
+  <div class="cartao metrica"><div class="valor">{{ totais.ativos_7d }}</div><div class="rotulo">Estudaram (7 dias)</div></div>
+  <div class="cartao metrica"><div class="valor">{{ totais.compras }}</div><div class="rotulo">Compras aprovadas</div></div>
+  <div class="cartao metrica"><div class="valor">R$ {{ '%.0f'|format(totais.receita) }}</div><div class="rotulo">Receita registrada</div></div>
+  <div class="cartao metrica"><div class="valor">{{ totais.concluintes }}</div><div class="rotulo">Concluíram os 30 dias</div></div>
+</div>
+
+<div class="grade grade-2">
+  <div class="cartao">
+    <div class="flex-entre mb-2">
+      <h3 class="mb-0">Funil da jornada</h3>
+      <span class="apagado" style="font-size:.8rem">alunos que concluíram cada dia</span>
+    </div>
+    {% if funil %}
+      {% set maximo = funil|map(attribute='alunos')|max %}
+      <div class="grafico" style="height:120px">
+        {% for f in funil %}
+        <div style="height:{{ (f['alunos'] / maximo * 100)|round }}%" data-info="Dia {{ f['dia'] }}: {{ f['alunos'] }} aluno(s)"></div>
+        {% endfor %}
+      </div>
+      <p class="apagado mt-2 mb-0" style="font-size:.78rem">
+        Onde a barra despenca é onde o aluno abandona — bom lugar para um e-mail de resgate.
+      </p>
+    {% else %}
+      <p class="suave mb-0">Nenhum dia concluído ainda.</p>
+    {% endif %}
+  </div>
+
+  <div class="cartao">
+    <h3>Atividade</h3>
+    <table class="tabela">
+      <tbody>
+        <tr><td>Questões respondidas</td><td class="mono negrito">{{ totais.respostas }}</td></tr>
+        <tr><td>Simulados finalizados</td><td class="mono negrito">{{ totais.simulados }}</td></tr>
+        <tr><td>E-mails na fila / caixa de saída</td><td class="mono negrito">{{ totais.emails_fila }}</td></tr>
+      </tbody>
+    </table>
+    <div class="flex-centro mt-2">
+      <a class="btn btn-principal btn-pequeno" href="/admin/novo">+ Liberar acesso manual</a>
+      <a class="btn btn-fantasma btn-pequeno" href="/admin/emails">Ver e-mails</a>
+    </div>
+  </div>
+</div>
+
+<div class="grade grade-2 mt-3">
+  <div class="cartao">
+    <div class="flex-entre mb-2"><h3 class="mb-0">Últimos alunos</h3><a class="suave" href="/admin/alunos">ver todos →</a></div>
+    <div class="tabela-rolagem">
+      <table class="tabela">
+        <thead><tr><th>Aluno</th><th>Status</th><th>Pontos</th><th>Último login</th></tr></thead>
+        <tbody>
+          {% for a in recentes %}
+          <tr>
+            <td><a href="/admin/aluno/{{ a['id'] }}">{{ a['nome'] }}</a><br><span class="apagado" style="font-size:.78rem">{{ a['email'] }}</span></td>
+            <td><span class="etiqueta {{ 'etiqueta-verde' if a['status'] == 'ativo' else ('etiqueta-ambar' if a['status'] == 'pendente' else 'etiqueta-vermelha') }}">{{ a['status'] }}</span></td>
+            <td class="mono">{{ a['pontos'] }}</td>
+            <td class="apagado" style="font-size:.8rem">{{ a['ultimo_login'][:16] if a['ultimo_login'] else '—' }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="suave">Nenhum aluno ainda.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="cartao">
+    <div class="flex-entre mb-2"><h3 class="mb-0">Últimos webhooks</h3><a class="suave" href="/admin/webhooks">ver todos →</a></div>
+    <div class="tabela-rolagem">
+      <table class="tabela">
+        <thead><tr><th>Quando</th><th>Tipo</th><th>Assinatura</th><th>Resultado</th></tr></thead>
+        <tbody>
+          {% for w in webhooks %}
+          <tr>
+            <td class="apagado" style="font-size:.8rem">{{ w['criado_em'][5:16] }}</td>
+            <td>{{ w['tipo'] or '—' }}</td>
+            <td>{{ '✅' if w['assinatura_ok'] else '⚠️' }}</td>
+            <td class="suave" style="font-size:.82rem">{{ w['resultado'] }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="suave">Nenhum webhook recebido. Configure a URL na Cakto.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% import "emails/base_email.html" as e with context %}
+{% set corpo %}
+<p>Boa, {{ nome }}.</p>
+<p>Você concluiu o <strong>Dia {{ dia }}</strong> e ganhou <strong>+{{ pontos }} pontos</strong>.
+   {% if streak %}Sua constância está em <strong>{{ streak }} dia(s) seguidos</strong> 🔥{% endif %}</p>
+<p><strong>Dia {{ proximo }} liberado:</strong> {{ titulo_proximo }}</p>
+<p>Regra da casa: não deixe passar dois dias. Se hoje for caótico, faça o plano mínimo — 15 minutos
+   revisando os erros já vale para manter a corrente viva.</p>
+{% endset %}
+{{ e.layout('Dia ' ~ dia ~ ' concluído 🔓', corpo, 'Ir para o Dia ' ~ proximo, link) }}

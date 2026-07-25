@@ -1,0 +1,15 @@
+{% import "emails/base_email.html" as e with context %}
+{% set corpo %}
+<p>Olá, {{ nome }}.</p>
+<p><strong>Seu acesso foi aprovado.</strong> Falta só um passo: criar a sua senha.</p>
+<p>Seu login será o e-mail <strong>{{ email }}</strong>. O link abaixo vale por 7 dias e só pode ser usado uma vez.</p>
+<p>Assim que entrar, comece pelo <strong>Dia 1 — o diagnóstico</strong>: 24 questões que definem
+   a sua trilha inteira. Sem consultar nada; é o resultado real que faz o método funcionar.</p>
+{% endset %}
+{{ e.layout(
+     'Acesso aprovado ✅',
+     corpo,
+     'Criar minha senha e começar',
+     link,
+     'Se você não comprou este curso, ignore este e-mail — nenhuma conta será ativada sem esta confirmação.'
+   ) }}

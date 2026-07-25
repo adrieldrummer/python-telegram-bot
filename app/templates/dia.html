@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block titulo %}Dia {{ d.numero }} — {{ d.titulo }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <a href="/jornada" class="suave" style="font-size:.85rem">← voltar para a jornada</a>
+
+  <div class="flex-entre mt-1 mb-3">
+    <div>
+      <span class="etiqueta etiqueta-vermelha">Fase {{ fase.numero }} · {{ fase.nome }}</span>
+      <h1 class="mt-1 mb-1">Dia {{ d.numero }} — {{ d.titulo }}</h1>
+      <p class="suave mb-0">{{ d.promessa }}</p>
+    </div>
+    <div class="cartao" style="min-width:190px;padding:1rem">
+      <div class="flex-entre" style="font-size:.84rem"><span class="apagado">Tempo</span><strong>{{ d.tempo_min }} min</strong></div>
+      <div class="flex-entre" style="font-size:.84rem"><span class="apagado">Recompensa</span><strong>+{{ d.pontos_base }} pts</strong></div>
+      <div class="flex-entre" style="font-size:.84rem"><span class="apagado">Status</span>
+        <strong>{{ 'concluído ✓' if item.concluido else 'em andamento' }}</strong></div>
+    </div>
+  </div>
+
+  <div class="grade" style="grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);align-items:start">
+    <!-- coluna principal -->
+    <div>
+      <article class="cartao">
+        <h2 style="font-size:1.15rem">Aula do dia</h2>
+        <div class="aula-texto">
+          {% for paragrafo in d.aula %}<p>{{ paragrafo|safe }}</p>{% endfor %}
+        </div>
+
+        <div class="chave mt-2">🧭 {{ d.chave }}</div>
+
+        {% if not item.aula_lida %}
+        <form method="post" action="/dia/{{ d.numero }}/aula-lida" class="mt-3">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="btn btn-fantasma" type="submit">Li a aula (+25 pontos) →</button>
+        </form>
+        {% else %}
+        <p class="apagado mt-2 mb-0" style="font-size:.85rem">✓ aula concluída</p>
+        {% endif %}
+      </article>
+
+      <!-- missão -->
+      <article class="cartao mt-3" id="missao">
+        <div class="flex-entre mb-2">
+          <div>
+            <span class="etiqueta etiqueta-vermelha">Missão do dia</span>
+            <h2 class="mt-1 mb-0" style="font-size:1.15rem">{{ d.missao.titulo }}</h2>
+          </div>
+          <span class="apagado" data-contador style="font-size:.85rem"></span>
+        </div>
+
+        {% if d.missao.descricao %}<p class="suave" style="font-size:.9rem">{{ d.missao.descricao }}</p>{% endif %}
+
+        {% if d.missao.tipo == 'simulado' and simulado %}
+          <div class="aviso aviso-atencao">
+            Este dia é um simulado cronometrado: <strong>{{ simulado.total }} questões em {{ simulado.minutos }} minutos</strong>.
+            Separe o tempo antes de começar — o cronômetro não pausa.
+          </div>
+          <a class="btn btn-principal btn-largo mt-2" href="/simulado/{{ simulado.id }}">Iniciar {{ simulado.nome }}</a>
+        {% else %}
+          <div data-player data-modo="missao" data-dia="{{ d.numero }}"
+               data-origem="{{ 'diagnostico' if d.missao.tipo == 'diagnostico' else ('revisao' if d.missao.tipo == 'revisao' else 'missao') }}">
+            <div data-questao></div>
+            <div class="navegacao-questoes">
+              <div class="flex-centro">
+                <button class="btn btn-fantasma btn-pequeno" type="button" data-anterior>← anterior</button>
+                <button class="btn btn-fantasma btn-pequeno" type="button" data-proximo>próxima →</button>
+              </div>
+              <div class="pontinhos" data-navegacao></div>
+              <button class="btn btn-principal btn-pequeno" type="button" data-concluir disabled>Concluir o dia</button>
+            </div>
+          </div>
+          <script type="application/json" id="dados-questoes">{{ questoes|tojson }}</script>
+        {% endif %}
+
+        {% if d.missao.tipo in ('questoes', 'simulado') %}
+        <p class="apagado mt-2 mb-0" style="font-size:.8rem">
+          Meta para concluir o dia: {{ meta }}% de acerto. Abaixo disso, revise os erros e refaça o bloco.
+        </p>
+        {% endif %}
+      </article>
+    </div>
+
+    <!-- coluna lateral -->
+    <aside class="pilha">
+      <div class="cartao">
+        <h3 style="font-size:1rem">Checklist</h3>
+        <ul class="checklist">
+          {% for tarefa in d.tarefas %}<li>{{ tarefa }}</li>{% endfor %}
+        </ul>
+      </div>
+
+      {% if caderno.pendentes %}
+      <div class="cartao" style="border-color:rgba(240,169,43,.4)">
+        <h3 style="font-size:1rem">📓 Revisão pendente</h3>
+        <p class="suave" style="font-size:.87rem">
+          {{ caderno.pendentes }} questão(ões) do seu caderno venceram o prazo de revisão.
+        </p>
+        <a class="btn btn-fantasma btn-pequeno btn-largo" href="/erros/revisar">Revisar</a>
+      </div>
+      {% endif %}
+
+      {% if d.diario %}
+      <div class="cartao" id="diario">
+        <h3 style="font-size:1rem">Diário de bordo</h3>
+        <p class="suave" style="font-size:.87rem">{{ d.diario }}</p>
+        <form method="post" action="/dia/{{ d.numero }}/diario">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <textarea name="texto" placeholder="Escreva aqui...">{{ anotacao }}</textarea>
+          <button class="btn btn-fantasma btn-pequeno btn-largo mt-1" type="submit">
+            Salvar {% if not anotacao %}(+15 pts){% endif %}
+          </button>
+        </form>
+      </div>
+      {% endif %}
+
+      <div class="cartao" style="background:linear-gradient(150deg,var(--azul-700),var(--azul-850))">
+        <p class="mb-0" style="font-size:.98rem;font-weight:600;font-style:italic">“{{ d.frase }}”</p>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{% if d.missao.tipo != 'simulado' %}<script src="/static/js/questoes.js"></script>{% endif %}
+{% endblock %}

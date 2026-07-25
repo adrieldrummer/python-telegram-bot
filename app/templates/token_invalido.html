@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }} — {{ config.app_nome }}{% endblock %}
+{% block topo %}{% endblock %}
+
+{% block corpo %}
+<div class="tela-auth" style="--textura:url('{{ CAPAS.textura }}')">
+  <div class="caixa-auth">
+    <a class="marca" href="/"><img src="/static/img/emblema.png" alt=""><span>MAPA DA <b>APROVAÇÃO</b></span></a>
+    <div class="cartao centro">
+      <div style="font-size:2.5rem">⏳</div>
+      <h1 style="font-size:1.35rem">{{ titulo }}</h1>
+      <p class="suave">{{ mensagem }}</p>
+      <a class="btn btn-principal btn-largo mt-2" href="/recuperar">Pedir novo link</a>
+      <a class="btn btn-fantasma btn-largo mt-1" href="/entrar">Ir para o login</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block rodape %}{% endblock %}

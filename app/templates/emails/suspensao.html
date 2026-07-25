@@ -1,0 +1,8 @@
+{% import "emails/base_email.html" as e with context %}
+{% set corpo %}
+<p>Olá, {{ nome }}.</p>
+<p>Seu acesso à plataforma foi suspenso. Motivo registrado: <strong>{{ motivo }}</strong>.</p>
+<p>Se isso foi um engano — por exemplo, um estorno cancelado depois ou um pagamento reprocessado —
+   responda este e-mail que reativamos o acesso.</p>
+{% endset %}
+{{ e.layout('Acesso suspenso', corpo, '', '', 'Seu progresso continua salvo caso o acesso seja reativado.') }}

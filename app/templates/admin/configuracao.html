@@ -1,0 +1,51 @@
+{% extends "admin/base_admin.html" %}
+{% block titulo %}Configuração — Admin{% endblock %}
+{% block titulo_admin %}Configuração e diagnóstico{% endblock %}
+
+{% block admin %}
+<div class="grade grade-2" style="align-items:start">
+  <div class="cartao">
+    <h3>Checagem de ambiente</h3>
+    <table class="tabela">
+      <tbody>
+        {% for nome, valor, ok in checagens %}
+        <tr>
+          <td>{{ '✅' if ok else '⚠️' }} {{ nome }}</td>
+          <td class="suave mono" style="font-size:.8rem;word-break:break-all">{{ valor }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="apagado mt-2 mb-0" style="font-size:.8rem">
+      Tudo isso vem do arquivo <span class="mono">.env</span> (ou das variáveis de ambiente da hospedagem).
+      Nada é editável pela interface, de propósito: configuração é infraestrutura, não conteúdo.
+    </p>
+  </div>
+
+  <div class="pilha">
+    <div class="cartao">
+      <h3>Webhook da Cakto</h3>
+      <p class="mono" style="background:rgba(255,255,255,.06);padding:.7rem 1rem;border-radius:var(--raio-p);word-break:break-all">
+        {{ webhook_url }}
+      </p>
+      <p class="suave mb-0" style="font-size:.86rem">
+        Cadastre essa URL no painel da Cakto e informe o mesmo segredo em
+        <span class="mono">CAKTO_WEBHOOK_SEGREDO</span>. Teste com um pagamento em modo de teste e
+        confira em <a href="/admin/webhooks">/admin/webhooks</a>.
+      </p>
+    </div>
+
+    <div class="cartao">
+      <h3>Antes de vender</h3>
+      <ul class="checklist">
+        <li>Trocar <span class="mono">SECRET_KEY</span> e ativar <span class="mono">COOKIE_SEGURO</span></li>
+        <li>Apontar o domínio e emitir o certificado HTTPS</li>
+        <li>Configurar SMTP com domínio verificado (SPF/DKIM)</li>
+        <li>Cadastrar o webhook na Cakto e testar uma compra</li>
+        <li>Trocar a senha do admin e remover os usuários de teste</li>
+        <li>Programar backup do banco de dados</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

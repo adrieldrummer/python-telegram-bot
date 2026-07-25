@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block titulo %}Jornada de 30 dias — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <div class="flex-entre mb-2">
+    <div>
+      <h1 class="mb-1">Jornada de 30 dias</h1>
+      <p class="suave mb-0">
+        {{ resumo.concluidos }} de {{ resumo.total }} dias concluídos
+        {% if resumo.previsao %} · conclusão prevista para {{ resumo.previsao }}{% endif %}
+      </p>
+    </div>
+    <div style="min-width:220px">
+      <div class="barra"><span style="width:{{ resumo.pct }}%"></span></div>
+      <div class="apagado mt-1 centro" style="font-size:.8rem">{{ resumo.pct }}% do mapa</div>
+    </div>
+  </div>
+
+  {% if request.query_params.get('concluido') %}
+  <div class="aviso aviso-ok mb-3">
+    ✅ Dia {{ request.query_params.get('concluido') }} concluído! O próximo dia foi liberado.
+  </div>
+  {% endif %}
+  {% if request.query_params.get('aviso') %}
+  <div class="aviso aviso-atencao mb-3">{{ request.query_params.get('aviso') }}</div>
+  {% endif %}
+
+  {% for f in resumo.fases %}
+  <section class="fileira" id="{{ f.fase.id }}">
+    <div class="fileira-cabecalho">
+      <div>
+        <h2 style="margin-bottom:.2rem">
+          <span class="destaque-vermelho">Fase {{ f.fase.numero }}</span> — {{ f.fase.nome }}
+        </h2>
+        <p class="apagado mb-0" style="font-size:.85rem">{{ f.fase.subtitulo }} · {{ f.fase.objetivo }}</p>
+      </div>
+      <span class="etiqueta {{ 'etiqueta-verde' if f.pct == 100 }}">{{ f.concluidos }}/{{ f.total }}</span>
+    </div>
+
+    <div class="dias-grade">
+      {% for item in resumo.dias if item.dia.fase == f.fase.id %}
+        {% set eh_atual = item.numero == resumo.atual.numero %}
+        {% if item.liberado %}
+        <a class="dia-cartao {{ 'concluido' if item.concluido }} {{ 'atual' if eh_atual and not item.concluido }}"
+           href="/dia/{{ item.numero }}">
+          <div>
+            <div class="numero">Dia {{ item.numero }}</div>
+            <div class="titulo">{{ item.dia.titulo }}</div>
+          </div>
+          <div class="apagado" style="font-size:.74rem">
+            {% if item.concluido %}
+              ✓ {{ item.acerto_pct }}% de acerto
+            {% else %}
+              {{ item.dia.tempo_min }} min · {{ item.dia.missao.tipo }}
+            {% endif %}
+          </div>
+        </a>
+        {% else %}
+        <div class="dia-cartao bloqueado">
+          <div>
+            <div class="numero">Dia {{ item.numero }} 🔒</div>
+            <div class="titulo">{{ item.dia.titulo }}</div>
+          </div>
+          <div class="apagado" style="font-size:.72rem">{{ item.motivo }}</div>
+          {% if item.pode_antecipar %}
+          <form method="post" action="/jornada/antecipar/{{ item.numero }}" class="mt-1">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button class="btn btn-fantasma btn-pequeno btn-largo" type="submit"
+                    title="Usa {{ custo }} pontos de estudo">
+              🔑 Antecipar ({{ custo }} pts)
+            </button>
+          </form>
+          {% endif %}
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+
+  <div class="cartao mt-3">
+    <h3>Como funciona o desbloqueio</h3>
+    <p class="suave mb-1">
+      Um dia por vez: o próximo abre quando você conclui a missão do dia anterior com pelo menos
+      {{ config.meta_acerto_missao }}% de acerto{% if config.jornada_drip_diario %}, respeitando o ritmo de um dia por dia{% endif %}.
+    </p>
+    <p class="apagado mb-0" style="font-size:.85rem">
+      Está com pressa? A <strong>Chave de Antecipação</strong> ({{ custo }} pontos) libera o próximo dia
+      antes do prazo — os pontos você ganha estudando.
+    </p>
+  </div>
+</section>
+{% endblock %}

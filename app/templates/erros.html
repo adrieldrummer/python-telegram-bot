@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block titulo %}Caderno de Erros — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <div class="flex-entre mb-3">
+    <div>
+      <h1 class="mb-1">Caderno de Erros</h1>
+      <p class="suave mb-0">Cada erro classificado volta em 1, 3, 7 e 15 dias. Três acertos seguidos e ele sai como dominado.</p>
+    </div>
+    {% if resumo.pendentes %}
+    <a class="btn btn-principal" href="/erros/revisar">Revisar {{ resumo.pendentes }} agora</a>
+    {% endif %}
+  </div>
+
+  <div class="grade grade-4 mb-3">
+    <div class="cartao metrica"><div class="valor">{{ resumo.abertos }}</div><div class="rotulo">Em aberto</div></div>
+    <div class="cartao metrica"><div class="valor">{{ resumo.pendentes }}</div><div class="rotulo">Vencidas hoje</div></div>
+    <div class="cartao metrica"><div class="valor">{{ resumo.dominados }}</div><div class="rotulo">Dominadas</div></div>
+    <div class="cartao metrica">
+      <div class="valor">{{ CATEGORIAS_ERRO[resumo.categoria_dominante].icone if resumo.categoria_dominante else '—' }}</div>
+      <div class="rotulo">{{ CATEGORIAS_ERRO[resumo.categoria_dominante].nome if resumo.categoria_dominante else 'sem padrão ainda' }}</div>
+    </div>
+  </div>
+
+  {% if resumo.categoria_dominante %}
+  <div class="cartao mb-3" style="border-left:3px solid var(--vermelho)">
+    <strong>Seu padrão de erro dominante: {{ CATEGORIAS_ERRO[resumo.categoria_dominante].nome }}</strong>
+    <p class="suave mb-0" style="font-size:.9rem">{{ CATEGORIAS_ERRO[resumo.categoria_dominante].acao }}</p>
+  </div>
+  {% endif %}
+
+  <div class="cartao mb-3">
+    <div class="flex-centro" style="flex-wrap:wrap">
+      <a class="btn btn-pequeno {{ 'btn-principal' if not materia else 'btn-fantasma' }}" href="/erros">Todas</a>
+      {% for m in MATERIAS %}
+      <a class="btn btn-pequeno {{ 'btn-principal' if materia == m.id else 'btn-fantasma' }}"
+         href="/erros?materia={{ m.id }}">{{ m.curta }}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if not itens %}
+    <div class="cartao centro">
+      <div style="font-size:2.4rem">🧠</div>
+      <h3>Caderno vazio</h3>
+      <p class="suave mb-0">Assim que você errar uma questão, ela aparece aqui com o motivo do erro e o prazo de revisão.</p>
+    </div>
+  {% else %}
+    <div class="pilha">
+      {% for item in itens %}
+      <article class="cartao">
+        <div class="flex-entre mb-1">
+          <div class="flex-centro" style="flex-wrap:wrap">
+            <span class="etiqueta" style="border-color:{{ item.questao.cor }}">{{ item.questao.materia_nome }}</span>
+            <span class="etiqueta">{{ item.questao.tema }}</span>
+            {% if item.categoria %}
+              <span class="etiqueta etiqueta-ambar">
+                {{ CATEGORIAS_ERRO[item.categoria].icone }} {{ CATEGORIAS_ERRO[item.categoria].nome }}
+              </span>
+            {% else %}
+              <span class="etiqueta etiqueta-vermelha">sem classificação</span>
+            {% endif %}
+          </div>
+          <span class="apagado" style="font-size:.8rem">
+            {% if item.vencida %}⏰ revisar hoje{% else %}próxima revisão: {{ item.proxima }}{% endif %}
+          </span>
+        </div>
+        <p class="mb-1" style="font-size:.95rem">{{ item.questao.enunciado[:220] }}{% if item.questao.enunciado|length > 220 %}…{% endif %}</p>
+        <div class="flex-entre">
+          <span class="apagado" style="font-size:.8rem">
+            nível de fixação {{ item.nivel }}/3 · {{ item.acertos_seguidos }} acerto(s) seguido(s)
+          </span>
+          {% if item.anotacao %}<span class="suave" style="font-size:.82rem">“{{ item.anotacao }}”</span>{% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

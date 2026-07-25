@@ -1,0 +1,7 @@
+{% import "emails/base_email.html" as e with context %}
+{% set corpo %}
+<p>{{ nome }}, você desbloqueou uma conquista:</p>
+<p style="font-size:17px;color:#fff"><strong>{{ titulo }}</strong></p>
+<p>{{ texto }}</p>
+{% endset %}
+{{ e.layout('Nova conquista 🎖', corpo, 'Ver meu progresso', link) }}

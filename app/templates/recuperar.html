@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Recuperar senha — {{ config.app_nome }}{% endblock %}
+{% block topo %}{% endblock %}
+
+{% block corpo %}
+<div class="tela-auth" style="--textura:url('{{ CAPAS.textura }}')">
+  <div class="caixa-auth">
+    <a class="marca" href="/"><img src="/static/img/emblema.png" alt=""><span>MAPA DA <b>APROVAÇÃO</b></span></a>
+    <div class="cartao">
+      {% if enviado %}
+        <h1 style="font-size:1.4rem">Verifique seu e-mail</h1>
+        <div class="aviso aviso-ok">
+          Se <strong>{{ email }}</strong> tiver acesso à plataforma, enviamos um link para redefinir a senha.
+          O link vale por 6 horas.
+        </div>
+        <p class="suave mt-2" style="font-size:.86rem">
+          Não chegou? Confira a caixa de spam ou fale com {{ config.suporte_email }}.
+        </p>
+        <a class="btn btn-fantasma btn-largo mt-2" href="/entrar">Voltar para o login</a>
+      {% else %}
+        <h1 style="font-size:1.4rem">Esqueci minha senha</h1>
+        <p class="suave" style="font-size:.9rem">Informe o e-mail da sua compra.</p>
+        <form method="post" action="/recuperar">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <label class="campo">
+            <span>E-mail</span>
+            <input type="email" name="email" required autofocus autocomplete="email">
+          </label>
+          <button class="btn btn-principal btn-largo" type="submit">Enviar link de recuperação</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block rodape %}{% endblock %}

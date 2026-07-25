@@ -1,0 +1,13 @@
+{% import "emails/base_email.html" as e with context %}
+{% set corpo %}
+<p>Olá, {{ nome }}.</p>
+<p>Recebemos um pedido para redefinir a senha da sua conta. Clique no botão abaixo para criar uma nova.</p>
+<p>O link vale por <strong>6 horas</strong>.</p>
+{% endset %}
+{{ e.layout(
+     'Redefinir sua senha',
+     corpo,
+     'Criar nova senha',
+     link,
+     'Se não foi você quem pediu, ignore este e-mail: sua senha atual continua valendo.'
+   ) }}

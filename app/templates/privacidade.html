@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Privacidade — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao container-estreito">
+  <h1>Política de privacidade</h1>
+  <div class="cartao aula-texto">
+    <h3>Quais dados tratamos</h3>
+    <p>Nome, e-mail, telefone (quando informado na compra) e os dados gerados pelo seu uso da
+      plataforma: respostas às questões, progresso na jornada, pontos, anotações do diário de bordo
+      e registros de acesso (data, hora e endereço IP).</p>
+
+    <h3>Para que usamos</h3>
+    <p>Para liberar e manter o seu acesso, personalizar a trilha de estudo (prioridades e revisão
+      espaçada dependem das suas respostas), enviar comunicações sobre o curso e cumprir obrigações
+      legais e fiscais.</p>
+
+    <h3>Base legal</h3>
+    <p>Execução do contrato de prestação de serviço educacional (art. 7º, V, da LGPD) e legítimo
+      interesse para segurança e prevenção a fraudes.</p>
+
+    <h3>Compartilhamento</h3>
+    <p>Compartilhamos dados apenas com prestadores necessários à operação: plataforma de pagamento
+      (Cakto), serviço de envio de e-mail e infraestrutura de hospedagem. Não vendemos dados.</p>
+
+    <h3>Seus direitos</h3>
+    <p>Você pode solicitar acesso, correção, portabilidade ou exclusão dos seus dados pelo e-mail
+      <a href="mailto:{{ config.suporte_email }}">{{ config.suporte_email }}</a>. A exclusão da conta
+      encerra o acesso ao curso.</p>
+
+    <h3>Retenção e segurança</h3>
+    <p>Os dados são mantidos enquanto durar o acesso e pelo prazo legal aplicável. As senhas são
+      armazenadas com hash PBKDF2-SHA256 e nunca em texto puro; a comunicação é protegida por HTTPS.</p>
+  </div>
+</section>
+{% endblock %}

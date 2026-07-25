@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block titulo %}{{ s.nome }} — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <div class="cronometro" id="cronometro">
+    <div>
+      <div class="apagado" style="font-size:.76rem;text-transform:uppercase;letter-spacing:.08em">{{ s.nome }}</div>
+      <div class="tempo" id="tempo">{{ '%02d'|format(s.minutos) }}:00</div>
+    </div>
+    <div class="apagado" style="font-size:.85rem" data-contador></div>
+    <button class="btn btn-principal btn-pequeno" type="button" data-concluir id="finalizar">Finalizar e corrigir</button>
+  </div>
+
+  <div class="aviso aviso-atencao mb-3">
+    Sem correção durante a prova — igual à prova real. Você vê o gabarito comentado no relatório final.
+    <strong>Não feche esta aba</strong>: o cronômetro roda aqui.
+  </div>
+
+  <div data-player data-modo="simulado" data-origem="simulado" data-sessao="{{ sessao_id }}"
+       data-minutos="{{ s.minutos }}">
+    <div data-questao></div>
+    <div class="navegacao-questoes">
+      <div class="flex-centro">
+        <button class="btn btn-fantasma btn-pequeno" type="button" data-anterior>← anterior</button>
+        <button class="btn btn-fantasma btn-pequeno" type="button" data-proximo>próxima →</button>
+      </div>
+      <div class="pontinhos" data-navegacao></div>
+    </div>
+  </div>
+  <script type="application/json" id="dados-questoes">{{ questoes|tojson }}</script>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/questoes.js"></script>
+<script>
+(function () {
+  const raiz = document.querySelector('[data-player]');
+  const minutos = parseInt(raiz.dataset.minutos, 10);
+  const total = minutos * 60;
+  const inicio = Date.now();
+  const alvo = document.getElementById('tempo');
+  const caixa = document.getElementById('cronometro');
+  const botao = document.getElementById('finalizar');
+  let encerrado = false;
+
+  function formatar(segundos) {
+    const m = Math.floor(Math.max(segundos, 0) / 60);
+    const s = Math.max(segundos, 0) % 60;
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  const relogio = setInterval(() => {
+    const decorrido = Math.floor((Date.now() - inicio) / 1000);
+    const restante = total - decorrido;
+    alvo.textContent = formatar(restante);
+    if (restante <= 300) caixa.classList.add('alerta');
+    if (restante <= 0 && !encerrado) finalizar(true);
+  }, 1000);
+
+  async function finalizar(automatico) {
+    if (encerrado) return;
+    const respondidas = window.MAPA_PLAYER.estado.filter((e) => e.respondida).length;
+    if (!automatico) {
+      const faltam = window.MAPA_PLAYER.estado.length - respondidas;
+      if (faltam > 0 && !confirm(`Faltam ${faltam} questões sem resposta. Finalizar mesmo assim?`)) return;
+    }
+    encerrado = true;
+    clearInterval(relogio);
+    botao.disabled = true;
+    botao.textContent = 'Corrigindo...';
+    try {
+      const duracao = Math.min(Math.floor((Date.now() - inicio) / 1000), total);
+      await window.MAPA_PLAYER.finalizarSimulado(duracao);
+      window.location.href = '/simulado/{{ s.id }}/relatorio/{{ sessao_id }}';
+    } catch (erro) {
+      window.MAPA.aviso(erro.message);
+      botao.disabled = false;
+      botao.textContent = 'Finalizar e corrigir';
+      encerrado = false;
+    }
+  }
+
+  botao.addEventListener('click', () => finalizar(false));
+  window.addEventListener('beforeunload', (e) => {
+    if (!encerrado) { e.preventDefault(); e.returnValue = ''; }
+  });
+})();
+</script>
+{% endblock %}

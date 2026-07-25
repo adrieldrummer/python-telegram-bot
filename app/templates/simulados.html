@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block titulo %}Simulados — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <h1 class="mb-1">Simulados cronometrados</h1>
+  <p class="suave mb-3">Prova é execução sob relógio — e isso se treina. Cada simulado gera um relatório com tempo e acerto por matéria.</p>
+
+  <div class="trilho mb-3">
+    {% for i in itens %}
+    <div class="capa {{ '' if i.liberado else 'capa-bloqueada' }}">
+      <img src="{{ CAPAS.simulados }}" alt="{{ i.simulado.nome }}">
+      <div class="capa-topo">
+        <span class="etiqueta">Dia {{ i.simulado.dia_liberacao }}</span>
+        {% if i.melhor is not none %}<span class="etiqueta etiqueta-verde">{{ i.melhor }}%</span>{% endif %}
+      </div>
+      {% if not i.liberado %}<div class="cadeado">🔒</div>{% endif %}
+      <div class="capa-sobreposicao">
+        <h3>{{ i.simulado.nome }}</h3>
+        <p>{{ i.simulado.subtitulo }}</p>
+        {% if i.liberado %}
+        <a class="btn btn-principal btn-pequeno mt-1" href="/simulado/{{ i.simulado.id }}">
+          {{ 'Refazer' if i.tentativas else 'Iniciar' }}
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="grade grade-2">
+    {% for i in itens %}
+    <article class="cartao">
+      <div class="flex-entre mb-1">
+        <h3 class="mb-0">{{ i.simulado.nome }}</h3>
+        <span class="etiqueta">{{ i.simulado.subtitulo }}</span>
+      </div>
+      <p class="suave" style="font-size:.9rem">{{ i.simulado.descricao }}</p>
+      {% if i.tentativas %}
+        <div class="tabela-rolagem">
+          <table class="tabela">
+            <thead><tr><th>Data</th><th>Acerto</th><th>Tempo</th><th></th></tr></thead>
+            <tbody>
+            {% for t in i.tentativas %}
+              <tr>
+                <td class="apagado">{{ t.finalizado_em[:16] }}</td>
+                <td class="negrito">{{ t.pct }}% <span class="apagado">({{ t.acertos }}/{{ t.total }})</span></td>
+                <td>{{ t.duracao_min }} min</td>
+                <td><a class="suave" href="/simulado/{{ i.simulado.id }}/relatorio/{{ t.id }}">relatório →</a></td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% elif i.liberado %}
+        <a class="btn btn-principal btn-pequeno" href="/simulado/{{ i.simulado.id }}">Fazer agora</a>
+      {% else %}
+        <div class="aviso">🔒 Libera no Dia {{ i.simulado.dia_liberacao }} da jornada.</div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+
+  {% if historico|length > 1 %}
+  <div class="cartao mt-3">
+    <h3>Sua curva de evolução</h3>
+    <div class="grafico mt-2">
+      {% for h in historico %}
+      <div style="height:{{ 4 + h.pct }}%" data-info="{{ h.nome }}: {{ h.pct }}%"></div>
+      {% endfor %}
+    </div>
+    <p class="apagado mt-2 mb-0" style="font-size:.8rem">Percentual de acerto em cada simulado, na ordem em que você fez.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

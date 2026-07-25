@@ -1,0 +1,29 @@
+{% extends "admin/base_admin.html" %}
+{% block titulo %}{{ linha['assunto'] }} — Admin{% endblock %}
+{% block titulo_admin %}Pré-visualização do e-mail{% endblock %}
+
+{% block admin %}
+<div class="cartao mb-3">
+  <table class="tabela">
+    <tbody>
+      <tr><td class="apagado">Para</td><td>{{ linha['destinatario'] }}</td></tr>
+      <tr><td class="apagado">Assunto</td><td>{{ linha['assunto'] }}</td></tr>
+      <tr><td class="apagado">Tipo</td><td>{{ linha['tipo'] }}</td></tr>
+      <tr><td class="apagado">Status</td><td>{{ linha['status'] }} · {{ linha['tentativas'] }} tentativa(s)</td></tr>
+      <tr><td class="apagado">Criado em</td><td>{{ linha['criado_em'] }}</td></tr>
+      {% if linha['erro'] %}<tr><td class="apagado">Erro</td><td class="destaque-vermelho">{{ linha['erro'] }}</td></tr>{% endif %}
+    </tbody>
+  </table>
+  <a class="btn btn-fantasma btn-pequeno mt-2" href="/admin/emails">← voltar</a>
+</div>
+
+<div class="cartao">
+  <h3>Conteúdo</h3>
+  <iframe srcdoc="{{ linha['corpo_html']|e }}" style="width:100%;height:70vh;border:1px solid var(--linha);border-radius:var(--raio-p);background:#fff"></iframe>
+</div>
+
+<div class="cartao mt-3">
+  <h3>Versão texto</h3>
+  <pre class="mono suave" style="white-space:pre-wrap;font-size:.82rem">{{ linha['corpo_texto'] }}</pre>
+</div>
+{% endblock %}

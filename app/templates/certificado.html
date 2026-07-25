@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block titulo %}Certificado — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  {% if not liberado %}
+    <div class="cartao centro">
+      <img src="{{ CAPAS.certificado }}" alt="" style="width:190px;margin:0 auto 1.5rem;border-radius:var(--raio)">
+      <h1>Seu certificado está a {{ resumo.total - resumo.concluidos }} dia(s) daqui</h1>
+      <p class="suave" style="max-width:520px;margin-inline:auto">
+        Ele é liberado quando você conclui os 30 dias da jornada. Faltam
+        <strong>{{ resumo.total - resumo.concluidos }}</strong> dias — você já fez {{ resumo.concluidos }}.
+      </p>
+      <div class="barra mt-2" style="max-width:420px;margin-inline:auto"><span style="width:{{ resumo.pct }}%"></span></div>
+      <a class="btn btn-principal mt-3" href="/jornada">Continuar a jornada</a>
+    </div>
+  {% else %}
+    <div class="cartao" style="background:linear-gradient(140deg,var(--azul-700),var(--azul-850));border:2px solid var(--vermelho);padding:3rem 2rem" id="certificado">
+      <div class="centro">
+        <img src="/static/img/emblema.png" alt="" style="width:74px;margin:0 auto 1rem">
+        <p class="apagado" style="letter-spacing:.25em;text-transform:uppercase;font-size:.78rem">Certificado de conclusão</p>
+        <h1 style="font-size:2rem;margin:.6rem 0">{{ aluno['nome'] }}</h1>
+        <p class="suave" style="max-width:560px;margin-inline:auto">
+          concluiu integralmente a jornada de <strong>30 dias</strong> do método
+          <strong>Mapa da Aprovação</strong>, cumprindo as quatro fases — diagnóstico, imersão em
+          questões, simulados cronometrados e blindagem final.
+        </p>
+        <div class="grade grade-4 mt-3" style="max-width:640px;margin-inline:auto">
+          <div class="metrica"><div class="valor">{{ stats.respondidas }}</div><div class="rotulo">questões</div></div>
+          <div class="metrica"><div class="valor">{{ stats.acerto_pct }}%</div><div class="rotulo">acerto</div></div>
+          <div class="metrica"><div class="valor">{{ stats.simulados }}</div><div class="rotulo">simulados</div></div>
+          <div class="metrica"><div class="valor">{{ aluno['pontos'] }}</div><div class="rotulo">pontos</div></div>
+        </div>
+        <p class="apagado mt-3" style="font-size:.8rem">
+          Emitido em {{ aluno['concluido_em'][:10] if aluno['concluido_em'] else '—' }} ·
+          Certificado de participação em curso livre, sem valor de titulação oficial.
+        </p>
+      </div>
+    </div>
+    <div class="centro mt-3">
+      <button class="btn btn-principal" onclick="window.print()">Imprimir / salvar em PDF</button>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

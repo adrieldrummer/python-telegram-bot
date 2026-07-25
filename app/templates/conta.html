@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block titulo %}Minha conta — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <h1 class="mb-3">Minha conta</h1>
+  {% if aviso %}<div class="aviso mb-3">{{ aviso }}</div>{% endif %}
+
+  <div class="grade grade-2">
+    <div class="cartao">
+      <h3>Dados de acesso</h3>
+      <table class="tabela">
+        <tbody>
+          <tr><td class="apagado">Nome</td><td>{{ aluno['nome'] }}</td></tr>
+          <tr><td class="apagado">E-mail (login)</td><td>{{ aluno['email'] }}</td></tr>
+          <tr><td class="apagado">Situação</td><td>{{ aluno['status']|capitalize }}</td></tr>
+          <tr><td class="apagado">Início da jornada</td><td>{{ aluno['inicio_jornada'] or '—' }}</td></tr>
+          <tr><td class="apagado">Patente</td><td>{{ patente.atual.insignia }} {{ patente.atual.nome }}</td></tr>
+        </tbody>
+      </table>
+      <form method="post" action="/conta/lembretes" class="mt-2">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="ativo" value="{{ '0' if aluno['lembretes_email'] else '1' }}">
+        <button class="btn btn-fantasma btn-pequeno" type="submit">
+          {{ 'Desativar' if aluno['lembretes_email'] else 'Ativar' }} lembretes por e-mail
+        </button>
+      </form>
+    </div>
+
+    <div class="cartao">
+      <h3>Trocar senha</h3>
+      <form method="post" action="/conta/senha">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <label class="campo"><span>Senha atual</span><input type="password" name="atual" required autocomplete="current-password"></label>
+        <label class="campo"><span>Nova senha</span><input type="password" name="nova" required minlength="8" autocomplete="new-password"></label>
+        <label class="campo"><span>Repita a nova senha</span><input type="password" name="confirmacao" required minlength="8" autocomplete="new-password"></label>
+        <button class="btn btn-principal" type="submit">Salvar nova senha</button>
+      </form>
+    </div>
+  </div>
+
+  <form method="post" action="/sair" class="mt-3">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button class="btn btn-fantasma" type="submit">Sair da plataforma</button>
+  </form>
+</section>
+{% endblock %}

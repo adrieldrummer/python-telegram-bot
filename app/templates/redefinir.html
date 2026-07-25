@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block titulo %}Nova senha — {{ config.app_nome }}{% endblock %}
+{% block topo %}{% endblock %}
+
+{% block corpo %}
+<div class="tela-auth" style="--textura:url('{{ CAPAS.textura }}')">
+  <div class="caixa-auth">
+    <a class="marca" href="/"><img src="/static/img/emblema.png" alt=""><span>MAPA DA <b>APROVAÇÃO</b></span></a>
+    <div class="cartao">
+      <h1 style="font-size:1.4rem">Definir nova senha</h1>
+      {% if erro %}<div class="aviso aviso-erro mb-2">{{ erro }}</div>{% endif %}
+      <form method="post" action="/redefinir/{{ token }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <label class="campo">
+          <span>Nova senha</span>
+          <input type="password" name="senha" required minlength="8" autofocus autocomplete="new-password">
+        </label>
+        <label class="campo">
+          <span>Repita a senha</span>
+          <input type="password" name="confirmacao" required minlength="8" autocomplete="new-password">
+        </label>
+        <button class="btn btn-principal btn-largo" type="submit">Salvar nova senha</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block rodape %}{% endblock %}

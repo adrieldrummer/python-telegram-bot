@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block titulo %}Manual do Mapa — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <div class="grade" style="grid-template-columns:minmax(240px,300px) minmax(0,1fr);align-items:start;gap:2rem">
+    <aside class="cartao" style="position:sticky;top:88px">
+      <img src="{{ CAPAS.manual }}" alt="" style="border-radius:var(--raio-p);margin-bottom:1rem">
+      <h3 style="font-size:1rem">O Mapa da Aprovação</h3>
+      <p class="apagado" style="font-size:.82rem">2ª edição — revisada e ampliada com {{ novos }} capítulos novos.</p>
+      <a class="btn btn-fantasma btn-pequeno btn-largo mb-2" href="/manual/download">⬇ Baixar em Markdown</a>
+      <nav style="display:grid;gap:.35rem;font-size:.85rem;max-height:46vh;overflow-y:auto">
+        {% for c in capitulos %}
+        <a href="#{{ c.id }}" class="suave">{{ c.numero }} — {{ c.titulo }}{% if c.novo %} <span class="destaque-vermelho">•</span>{% endif %}</a>
+        {% endfor %}
+      </nav>
+    </aside>
+
+    <div>
+      <h1 class="mb-1">Manual do Mapa</h1>
+      <p class="suave mb-3">O e-book completo, com os capítulos que faltavam na primeira edição.</p>
+
+      {% for c in capitulos %}
+      <article class="cartao mb-3" id="{{ c.id }}">
+        <div class="flex-centro mb-1" style="flex-wrap:wrap">
+          <span class="etiqueta">{{ c.numero }}</span>
+          {% if c.novo %}<span class="etiqueta etiqueta-vermelha">novo nesta edição</span>{% endif %}
+        </div>
+        <h2 style="font-size:1.3rem">{{ c.titulo }}</h2>
+        <p class="apagado" style="font-size:.88rem;font-style:italic">{{ c.resumo }}</p>
+        <div class="aula-texto">
+          {% for p in c.paragrafos %}<p>{{ p|safe }}</p>{% endfor %}
+        </div>
+        {% if c.lista %}
+        <ul class="checklist mb-2">
+          {% for item in c.lista %}<li>{{ item }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+        {% if c.destaque %}<div class="chave">{{ c.destaque }}</div>{% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

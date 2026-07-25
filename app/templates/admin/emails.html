@@ -1,0 +1,46 @@
+{% extends "admin/base_admin.html" %}
+{% block titulo %}E-mails — Admin{% endblock %}
+{% block titulo_admin %}E-mails{% endblock %}
+
+{% block admin %}
+{% if modo_caixa %}
+<div class="aviso aviso-atencao mb-3">
+  <strong>Modo caixa de saída.</strong> Sem SMTP configurado, nada é enviado de fato — os e-mails
+  ficam registrados aqui com o conteúdo completo (inclusive os links de ativação). Configure
+  <span class="mono">SMTP_HOST</span> no .env para enviar de verdade.
+</div>
+{% endif %}
+{% if aviso %}<div class="aviso mb-3">{{ aviso }}</div>{% endif %}
+
+<form method="post" action="/admin/emails/processar" class="mb-3">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button class="btn btn-principal btn-pequeno" type="submit">Processar fila agora</button>
+</form>
+
+<div class="cartao">
+  <div class="tabela-rolagem">
+    <table class="tabela">
+      <thead><tr><th>Data</th><th>Para</th><th>Assunto</th><th>Tipo</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for e in linhas %}
+        <tr>
+          <td class="apagado" style="font-size:.8rem">{{ e['criado_em'][:16] }}</td>
+          <td class="suave">{{ e['destinatario'] }}</td>
+          <td>{{ e['assunto'] }}</td>
+          <td class="apagado">{{ e['tipo'] }}</td>
+          <td>
+            <span class="etiqueta {{ 'etiqueta-verde' if e['status'] == 'enviado' else ('etiqueta-vermelha' if e['status'] == 'erro' else 'etiqueta-ambar') }}">
+              {{ e['status'] }}
+            </span>
+            {% if e['erro'] %}<br><span class="apagado" style="font-size:.72rem">{{ e['erro'][:80] }}</span>{% endif %}
+          </td>
+          <td><a class="suave" href="/admin/email/{{ e['id'] }}">abrir →</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="suave">Nenhum e-mail gerado ainda.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

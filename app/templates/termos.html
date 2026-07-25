@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}Termos de uso — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao container-estreito">
+  <h1>Termos de uso</h1>
+  <div class="cartao aula-texto">
+    <h3>1. O que é este produto</h3>
+    <p>{{ config.app_nome }} é um curso online de preparação para concursos, composto por trilha de
+      estudo, banco de questões autorais comentadas, simulados e material de leitura. É conteúdo
+      educacional independente, sem qualquer vínculo, patrocínio ou endosso de instituições públicas,
+      corporações militares ou bancas examinadoras.</p>
+
+    <h3>2. Acesso individual</h3>
+    <p>O acesso é pessoal e intransferível, vinculado ao e-mail informado na compra. O
+      compartilhamento de login pode levar à suspensão do acesso sem reembolso.</p>
+
+    <h3>3. Prazo e disponibilidade</h3>
+    <p>O acesso é liberado após a confirmação do pagamento pela plataforma de checkout e permanece
+      disponível pelo prazo informado na página de vendas. Eventuais interrupções técnicas serão
+      comunicadas por e-mail.</p>
+
+    <h3>4. Reembolso</h3>
+    <p>Aplica-se o direito de arrependimento previsto no Código de Defesa do Consumidor: até 7 dias
+      corridos após a compra, mediante solicitação. Em caso de reembolso, o acesso é revogado.</p>
+
+    <h3>5. Resultados</h3>
+    <p>Nenhum curso pode garantir aprovação. Os resultados dependem de dedicação individual,
+      constância e das condições de cada certame. O material apresenta um método de estudo e uma
+      leitura estatística de provas anteriores — não substitui o edital vigente.</p>
+
+    <h3>6. Propriedade intelectual</h3>
+    <p>Todo o conteúdo é protegido por direitos autorais. É proibida a reprodução, distribuição ou
+      revenda sem autorização expressa.</p>
+
+    <h3>7. Suporte</h3>
+    <p>Dúvidas e solicitações: <a href="mailto:{{ config.suporte_email }}">{{ config.suporte_email }}</a>.</p>
+  </div>
+</section>
+{% endblock %}

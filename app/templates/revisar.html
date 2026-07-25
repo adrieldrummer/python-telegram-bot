@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block titulo %}Revisão espaçada — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <a href="/erros" class="suave" style="font-size:.85rem">← voltar para o caderno</a>
+  <div class="flex-entre mt-1 mb-3">
+    <div>
+      <h1 class="mb-1">Revisão espaçada</h1>
+      <p class="suave mb-0">Estas são as questões que venceram o prazo. Acertou três vezes seguidas, ela sai do caderno.</p>
+    </div>
+    <span class="etiqueta etiqueta-ambar">{{ questoes|length }} nesta rodada</span>
+  </div>
+
+  {% if not questoes %}
+    <div class="cartao centro">
+      <div style="font-size:2.4rem">✅</div>
+      <h3>Nada vencido por enquanto</h3>
+      <p class="suave">Suas revisões estão em dia. Volte quando o prazo de alguma questão chegar.</p>
+      <a class="btn btn-principal" href="/questoes">Treinar questões novas</a>
+    </div>
+  {% else %}
+    <div data-player data-modo="revisao" data-origem="revisao">
+      <div data-questao></div>
+      <div class="navegacao-questoes">
+        <div class="flex-centro">
+          <button class="btn btn-fantasma btn-pequeno" type="button" data-anterior>← anterior</button>
+          <button class="btn btn-fantasma btn-pequeno" type="button" data-proximo>próxima →</button>
+        </div>
+        <div class="pontinhos" data-navegacao></div>
+        <span class="apagado" data-contador style="font-size:.85rem"></span>
+      </div>
+    </div>
+    <script type="application/json" id="dados-questoes">{{ questoes|tojson }}</script>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}{% if questoes %}<script src="/static/js/questoes.js"></script>{% endif %}{% endblock %}

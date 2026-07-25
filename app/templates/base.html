@@ -1,0 +1,106 @@
+{% set caminho = request.url.path %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="theme-color" content="#0b1b33">
+  <meta name="description" content="{% block descricao %}{{ config.app_subtitulo }}{% endblock %}">
+  <title>{% block titulo %}{{ config.app_nome }}{% endblock %}</title>
+  <link rel="icon" href="/static/img/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/static/css/app.css">
+  {% block cabecalho %}{% endblock %}
+</head>
+<body>
+{% block topo %}
+<header class="topo">
+  <div class="container topo-interno">
+    <a class="marca" href="{{ '/painel' if aluno else '/' }}">
+      <img src="/static/img/emblema.png" alt="">
+      <span>MAPA DA <b>APROVAÇÃO</b></span>
+    </a>
+
+    {% if aluno %}
+    <nav class="menu">
+      <a href="/painel" class="{{ 'ativo' if caminho == '/painel' }}">Início</a>
+      <a href="/jornada" class="{{ 'ativo' if caminho.startswith('/jornada') or caminho.startswith('/dia') }}">Jornada 30 dias</a>
+      <a href="/questoes" class="{{ 'ativo' if caminho.startswith('/questoes') }}">Questões</a>
+      <a href="/erros" class="{{ 'ativo' if caminho.startswith('/erros') }}">Caderno de Erros</a>
+      <a href="/simulados" class="{{ 'ativo' if caminho.startswith('/simulado') }}">Simulados</a>
+      <a href="/manual" class="{{ 'ativo' if caminho.startswith('/manual') }}">Manual</a>
+      {% if aluno['admin'] %}<a href="/admin" class="{{ 'ativo' if caminho.startswith('/admin') }}">Admin</a>{% endif %}
+    </nav>
+    <div class="topo-direita">
+      <a class="pontos-topo" href="/pontos" title="Pontos de estudo">
+        ★ <span data-pontos>{{ '{:,}'.format(aluno['pontos']).replace(',', '.') }}</span>
+      </a>
+      {% if aluno['streak_atual'] %}
+        <span class="pontos-topo" style="background:rgba(240,169,43,.12);border-color:rgba(240,169,43,.4);color:#ffe0ad">
+          🔥 {{ aluno['streak_atual'] }}
+        </span>
+      {% endif %}
+      <a class="avatar" href="/conta" title="{{ aluno['nome'] }}">{{ aluno['nome'][0]|upper }}</a>
+      <button class="abre-menu" type="button" aria-label="Menu">☰</button>
+    </div>
+    {% else %}
+    <nav class="menu">
+      <a href="/#metodo">O método</a>
+      <a href="/#plataforma">A plataforma</a>
+      <a href="/#faq">Dúvidas</a>
+    </nav>
+    <div class="topo-direita">
+      <a class="btn btn-fantasma btn-pequeno" href="/entrar">Entrar</a>
+      <a class="btn btn-principal btn-pequeno" href="{{ config.cakto_checkout_url }}">Quero começar</a>
+      <button class="abre-menu" type="button" aria-label="Menu">☰</button>
+    </div>
+    {% endif %}
+  </div>
+</header>
+{% endblock %}
+
+{% block corpo %}
+<main class="container">
+  {% block conteudo %}{% endblock %}
+</main>
+{% endblock %}
+
+{% block rodape %}
+<footer class="rodape">
+  <div class="container rodape-grade">
+    <div style="max-width:320px">
+      <div class="marca mb-1"><img src="/static/img/emblema.png" alt=""><span>MAPA DA <b>APROVAÇÃO</b></span></div>
+      <p class="apagado" style="font-size:.82rem">
+        Plataforma de estudo do método de 30 dias. Conteúdo educacional independente,
+        sem vínculo com qualquer instituição pública ou banca examinadora.
+      </p>
+    </div>
+    <div>
+      <strong style="color:var(--claro)">Plataforma</strong>
+      <p class="mt-1" style="display:grid;gap:.4rem;font-size:.85rem">
+        <a href="/entrar">Entrar</a>
+        <a href="/recuperar">Esqueci minha senha</a>
+        <a href="/termos">Termos de uso</a>
+        <a href="/privacidade">Privacidade</a>
+      </p>
+    </div>
+    <div>
+      <strong style="color:var(--claro)">Suporte</strong>
+      <p class="mt-1" style="display:grid;gap:.4rem;font-size:.85rem">
+        <a href="mailto:{{ config.suporte_email }}">{{ config.suporte_email }}</a>
+        {% if config.suporte_whatsapp %}
+        <a href="https://wa.me/{{ config.suporte_whatsapp }}">WhatsApp</a>
+        {% endif %}
+      </p>
+    </div>
+  </div>
+  <div class="container mt-3 apagado" style="font-size:.78rem">
+    © {{ config.app_nome }} — todos os direitos reservados. Resultados dependem de dedicação individual.
+  </div>
+</footer>
+{% endblock %}
+
+<script src="/static/js/app.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

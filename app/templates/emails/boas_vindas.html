@@ -1,0 +1,13 @@
+{% import "emails/base_email.html" as e with context %}
+{% set corpo %}
+<p>Sua conta está ativa, {{ nome }}.</p>
+<p>Três coisas para saber antes de começar:</p>
+<p>
+  <strong>1.</strong> A jornada libera um dia por vez. O Dia 2 abre quando você conclui o Dia 1 —
+  porque cada dia usa o resultado do anterior para escolher suas questões.<br>
+  <strong>2.</strong> Toda questão errada entra no seu Caderno de Erros e volta em 1, 3, 7 e 15 dias.<br>
+  <strong>3.</strong> Você ganha pontos estudando e sobe de patente. Constância vale mais que maratona.
+</p>
+<p>Comece agora pelo diagnóstico. São 40 minutos que valem os 30 dias.</p>
+{% endset %}
+{{ e.layout('Bem-vindo ao Mapa 🧭', corpo, 'Abrir o Dia 1', link) }}

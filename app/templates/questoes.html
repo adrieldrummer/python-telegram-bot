@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block titulo %}Banco de questões — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <div class="flex-entre mb-2">
+    <div>
+      <h1 class="mb-1">Banco de Questões</h1>
+      <p class="suave mb-0">Treino livre, sem afetar o desbloqueio da jornada — mas contando pontos e alimentando o caderno.</p>
+    </div>
+    {% if caderno.pendentes %}
+    <a class="btn btn-fantasma btn-pequeno" href="/erros/revisar">📓 {{ caderno.pendentes }} para revisar</a>
+    {% endif %}
+  </div>
+
+  <form class="cartao mb-3" method="get" action="/questoes">
+    <div class="grade grade-3" style="align-items:end">
+      <label class="campo mb-0">
+        <span>Matéria</span>
+        <select name="materia">
+          <option value="">Todas as matérias</option>
+          {% for m in MATERIAS %}
+          <option value="{{ m.id }}" {{ 'selected' if materia == m.id }}>
+            {{ m.nome }} ({{ por_materia.get(m.id, 0) }})
+          </option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="campo mb-0">
+        <span>Nível</span>
+        <select name="nivel">
+          <option value="">Todos</option>
+          <option value="facil" {{ 'selected' if nivel == 'facil' }}>Fácil</option>
+          <option value="medio" {{ 'selected' if nivel == 'medio' }}>Médio</option>
+          <option value="dificil" {{ 'selected' if nivel == 'dificil' }}>Difícil</option>
+        </select>
+      </label>
+      <label class="campo mb-0">
+        <span>Quantidade</span>
+        <select name="quantidade">
+          {% for n in [5, 10, 15, 20, 30] %}
+          <option value="{{ n }}" {{ 'selected' if quantidade == n }}>{{ n }} questões</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+    <button class="btn btn-principal mt-2" type="submit">Gerar novo bloco</button>
+  </form>
+
+  <div data-player data-modo="treino" data-origem="treino">
+    <div data-questao></div>
+    <div class="navegacao-questoes">
+      <div class="flex-centro">
+        <button class="btn btn-fantasma btn-pequeno" type="button" data-anterior>← anterior</button>
+        <button class="btn btn-fantasma btn-pequeno" type="button" data-proximo>próxima →</button>
+      </div>
+      <div class="pontinhos" data-navegacao></div>
+      <span class="apagado" data-contador style="font-size:.85rem"></span>
+    </div>
+  </div>
+  <script type="application/json" id="dados-questoes">{{ questoes|tojson }}</script>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="/static/js/questoes.js"></script>{% endblock %}

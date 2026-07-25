@@ -1,0 +1,54 @@
+{% extends "admin/base_admin.html" %}
+{% block titulo %}Alunos — Admin{% endblock %}
+{% block titulo_admin %}Alunos{% endblock %}
+
+{% block admin %}
+<form class="cartao mb-3" method="get" action="/admin/alunos">
+  <div class="grade grade-3" style="align-items:end">
+    <label class="campo mb-0"><span>Buscar por nome ou e-mail</span>
+      <input type="search" name="busca" value="{{ busca }}" placeholder="ex.: joao@..."></label>
+    <label class="campo mb-0"><span>Situação</span>
+      <select name="status">
+        <option value="">Todas</option>
+        {% for s in ['ativo', 'pendente', 'suspenso'] %}
+        <option value="{{ s }}" {{ 'selected' if status == s }}>{{ s|capitalize }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <div class="flex-centro">
+      <button class="btn btn-principal" type="submit">Filtrar</button>
+      <a class="btn btn-fantasma" href="/admin/novo">+ Novo acesso</a>
+    </div>
+  </div>
+</form>
+
+<div class="cartao">
+  <div class="tabela-rolagem">
+    <table class="tabela">
+      <thead>
+        <tr><th>#</th><th>Aluno</th><th>Status</th><th>Origem</th><th>Pontos</th><th>Streak</th><th>Cadastro</th><th>Último login</th></tr>
+      </thead>
+      <tbody>
+        {% for a in linhas %}
+        <tr>
+          <td class="apagado">{{ a['id'] }}</td>
+          <td>
+            <a href="/admin/aluno/{{ a['id'] }}" class="negrito">{{ a['nome'] }}</a>
+            {% if a['admin'] %}<span class="etiqueta etiqueta-vermelha">admin</span>{% endif %}
+            <br><span class="apagado" style="font-size:.78rem">{{ a['email'] }}</span>
+          </td>
+          <td><span class="etiqueta {{ 'etiqueta-verde' if a['status'] == 'ativo' else ('etiqueta-ambar' if a['status'] == 'pendente' else 'etiqueta-vermelha') }}">{{ a['status'] }}</span></td>
+          <td class="apagado">{{ a['origem'] }}</td>
+          <td class="mono">{{ a['pontos'] }}</td>
+          <td class="mono">{{ a['streak_atual'] }}</td>
+          <td class="apagado" style="font-size:.8rem">{{ a['criado_em'][:10] }}</td>
+          <td class="apagado" style="font-size:.8rem">{{ a['ultimo_login'][:16] if a['ultimo_login'] else '—' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="suave">Nenhum aluno encontrado com esse filtro.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

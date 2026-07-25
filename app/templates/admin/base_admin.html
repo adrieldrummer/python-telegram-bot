@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<section class="secao">
+  <div class="flex-entre mb-3">
+    <div>
+      <span class="etiqueta etiqueta-vermelha">Administração</span>
+      <h1 class="mt-1 mb-0">{% block titulo_admin %}Painel{% endblock %}</h1>
+    </div>
+    <nav class="flex-centro" style="flex-wrap:wrap">
+      {% set atual = request.url.path %}
+      <a class="btn btn-pequeno {{ 'btn-principal' if atual == '/admin' else 'btn-fantasma' }}" href="/admin">Visão geral</a>
+      <a class="btn btn-pequeno {{ 'btn-principal' if atual.startswith('/admin/aluno') else 'btn-fantasma' }}" href="/admin/alunos">Alunos</a>
+      <a class="btn btn-pequeno {{ 'btn-principal' if atual == '/admin/compras' else 'btn-fantasma' }}" href="/admin/compras">Compras</a>
+      <a class="btn btn-pequeno {{ 'btn-principal' if atual == '/admin/webhooks' else 'btn-fantasma' }}" href="/admin/webhooks">Webhooks</a>
+      <a class="btn btn-pequeno {{ 'btn-principal' if atual.startswith('/admin/email') else 'btn-fantasma' }}" href="/admin/emails">E-mails</a>
+      <a class="btn btn-pequeno {{ 'btn-principal' if atual == '/admin/conteudo' else 'btn-fantasma' }}" href="/admin/conteudo">Conteúdo</a>
+      <a class="btn btn-pequeno {{ 'btn-principal' if atual == '/admin/configuracao' else 'btn-fantasma' }}" href="/admin/configuracao">Configuração</a>
+    </nav>
+  </div>
+
+  {% if request.query_params.get('aviso') %}
+  <div class="aviso aviso-ok mb-3">{{ request.query_params.get('aviso') }}</div>
+  {% endif %}
+
+  {% block admin %}{% endblock %}
+</section>
+{% endblock %}

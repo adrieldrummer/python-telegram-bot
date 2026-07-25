@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titulo %}Dia bloqueado — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao centro">
+  <div style="font-size:3rem">🔒</div>
+  <h1>Dia {{ dia.numero }} ainda não liberado</h1>
+  <p class="suave" style="max-width:520px;margin-inline:auto">
+    "{{ dia.titulo }}" abre quando você conclui o dia anterior. O desbloqueio em sequência existe
+    por um motivo: cada dia usa o resultado do anterior para escolher as suas questões.
+  </p>
+  <div class="flex-centro mt-3" style="justify-content:center">
+    <a class="btn btn-principal" href="/jornada">Ver minha jornada</a>
+    <a class="btn btn-fantasma" href="/questoes">Treinar questões livres</a>
+  </div>
+</section>
+{% endblock %}

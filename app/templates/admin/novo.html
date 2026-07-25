@@ -1,0 +1,36 @@
+{% extends "admin/base_admin.html" %}
+{% block titulo %}Novo acesso — Admin{% endblock %}
+{% block titulo_admin %}Liberar acesso manualmente{% endblock %}
+
+{% block admin %}
+<div class="grade grade-2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+  <div class="cartao">
+    {% if aviso %}<div class="aviso aviso-atencao mb-2">{{ aviso }}</div>{% endif %}
+    <p class="suave">
+      Use para vendas fora da Cakto, cortesias ou correção de compra que não disparou webhook.
+      O aluno recebe o e-mail de aprovação com link para criar a senha.
+    </p>
+    <form method="post" action="/admin/novo">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label class="campo"><span>Nome</span><input type="text" name="nome" required></label>
+      <label class="campo"><span>E-mail</span><input type="email" name="email" required></label>
+      <label class="campo"><span>Telefone (opcional)</span><input type="text" name="telefone"></label>
+      <button class="btn btn-principal btn-largo" type="submit">Aprovar acesso e enviar e-mail</button>
+    </form>
+  </div>
+
+  <div class="cartao">
+    <h3>Como funciona a aprovação por e-mail</h3>
+    <ol class="suave" style="font-size:.9rem;padding-left:1.1rem">
+      <li>A compra aprovada na Cakto (ou esta liberação manual) cria o aluno com status <strong>pendente</strong>.</li>
+      <li>A plataforma envia o <strong>e-mail de aprovação</strong> com um link único, válido por 7 dias.</li>
+      <li>O aluno clica, define a senha e o status vira <strong>ativo</strong> — o Dia 1 é liberado na hora.</li>
+      <li>Reembolso ou chargeback na Cakto suspende o acesso automaticamente.</li>
+    </ol>
+    <p class="apagado mb-0" style="font-size:.82rem">
+      Sem SMTP configurado, o e-mail fica na caixa de saída em /admin/emails — você consegue copiar
+      o link de ativação de lá.
+    </p>
+  </div>
+</div>
+{% endblock %}

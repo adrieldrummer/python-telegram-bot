@@ -1,0 +1,10 @@
+{% import "emails/base_email.html" as e with context %}
+{% set corpo %}
+<p>Olá, {{ nome }}.</p>
+<p>{{ mensagem }}</p>
+{% if streak %}<p>Sua sequência atual: <strong>{{ streak }} dia(s)</strong>. Seria uma pena quebrar hoje.</p>{% endif %}
+<p>Se o dia estiver impossível, faça o plano mínimo: 15 minutos revisando o Caderno de Erros.
+   Não é o ideal — mas mantém a corrente viva, e é a corrente que aprova.</p>
+{% endset %}
+{{ e.layout('Seu bloco de hoje', corpo, 'Estudar agora', link,
+   'Você pode desativar estes lembretes na página Minha conta.') }}

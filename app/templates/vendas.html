@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block titulo %}{{ config.app_nome }} — {{ config.app_subtitulo }}{% endblock %}
+
+{% block corpo %}
+<section class="hero">
+  <div class="hero-fundo" style="background-image:url('{{ CAPAS.hero }}')"></div>
+  <div class="container hero-conteudo">
+    <div class="hero-linha"></div>
+    <span class="etiqueta etiqueta-vermelha mb-2">Método de 30 dias · Soldado PM 2ª Classe</span>
+    <h1>Você não precisa estudar mais.<br>Precisa estudar <span class="destaque-vermelho">certo</span>.</h1>
+    <p style="font-size:1.1rem;max-width:560px;color:var(--claro)">
+      O método que aprovou Rafael Andrade depois de três reprovações — agora dentro de uma
+      plataforma que faz por você o trabalho braçal: diagnóstico, prioridades, caderno de erros
+      e revisão espaçada.
+    </p>
+    <div class="hero-acoes">
+      <a class="btn btn-principal" href="{{ checkout }}">Garantir meu acesso</a>
+      <a class="btn btn-fantasma" href="#metodo">Ver como funciona</a>
+    </div>
+    <p class="apagado mt-2" style="font-size:.84rem">
+      Acesso liberado por e-mail logo após a aprovação do pagamento.
+    </p>
+  </div>
+</section>
+
+<div class="container">
+
+  <section class="secao" id="metodo">
+    <div class="fileira-cabecalho"><h2>Os 30 dias, divididos em 4 fases</h2></div>
+    <div class="trilho">
+      {% for fase in fases %}
+      <div class="capa">
+        <img src="{{ CAPAS[fase.id] }}" alt="{{ fase.nome }}">
+        <div class="capa-sobreposicao">
+          <span class="etiqueta etiqueta-vermelha" style="align-self:flex-start;margin-bottom:.5rem">Fase {{ fase.numero }}</span>
+          <h3>{{ fase.nome }}</h3>
+          <p>{{ fase.subtitulo }} — {{ fase.objetivo }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="secao" id="plataforma">
+    <div class="fileira-cabecalho"><h2>O que você recebe</h2></div>
+    <div class="grade grade-3">
+      <div class="cartao">
+        <h3>🧭 Diagnóstico real</h3>
+        <p class="suave">24 questões no primeiro dia geram o seu Mapa de Prioridades: quais matérias
+          merecem o seu tempo, com base em dado — não em achismo.</p>
+      </div>
+      <div class="cartao">
+        <h3>📓 Caderno de Erros com revisão espaçada</h3>
+        <p class="suave">Cada erro é classificado (falta de conteúdo, pegadinha ou desatenção) e volta
+          para você em 1, 3, 7 e 15 dias — até virar acerto.</p>
+      </div>
+      <div class="cartao">
+        <h3>⏱ Simulados cronometrados</h3>
+        <p class="suave">Três provas completas com relatório de tempo por questão, acerto por matéria
+          e comparação da sua curva de evolução.</p>
+      </div>
+      <div class="cartao">
+        <h3>🔓 Jornada com desbloqueio</h3>
+        <p class="suave">Um dia por vez, com missão diária. Nada de plataforma cheia de vídeo onde
+          você se perde no segundo dia.</p>
+      </div>
+      <div class="cartao">
+        <h3>★ Pontos de estudo e patentes</h3>
+        <p class="suave">Você sobe de Recruta a Subtenente conforme estuda. Constância vira número —
+          e número vira hábito.</p>
+      </div>
+      <div class="cartao">
+        <h3>📖 {{ total_questoes }} questões comentadas</h3>
+        <p class="suave">Todas com comentário de correção e a armadilha da banca explicada.
+          Mais o e-book completo revisado e ampliado.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao">
+    <div class="cartao" style="background:linear-gradient(135deg,var(--azul-700),var(--azul-850))">
+      <div class="flex-entre">
+        <div style="max-width:620px">
+          <h2 class="mb-1">"Não faltou esforço nas três primeiras tentativas. Faltou direção."</h2>
+          <p class="suave mb-0">
+            Rafael reprovou três vezes estudando muito e errado. Na quarta tentativa, com 60 dias,
+            trocou teoria por questões, passou a categorizar cada erro e foi aprovado. Este curso é
+            esse método — em 30 dias, com a plataforma fazendo a parte chata.
+          </p>
+        </div>
+        <a class="btn btn-principal" href="{{ checkout }}">Começar agora</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao" id="faq">
+    <div class="fileira-cabecalho"><h2>Perguntas frequentes</h2></div>
+    <div class="grade grade-2">
+      <div class="cartao">
+        <h3>Como recebo meu acesso?</h3>
+        <p class="suave mb-0">Assim que o pagamento é aprovado na Cakto, você recebe um e-mail de
+          aprovação com um link para criar sua senha. O login é seu e-mail.</p>
+      </div>
+      <div class="cartao">
+        <h3>Preciso estudar quantas horas por dia?</h3>
+        <p class="suave mb-0">A trilha é desenhada para 40 a 60 minutos por dia, divididos em blocos —
+          feita para quem trabalha e tem família.</p>
+      </div>
+      <div class="cartao">
+        <h3>O conteúdo serve para outros concursos?</h3>
+        <p class="suave mb-0">O método serve para qualquer prova objetiva. As questões e os pesos são
+          calibrados para o concurso de Soldado PM 2ª Classe de São Paulo.</p>
+      </div>
+      <div class="cartao">
+        <h3>Isso substitui o edital?</h3>
+        <p class="suave mb-0">Não. Os pesos por matéria são leitura estatística de provas anteriores e
+          servem para priorizar. Confira sempre o edital vigente do seu certame.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

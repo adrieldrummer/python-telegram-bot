@@ -1,0 +1,42 @@
+{% extends "admin/base_admin.html" %}
+{% block titulo %}Webhooks — Admin{% endblock %}
+{% block titulo_admin %}Webhooks recebidos{% endblock %}
+
+{% block admin %}
+<div class="cartao mb-3">
+  <h3>URL para cadastrar na Cakto</h3>
+  <p class="mono" style="background:rgba(255,255,255,.06);padding:.7rem 1rem;border-radius:var(--raio-p);word-break:break-all">
+    {{ config.app_url }}/webhooks/cakto
+  </p>
+  <p class="apagado mb-0" style="font-size:.82rem">
+    Eventos úteis: compra aprovada (libera o acesso) e reembolso/chargeback (suspende).
+    A assinatura é validada com o segredo definido em <span class="mono">CAKTO_WEBHOOK_SEGREDO</span>.
+  </p>
+</div>
+
+<div class="cartao">
+  <div class="tabela-rolagem">
+    <table class="tabela">
+      <thead><tr><th>Data</th><th>Tipo</th><th>Assinatura</th><th>Resultado</th><th>Payload</th></tr></thead>
+      <tbody>
+        {% for w in linhas %}
+        <tr>
+          <td class="apagado" style="font-size:.8rem">{{ w['criado_em'][:16] }}</td>
+          <td>{{ w['tipo'] or '—' }}</td>
+          <td>{{ '✅ válida' if w['assinatura_ok'] else '⚠️ inválida' }}</td>
+          <td class="suave">{{ w['resultado'] }}</td>
+          <td>
+            <details>
+              <summary class="suave" style="cursor:pointer;font-size:.82rem">ver JSON</summary>
+              <pre class="mono" style="white-space:pre-wrap;font-size:.74rem;max-width:520px;color:var(--suave)">{{ w['payload'] }}</pre>
+            </details>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="suave">Nenhum webhook recebido ainda.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

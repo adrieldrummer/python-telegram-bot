@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block titulo %}Painel — {{ config.app_nome }}{% endblock %}
+
+{% set atual = resumo.atual %}
+
+{% block corpo %}
+<section class="hero" style="min-height:64vh">
+  <div class="hero-fundo" style="background-image:url('{{ CAPAS[atual.dia.fase] }}')"></div>
+  <div class="container hero-conteudo">
+    <div class="hero-linha"></div>
+    <span class="etiqueta etiqueta-vermelha mb-2">
+      {{ 'Continue de onde parou' if resumo.concluidos else 'Comece por aqui' }} · Fase {{ atual.fase.numero }}
+    </span>
+    <h1 style="font-size:clamp(1.7rem,3.4vw,2.6rem)">Dia {{ atual.numero }} — {{ atual.dia.titulo }}</h1>
+    <p style="max-width:560px">{{ atual.dia.promessa }}</p>
+    <div class="flex-centro mt-1" style="gap:1.2rem;font-size:.86rem;color:var(--suave)">
+      <span>⏱ {{ atual.dia.tempo_min }} min</span>
+      <span>🎯 {{ atual.dia.missao.titulo }}</span>
+      <span>★ +{{ atual.dia.pontos_base }} pontos</span>
+    </div>
+    <div class="hero-acoes">
+      <a class="btn btn-principal" href="/dia/{{ atual.numero }}">
+        {{ 'Continuar Dia ' ~ atual.numero if atual.aula_lida else 'Abrir Dia ' ~ atual.numero }}
+      </a>
+      <a class="btn btn-fantasma" href="/jornada">Ver os 30 dias</a>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+
+  {% if boasvindas %}
+  <div class="aviso aviso-ok mt-3">
+    <strong>Conta ativada.</strong> Comece pelo Dia 1 — o diagnóstico define sua trilha inteira.
+  </div>
+  {% endif %}
+
+  <!-- métricas -->
+  <section class="fileira">
+    <div class="grade grade-4">
+      <div class="cartao metrica">
+        <div class="valor">{{ resumo.concluidos }}<span class="apagado" style="font-size:1rem">/{{ resumo.total }}</span></div>
+        <div class="rotulo">Dias concluídos</div>
+        <div class="barra barra-fina mt-1"><span style="width:{{ resumo.pct }}%"></span></div>
+      </div>
+      <div class="cartao metrica">
+        <div class="valor">{{ stats.acerto_pct }}%</div>
+        <div class="rotulo">Acerto geral</div>
+        <div class="apagado mt-1" style="font-size:.75rem">{{ stats.respondidas }} questões respondidas</div>
+      </div>
+      <div class="cartao metrica">
+        <div class="valor">🔥 {{ aluno['streak_atual'] }}</div>
+        <div class="rotulo">Dias seguidos</div>
+        <div class="apagado mt-1" style="font-size:.75rem">Recorde: {{ aluno['streak_recorde'] }}</div>
+      </div>
+      <div class="cartao metrica">
+        <div class="valor">{{ patente.atual.insignia }}</div>
+        <div class="rotulo">{{ patente.atual.nome }}</div>
+        {% if patente.proxima %}
+        <div class="barra barra-fina mt-1"><span style="width:{{ patente.progresso }}%"></span></div>
+        <div class="apagado mt-1" style="font-size:.72rem">faltam {{ patente.faltam }} pts p/ {{ patente.proxima.nome }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- alerta do caderno -->
+  {% if caderno.pendentes %}
+  <div class="cartao mt-2" style="border-color:rgba(240,169,43,.45);background:rgba(240,169,43,.08)">
+    <div class="flex-entre">
+      <div>
+        <strong>📓 {{ caderno.pendentes }} questão(ões) esperando revisão</strong>
+        <p class="suave mb-0" style="font-size:.88rem">
+          A revisão espaçada é o que impede você de errar duas vezes pelo mesmo motivo.
+        </p>
+      </div>
+      <a class="btn btn-claro btn-pequeno" href="/erros/revisar">Revisar agora</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- fases -->
+  <section class="fileira">
+    <div class="fileira-cabecalho">
+      <h2>Sua jornada em 4 fases</h2>
+      <a href="/jornada">ver todos os dias →</a>
+    </div>
+    <div class="trilho">
+      {% for f in resumo.fases %}
+      <a class="capa {{ '' if f.liberada else 'capa-bloqueada' }}" href="/jornada#{{ f.fase.id }}">
+        <img src="{{ CAPAS[f.fase.id] }}" alt="{{ f.fase.nome }}">
+        <div class="capa-topo">
+          <span class="etiqueta">Fase {{ f.fase.numero }}</span>
+          {% if f.pct == 100 %}<span class="etiqueta etiqueta-verde">✓</span>{% endif %}
+        </div>
+        {% if not f.liberada %}<div class="cadeado">🔒</div>{% endif %}
+        <div class="capa-sobreposicao">
+          <h3>{{ f.fase.nome }}</h3>
+          <p>{{ f.concluidos }}/{{ f.total }} dias · {{ f.fase.subtitulo }}</p>
+          <div class="barra barra-fina mt-1"><span style="width:{{ f.pct }}%"></span></div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- treinos -->
+  <section class="fileira">
+    <div class="fileira-cabecalho"><h2>Treinos e ferramentas</h2></div>
+    <div class="trilho">
+      {% for t in treinos %}
+      <a class="capa" href="{{ t.url }}">
+        <img src="{{ t.capa }}" alt="{{ t.titulo }}">
+        <div class="capa-topo"><span class="etiqueta etiqueta-vermelha">{{ t.etiqueta }}</span></div>
+        <div class="capa-sobreposicao">
+          <h3>{{ t.titulo }}</h3>
+          <p>{{ t.descricao }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- prioridades e evolução -->
+  <section class="fileira grade grade-2">
+    <div class="cartao">
+      <div class="flex-entre mb-2">
+        <h3 class="mb-0">Seu mapa de prioridades</h3>
+        <span class="etiqueta">peso × erro</span>
+      </div>
+      {% if stats.respondidas == 0 %}
+        <p class="suave">Faça o diagnóstico do Dia 1 para gerar suas prioridades reais.</p>
+      {% else %}
+        {% for p in prioridades %}
+        <div class="mb-2">
+          <div class="flex-entre" style="font-size:.9rem">
+            <span>
+              {% if loop.index <= 3 %}<span class="destaque-vermelho">▲</span>{% endif %}
+              {{ p.materia.nome }}
+            </span>
+            <span class="mono suave">{{ p.acerto_pct }}% · {{ p.total }} q</span>
+          </div>
+          <div class="barra barra-fina mt-1">
+            <span style="width:{{ p.acerto_pct }}%;background:{{ p.materia.cor }}"></span>
+          </div>
+        </div>
+        {% endfor %}
+        <p class="apagado mb-0" style="font-size:.76rem">
+          Peso estatístico de provas anteriores. Confira sempre o edital vigente.
+        </p>
+      {% endif %}
+    </div>
+
+    <div class="cartao">
+      <h3>Evolução — últimos dias</h3>
+      {% if evolucao %}
+        <div class="grafico mt-2">
+          {% for e in evolucao %}
+          <div style="height:{{ 4 + e.pct }}%" data-info="{{ e.data[8:10] }}/{{ e.data[5:7] }}: {{ e.pct }}% ({{ e.total }}q)"></div>
+          {% endfor %}
+        </div>
+        <p class="apagado mt-2 mb-0" style="font-size:.78rem">Percentual de acerto por dia de estudo.</p>
+      {% else %}
+        <p class="suave">Seu gráfico aparece depois do primeiro bloco de questões.</p>
+      {% endif %}
+
+      {% if historico %}
+      <div class="mt-2" style="border-top:1px solid var(--linha);padding-top:1rem">
+        <strong style="font-size:.9rem">Simulados</strong>
+        {% for h in historico %}
+        <div class="flex-entre mt-1" style="font-size:.86rem">
+          <span class="suave">{{ h.nome }}</span>
+          <span class="mono negrito">{{ h.pct }}%</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if medalhas %}
+  <section class="fileira">
+    <div class="fileira-cabecalho">
+      <h2>Conquistas recentes</h2>
+      <a href="/pontos">ver todas →</a>
+    </div>
+    <div class="grade grade-4">
+      {% for m in medalhas %}
+      <div class="medalha">
+        <div class="icone">{{ m.icone }}</div>
+        <div class="nome">{{ m.nome }}</div>
+        <div class="desc">{{ m.descricao }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "admin/base_admin.html" %}
+{% block titulo %}Compras — Admin{% endblock %}
+{% block titulo_admin %}Compras{% endblock %}
+
+{% block admin %}
+<div class="cartao">
+  <div class="tabela-rolagem">
+    <table class="tabela">
+      <thead><tr><th>Data</th><th>Aluno</th><th>Status</th><th>Produto</th><th>Referência</th><th>Valor</th></tr></thead>
+      <tbody>
+        {% for c in linhas %}
+        <tr>
+          <td class="apagado" style="font-size:.82rem">{{ c['criado_em'][:16] }}</td>
+          <td>
+            {% if c['aluno_id'] %}<a href="/admin/aluno/{{ c['aluno_id'] }}">{{ c['nome'] or c['email'] }}</a>
+            {% else %}<span class="suave">{{ c['email'] }}</span>{% endif %}
+          </td>
+          <td><span class="etiqueta {{ 'etiqueta-verde' if c['status'] == 'aprovada' else 'etiqueta-vermelha' }}">{{ c['status'] }}</span></td>
+          <td class="suave">{{ c['produto'] or '—' }}</td>
+          <td class="apagado" style="font-size:.78rem">{{ c['referencia'] }}</td>
+          <td class="mono">R$ {{ '%.2f'|format(c['valor']) }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="suave">Nenhuma compra registrada ainda.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

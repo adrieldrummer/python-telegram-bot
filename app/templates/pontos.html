@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block titulo %}Pontos e patentes — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <div class="grade grade-2 mb-3" style="grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)">
+    <div class="cartao" style="background:linear-gradient(140deg,var(--azul-700),var(--azul-850))">
+      <span class="etiqueta etiqueta-vermelha">Sua patente</span>
+      <h1 class="mt-2 mb-1">{{ patente.atual.insignia }} {{ patente.atual.nome }}</h1>
+      <p class="suave">{{ patente.atual.lema }}</p>
+      <div class="flex-entre" style="font-size:.85rem">
+        <span class="negrito">{{ '{:,}'.format(aluno['pontos']).replace(',', '.') }} pontos</span>
+        {% if patente.proxima %}<span class="apagado">faltam {{ patente.faltam }} para {{ patente.proxima.nome }}</span>{% endif %}
+      </div>
+      <div class="barra mt-1"><span style="width:{{ patente.progresso }}%"></span></div>
+    </div>
+
+    <div class="cartao">
+      <h3>Como ganhar pontos</h3>
+      <table class="tabela">
+        <tbody>
+          <tr><td>Questão respondida</td><td class="mono">+5</td></tr>
+          <tr><td>Acerto</td><td class="mono">+5</td></tr>
+          <tr><td>Classificar o erro (correção ativa)</td><td class="mono">+8</td></tr>
+          <tr><td>Ler a aula do dia</td><td class="mono">+25</td></tr>
+          <tr><td>Diário de bordo</td><td class="mono">+15</td></tr>
+          <tr><td>Concluir o dia</td><td class="mono">+60 a 250</td></tr>
+          <tr><td>Simulado completo</td><td class="mono">+120</td></tr>
+          <tr><td>Constância diária</td><td class="mono">+5 a 35</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <section class="fileira">
+    <div class="fileira-cabecalho"><h2>Medalhas</h2>
+      <span class="apagado" style="font-size:.85rem">
+        {{ medalhas|selectattr('conquistada')|list|length }} de {{ medalhas|length }}
+      </span>
+    </div>
+    <div class="grade grade-4">
+      {% for m in medalhas %}
+      <div class="medalha {{ '' if m.conquistada else 'bloqueada' }}">
+        <div class="icone">{{ m.icone }}</div>
+        <div class="nome">{{ m.nome }}</div>
+        <div class="desc">{{ m.descricao }}</div>
+        {% if m.pontos %}<div class="apagado mt-1" style="font-size:.7rem">+{{ m.pontos }} pts</div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="grade grade-2 mt-3">
+    <div class="cartao">
+      <h3>Extrato de pontos</h3>
+      <div class="tabela-rolagem" style="max-height:380px;overflow-y:auto">
+        <table class="tabela">
+          <tbody>
+            {% for e in extrato %}
+            <tr>
+              <td class="suave">{{ e['descricao'] or e['tipo'] }}</td>
+              <td class="mono {{ 'destaque-vermelho' if e['pontos'] < 0 }}">{{ '+' if e['pontos'] > 0 }}{{ e['pontos'] }}</td>
+              <td class="apagado" style="font-size:.78rem">{{ e['criado_em'][5:16] }}</td>
+            </tr>
+            {% else %}
+            <tr><td class="suave">Seu extrato aparece assim que você começar a estudar.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <h3>Ranking da turma</h3>
+      <p class="apagado" style="font-size:.8rem">Só primeiro nome — comparar ritmo ajuda; expor gente, não.</p>
+      <table class="tabela">
+        <tbody>
+          {% for r in ranking %}
+          <tr class="{{ 'negrito' if r['id'] == aluno['id'] }}">
+            <td>{{ loop.index }}º</td>
+            <td>{{ r['nome']|primeiro_nome }}{{ ' (você)' if r['id'] == aluno['id'] }}</td>
+            <td class="mono">{{ r['pontos'] }}</td>
+            <td class="apagado">🔥 {{ r['streak_atual'] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
