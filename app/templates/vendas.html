@@ -157,34 +157,27 @@
     </div>
   </section>
 
-  <!-- o que está no fim da trilha -->
-  <section class="secao" id="farda">
+  <!-- a linha do tempo: de onde o aluno parte até onde ele quer chegar -->
+  <section class="secao" id="jornada">
     <div class="fileira-cabecalho">
       <div>
-        <h2 class="mb-1">O que está no fim dessa trilha</h2>
+        <h2 class="mb-1">De onde você está até a farda</h2>
         <p class="apagado mb-0" style="font-size:.9rem">
-          {{ ed.vagas }} vagas. Salário inicial de
-          R$ {{ '%.2f'|format(ed.salario)|replace('.', ',') }}. Estabilidade e carreira.
+          O concurso tem seis etapas. A plataforma acompanha todas.
         </p>
       </div>
     </div>
-    <div class="vitrine-farda">
-      <figure>
-        <img src="{{ CAPAS.farda }}" alt="Farda de gala pendurada" loading="lazy" width="800" height="1200">
-        <figcaption><strong>A farda</strong><span>O uniforme que 2000 pessoas vão vestir em 2026.</span></figcaption>
+    <div class="linha-tempo">
+      {% for m in narrativa %}
+      <figure class="momento">
+        <img src="{{ CAPAS[m.capa] }}" alt="{{ m.titulo }}" loading="lazy" width="800" height="1200">
+        <figcaption>
+          <span class="etiqueta {{ 'etiqueta-azul' if loop.last }}">{{ m.rotulo }}</span>
+          <strong>{{ m.titulo }}</strong>
+          <p>{{ m.legenda }}</p>
+        </figcaption>
       </figure>
-      <figure>
-        <img src="{{ CAPAS.formatura }}" alt="Formatura de recrutas em posição de sentido" loading="lazy" width="800" height="1200">
-        <figcaption><strong>A formatura</strong><span>Depois da objetiva vêm redação, TAF e as etapas eliminatórias.</span></figcaption>
-      </figure>
-      <figure>
-        <img src="{{ CAPAS.viatura }}" alt="Viatura de patrulhamento em avenida à noite" loading="lazy" width="800" height="1200">
-        <figcaption><strong>A rua</strong><span>Policiamento ostensivo: a função que o edital está selecionando.</span></figcaption>
-      </figure>
-      <figure>
-        <img src="{{ CAPAS.bota }}" alt="Coturno e boina sobre um banco de vestiário" loading="lazy" width="800" height="1200">
-        <figcaption><strong>O começo</strong><span>Tudo isso passa por {{ ed.total_questoes }} questões em uma manhã de setembro.</span></figcaption>
-      </figure>
+      {% endfor %}
     </div>
     <p class="apagado centro mt-2" style="font-size:.78rem">
       Imagens ilustrativas. Material educacional independente, sem vínculo com a

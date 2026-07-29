@@ -113,3 +113,34 @@ def test_modulos_avancados_exigem_recurso_de_plano():
 def test_edital_nao_promete_data_no_passado():
     """Guarda-chuva contra conteúdo desatualizado silenciosamente."""
     assert edital.FIM_INSCRICOES < edital.DATA_PROVA
+
+
+def test_narrativa_visual_e_consistente():
+    """As imagens contam uma história, e cada uma tem um significado só.
+
+    Se duas etapas da jornada usarem a mesma arte, o aluno para de ler a
+    imagem como informação — que é exatamente o que ela deveria ser aqui.
+    """
+    from conteudo import CAPAS, NARRATIVA
+
+    assert len(NARRATIVA) >= 5
+    capas = [m.capa for m in NARRATIVA]
+    assert len(capas) == len(set(capas)), "duas etapas dividindo a mesma imagem"
+    for m in NARRATIVA:
+        assert m.capa in CAPAS, m.id
+        assert m.rotulo and m.titulo and m.legenda, m.id
+    # a história começa no aluno de hoje e termina na carreira
+    assert NARRATIVA[0].id == "hoje"
+    assert NARRATIVA[-1].id == "farda"
+
+
+def test_toda_capa_do_catalogo_aponta_para_arquivo_existente():
+    """Capa quebrada só aparece em produção — a menos que um teste olhe."""
+    from pathlib import Path
+
+    from conteudo import CAPAS
+
+    estaticos = Path(__file__).resolve().parent.parent / "app" / "static"
+    for chave, url in CAPAS.items():
+        arquivo = estaticos / url.removeprefix("/static/")
+        assert arquivo.exists(), f"{chave} aponta para {url}, que não existe"

@@ -279,20 +279,50 @@ small { font-size: 0.8rem; }
   font-size: 1.8rem; color: rgba(255, 255, 255, 0.75);
 }
 
-/* ---------- vitrine de imagens (página de vendas) ---------- */
+/* ---------- linha do tempo da jornada (página de vendas) ----------
+   Seis momentos, do celular na cozinha até a farda. No desktop rolam na
+   horizontal como um filme; no celular viram cartões empilhados, porque
+   rolagem lateral de texto longo cansa. */
 
-.vitrine-farda { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.9rem; }
-.vitrine-farda figure {
+.linha-tempo {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(240px, 1fr);
+  gap: 1rem; overflow-x: auto; padding-bottom: 0.8rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin; scrollbar-color: var(--grafite-600) transparent;
+}
+.linha-tempo::-webkit-scrollbar { height: 8px; }
+.linha-tempo::-webkit-scrollbar-thumb { background: var(--grafite-600); border-radius: 999px; }
+
+.momento {
   margin: 0; position: relative; border-radius: var(--raio); overflow: hidden;
   border: 1px solid var(--linha); aspect-ratio: 2 / 3; background: var(--preto-800);
+  scroll-snap-align: start;
 }
-.vitrine-farda img { width: 100%; height: 100%; object-fit: cover; }
-.vitrine-farda figcaption {
-  position: absolute; inset: auto 0 0 0; padding: 0.9rem;
-  background: linear-gradient(0deg, rgba(3, 3, 4, 0.96) 20%, rgba(3, 3, 4, 0) 100%);
+.momento img { width: 100%; height: 100%; object-fit: cover; }
+.momento figcaption {
+  position: absolute; inset: auto 0 0 0; padding: 1rem;
+  background: linear-gradient(0deg, rgba(3, 3, 4, 0.97) 30%, rgba(3, 3, 4, 0.7) 65%, rgba(3, 3, 4, 0) 100%);
 }
-.vitrine-farda figcaption strong { display: block; font-size: 0.95rem; }
-.vitrine-farda figcaption span { display: block; font-size: 0.76rem; color: var(--suave); line-height: 1.35; margin-top: 0.15rem; }
+.momento figcaption strong { display: block; font-size: 1rem; margin-top: 0.45rem; line-height: 1.25; }
+.momento figcaption p { font-size: 0.78rem; color: var(--suave); line-height: 1.4; margin: 0.3rem 0 0; }
+
+/* ---------- faixa de contexto (imagem + texto lado a lado) ----------
+   Usada onde a imagem carrega um argumento: a sala de prova nos simulados,
+   a formatura na tela de upgrade e no certificado ainda bloqueado. */
+
+.faixa-motivo {
+  display: grid; grid-template-columns: 168px minmax(0, 1fr);
+  gap: 1.3rem; align-items: center;
+  border: 1px solid var(--linha); border-radius: var(--raio);
+  background: linear-gradient(160deg, var(--preto-800), var(--preto-850));
+  overflow: hidden;
+}
+.faixa-motivo > img {
+  width: 100%; height: 100%; object-fit: cover; aspect-ratio: 2 / 3;
+  /* dessaturada: a imagem contextualiza, o texto é que conduz */
+  filter: grayscale(0.25) brightness(0.85);
+}
+.faixa-motivo > div { padding: 1.3rem 1.4rem 1.3rem 0; }
 
 /* ---------- cartões de dia ---------- */
 
@@ -437,8 +467,13 @@ select option { background: var(--preto-800); }
 
 .tela-auth { flex: 1; display: grid; place-items: center; padding: 3rem 0; position: relative; }
 .tela-auth::before {
-  content: ""; position: absolute; inset: 0;
-  background-image: var(--textura); background-size: cover; opacity: 0.5; z-index: 0;
+  content: ""; position: absolute; inset: 0; z-index: 0;
+  /* quem entra aqui é a pessoa da foto: estudando no celular, à noite.
+     Bem escurecido — é fundo, não conteúdo. */
+  background-image:
+    linear-gradient(0deg, var(--preto-900) 8%, rgba(5, 5, 5, 0.9) 55%, rgba(5, 5, 5, 0.82) 100%),
+    url("/static/img/fundo-auth.webp");
+  background-size: cover; background-position: center;
 }
 .caixa-auth { position: relative; z-index: 1; width: min(430px, 100% - 2.5rem); }
 .caixa-auth .cartao { padding: 2rem; }
@@ -675,11 +710,20 @@ details.filtros > summary span { font-weight: 600; font-size: 0.84rem; }
   .capa-sobreposicao h3 { font-size: 0.88rem; }
   .capa-sobreposicao p { font-size: 0.72rem; }
 
-  /* a vitrine da farda vira duas colunas: quatro seriam selos ilegíveis */
-  .vitrine-farda { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
-  .vitrine-farda figcaption { padding: 0.6rem; }
-  .vitrine-farda figcaption strong { font-size: 0.82rem; }
-  .vitrine-farda figcaption span { font-size: 0.68rem; }
+  /* a faixa de contexto vira imagem em cima, texto embaixo */
+  .faixa-motivo { grid-template-columns: 1fr; gap: 0; }
+  .faixa-motivo > img { aspect-ratio: 16 / 7; }
+  .faixa-motivo > div { padding: 1rem; }
+
+  /* a linha do tempo empilha: no celular, ler legenda rolando de lado cansa */
+  .linha-tempo {
+    grid-auto-flow: row; grid-auto-columns: auto;
+    grid-template-columns: 1fr; overflow-x: visible; gap: 0.8rem;
+  }
+  .momento { aspect-ratio: 16 / 11; }
+  .momento figcaption { padding: 0.85rem; }
+  .momento figcaption strong { font-size: 0.98rem; }
+  .momento figcaption p { font-size: 0.8rem; }
 
   /* --- grades viram coluna única quando o conteúdo pede leitura --- */
   .grade { gap: 0.75rem; }

@@ -3,12 +3,18 @@
 
 {% block conteudo %}
 <section class="secao">
-  <h1 class="mb-1">Simulados cronometrados</h1>
-  <p class="suave mb-3">
+  <div class="faixa-motivo mb-3">
+    <img src="{{ CAPAS.prova }}" alt="" loading="lazy">
+    <div>
+      <span class="etiqueta mb-1">20 de setembro · {{ DATA_PROVA.strftime('%d/%m/%Y') }}</span>
+      <h1 class="mb-1" style="font-size:1.5rem">Simulados</h1>
+      <p class="suave mb-0">
     Prova é execução sob relógio — e isso se treina. Os simulados oficiais reproduzem a
     distribuição exata da VUNESP:
     {% for m in MATERIAS %}{{ m.peso }} de {{ m.curta }}{{ ', ' if not loop.last }}{% endfor %}.
   </p>
+    </div>
+  </div>
 
   <div class="trilho mb-3">
     {% for i in itens %}

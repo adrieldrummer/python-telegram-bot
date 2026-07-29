@@ -7,7 +7,7 @@ from pathlib import Path
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse, Response
 
-from conteudo import TOTAL_QUESTOES, edital, modulos as catalogo_modulos, trilha
+from conteudo import NARRATIVA, TOTAL_QUESTOES, edital, modulos as catalogo_modulos, trilha
 from conteudo import planos as catalogo_planos
 
 from .. import alunos, mailer, marketing, planos as servico_planos
@@ -48,6 +48,7 @@ async def vendas(request: Request):
         "vendas.html",
         {
             "ed": edital.resumo(),
+            "narrativa": NARRATIVA,
             "dias": trilha.DIAS,
             "fases": trilha.FASES,
             "modulos": catalogo_modulos.ordenados(),

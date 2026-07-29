@@ -3,17 +3,23 @@
 
 {% block conteudo %}
 <section class="secao">
-  <div class="cartao centro mb-3" style="border-color:var(--azul)">
-    <div style="font-size:2.6rem">🔒</div>
-    <h1 class="mb-1">{{ recurso_nome }} não está no seu plano</h1>
-    <p class="suave" style="max-width:560px;margin-inline:auto">
-      Seu plano atual é <strong>{{ meu_plano.nome }}</strong>.
-      {% if vencido %}
-        Ele venceu em {{ expira_em }} — renove para voltar a estudar de onde parou.
-      {% else %}
-        Faça o upgrade e libere na hora, sem perder nenhum ponto ou progresso.
-      {% endif %}
-    </p>
+  {# a imagem aqui não é enfeite: é o que está do outro lado do cadeado #}
+  <div class="faixa-motivo mb-3">
+    <img src="{{ CAPAS.formatura }}" alt="" loading="lazy">
+    <div>
+      <span class="etiqueta etiqueta-azul mb-1">🔒 {{ recurso_nome }}</span>
+      <h1 class="mb-1" style="font-size:1.5rem">Isso ainda não está no seu plano</h1>
+      <p class="suave mb-0">
+        Seu plano atual é <strong>{{ meu_plano.nome }}</strong>.
+        {% if vencido %}
+          Ele venceu em {{ expira_em }} — renove para voltar de onde parou; seu
+          progresso, seus pontos e seu caderno de erros continuam salvos.
+        {% else %}
+          A objetiva é só a primeira das seis etapas. O upgrade libera na hora,
+          sem perder nenhum ponto ou progresso.
+        {% endif %}
+      </p>
+    </div>
   </div>
 
   <div class="grade grade-3">

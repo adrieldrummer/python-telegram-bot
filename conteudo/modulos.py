@@ -45,7 +45,7 @@ MODULOS: tuple[Modulo, ...] = (
             "segurança no dia da prova."
         ),
         recurso="avancado",
-        capa="capa-redacao",
+        capa="redacao",
         etiqueta="Etapa eliminatória",
         ordem=1,
         aulas=(
@@ -181,7 +181,7 @@ MODULOS: tuple[Modulo, ...] = (
             "bem preparado."
         ),
         recurso="avancado",
-        capa="capa-etapas",
+        capa="documentos",
         etiqueta="Etapa eliminatória",
         ordem=3,
         aulas=(

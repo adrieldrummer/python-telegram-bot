@@ -3,9 +3,16 @@
 Reúne: os fatos do edital, matérias e pesos, a trilha de 7 dias, o banco de
 questões, os simulados no formato oficial, os módulos avançados, planos,
 patentes/medalhas e o catálogo visual (as "capas" da área do aluno).
+
+Sobre as imagens: elas não são enfeite. Cada arte tem **um** significado fixo
+(ver `NARRATIVA`), e esse significado é o mesmo na página de vendas e dentro da
+plataforma. Repetir a mesma imagem em contextos diferentes ensina o aluno a
+ignorá-la; usar sempre a mesma para a mesma ideia faz o contrário.
 """
 
 from __future__ import annotations
+
+from dataclasses import dataclass
 
 from . import edital, materias, modulos, patentes, planos, questoes, simulados, trilha
 
@@ -23,10 +30,15 @@ CAPAS = {
     "capa-fase2": "/static/img/capa-fase2.webp",
     "capa-fase3": "/static/img/capa-fase3.webp",
     "capa-fase4": "/static/img/capa-fase4.webp",
-    "capa-redacao": "/static/img/capa-manual.webp",
+    # o que decide a vaga depois da objetiva
+    "capa-redacao": "/static/img/capa-redacao.webp",
     "capa-taf": "/static/img/capa-taf.webp",
-    "capa-etapas": "/static/img/capa-formatura.webp",
-    # artes da farda — o que o aluno está buscando no fim da linha
+    "capa-etapas": "/static/img/capa-documentos.webp",
+    # o ponto de partida e o ponto de chegada do aluno
+    "celular": "/static/img/capa-celular.webp",
+    "prova": "/static/img/capa-prova.webp",
+    "redacao": "/static/img/capa-redacao.webp",
+    "documentos": "/static/img/capa-documentos.webp",
     "farda": "/static/img/capa-farda.webp",
     "bota": "/static/img/capa-bota.webp",
     "formatura": "/static/img/capa-formatura.webp",
@@ -39,6 +51,7 @@ CAPAS = {
     "pontos": "/static/img/capa-pontos.webp",
     "hero": "/static/img/hero-farda.webp",
     "hero-mapa": "/static/img/hero.webp",
+    "fundo-auth": "/static/img/fundo-auth.webp",
     "logo": "/static/img/emblema.png",
     "emblema": "/static/img/emblema.png",
     "textura": "/static/img/textura.webp",
@@ -47,6 +60,90 @@ CAPAS = {
 
 def capa(chave: str) -> str:
     return CAPAS.get(chave, CAPAS["questoes"])
+
+
+# --- a linha do tempo visual ------------------------------------------------
+
+
+@dataclass(frozen=True)
+class Momento:
+    """Um instante da jornada do candidato, com a imagem que o representa."""
+
+    id: str
+    rotulo: str        # onde ele está nessa história
+    titulo: str
+    legenda: str
+    capa: str
+
+
+NARRATIVA: tuple[Momento, ...] = (
+    Momento(
+        id="hoje",
+        rotulo="Hoje",
+        titulo="O celular na mesa da cozinha",
+        legenda=(
+            "Depois do trabalho, com o que sobrou do dia. É desse ponto que "
+            "quase todo aprovado começa — e é para esse ponto que a plataforma "
+            "foi feita."
+        ),
+        capa="celular",
+    ),
+    Momento(
+        id="prova",
+        rotulo="20 de setembro",
+        titulo="A manhã que decide o ano",
+        legenda=(
+            f"{edital.TOTAL_QUESTOES_PROVA} questões objetivas e um mínimo de "
+            f"{edital.NOTA_MINIMA} pontos. Quem chega treinado no formato não é "
+            "surpreendido pelo relógio."
+        ),
+        capa="prova",
+    ),
+    Momento(
+        id="dissertativa",
+        rotulo="Etapa 2",
+        titulo="A redação que elimina quem passou",
+        legenda=(
+            "Prova dissertativa corrigida por estrutura, argumentação e norma-"
+            "padrão. Três textos treinados resolvem."
+        ),
+        capa="redacao",
+    ),
+    Momento(
+        id="etapas",
+        rotulo="Etapas 3 a 6",
+        titulo="TAF, saúde, psicológico e investigação",
+        legenda=(
+            "Aqui se perde vaga por certidão atrasada e exame fora do prazo, "
+            "não por mérito. Organização é conteúdo."
+        ),
+        capa="documentos",
+    ),
+    Momento(
+        id="formatura",
+        rotulo="A chegada",
+        titulo="A formatura",
+        legenda=(
+            f"{edital.VAGAS} pessoas vão estar nessa formação. O processo até "
+            "ela é o que esta plataforma organiza."
+        ),
+        capa="formatura",
+    ),
+    Momento(
+        id="farda",
+        rotulo="Depois",
+        titulo="A farda e a rua",
+        legenda=(
+            f"Salário inicial de R$ {edital.SALARIO_INICIAL:,.2f}".replace(",", "X")
+            .replace(".", ",")
+            .replace("X", ".")
+            + ", estabilidade e carreira no policiamento ostensivo."
+        ),
+        capa="viatura",
+    ),
+)
+
+NARRATIVA_POR_ID = {m.id: m for m in NARRATIVA}
 
 
 TREINOS = (
@@ -72,7 +169,7 @@ TREINOS = (
         "id": "simulados",
         "titulo": "Simulados Oficiais",
         "descricao": "Provas de 60 questões no formato exato da VUNESP, com relatório.",
-        "capa": CAPAS["simulados"],
+        "capa": CAPAS["prova"],
         "url": "/simulados",
         "etiqueta": "Formato da prova",
         "recurso": "simulados",
@@ -81,7 +178,7 @@ TREINOS = (
         "id": "modulos",
         "titulo": "Módulos Avançados",
         "descricao": "Redação, TAF, etapas eliminatórias e aprofundamento por matéria.",
-        "capa": CAPAS["capa-redacao"],
+        "capa": CAPAS["formatura"],
         "url": "/modulos",
         "etiqueta": "Além da objetiva",
         "recurso": "avancado",
