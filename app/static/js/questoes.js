@@ -193,6 +193,16 @@
         window.MAPA.aviso(`🔥 +${retorno.bonus_streak} pontos de constância`, 'ok');
       }
       window.MAPA.medalhas(retorno.medalhas);
+      // no celular o comentário nasce abaixo da dobra: sem isto o aluno vê a
+      // alternativa ficar verde ou azul e nunca lê o porquê
+      requestAnimationFrame(() => {
+        const explicacao = document.querySelector('[data-questao] .retorno');
+        if (!explicacao) return;
+        const r = explicacao.getBoundingClientRect();
+        if (r.top > window.innerHeight - 120) {
+          explicacao.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+      });
       // aviso antecipado: descobrir o teto do plano na última questão frustra
       if (typeof retorno.restantes_hoje === 'number' && retorno.restantes_hoje <= 5) {
         window.MAPA.aviso(

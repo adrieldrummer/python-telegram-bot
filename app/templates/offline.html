@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block titulo %}Sem conexão — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao centro">
+  <div class="cartao" style="max-width:480px;margin-inline:auto">
+    <div style="font-size:2.6rem">📡</div>
+    <h1 style="font-size:1.5rem">Você está sem conexão</h1>
+    <p class="suave">
+      A internet caiu no meio do caminho. Seu progresso não se perde: tudo que você
+      respondeu com conexão já está salvo.
+    </p>
+    <button class="btn btn-principal btn-largo" type="button" onclick="location.reload()">
+      Tentar de novo
+    </button>
+    <p class="apagado mt-2 mb-0" style="font-size:.82rem">
+      Dica para estudar no ônibus: abra as páginas enquanto tem sinal — elas ficam
+      guardadas no aparelho e continuam abrindo depois.
+    </p>
+  </div>
+</section>
+{% endblock %}

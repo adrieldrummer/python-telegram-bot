@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import APIRouter, Form, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse, Response
 
 from conteudo import TOTAL_QUESTOES, edital, modulos as catalogo_modulos, trilha
 from conteudo import planos as catalogo_planos
@@ -268,3 +270,95 @@ async def termos(request: Request):
 @router.get("/privacidade")
 async def privacidade(request: Request):
     return responder_template(request, "privacidade.html", {})
+
+
+# --- aplicativo instalável (PWA), robots e sitemap -------------------------
+
+
+@router.get("/manifest.webmanifest", include_in_schema=False)
+async def manifesto():
+    """O que o celular usa para instalar a plataforma na tela de início."""
+    return JSONResponse(
+        {
+            "name": config.app_nome,
+            "short_name": "Op. Aprovação",
+            "description": config.app_subtitulo,
+            "lang": "pt-BR",
+            "start_url": "/painel",
+            "scope": "/",
+            # standalone: abre sem a barra do navegador, com cara de aplicativo
+            "display": "standalone",
+            "orientation": "portrait",
+            "background_color": "#050505",
+            "theme_color": "#050505",
+            "categories": ["education"],
+            "icons": [
+                {"src": "/static/img/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+                {"src": "/static/img/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+                {"src": "/static/img/icone-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+                {"src": "/static/img/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+            ],
+            "shortcuts": [
+                {"name": "Continuar a trilha", "url": "/jornada"},
+                {"name": "Treinar questões", "url": "/questoes"},
+                {"name": "Caderno de Erros", "url": "/erros"},
+            ],
+        },
+        media_type="application/manifest+json",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
+
+
+@router.get("/sw.js", include_in_schema=False)
+async def serviceworker():
+    """O service worker precisa ser servido da raiz para valer no site inteiro.
+
+    Em /static/sw.js o escopo dele seria só /static/ — inútil.
+    """
+    arquivo = Path(__file__).resolve().parent.parent / "static" / "sw.js"
+    return Response(
+        arquivo.read_text(encoding="utf-8"),
+        media_type="application/javascript",
+        headers={"Cache-Control": "no-cache", "Service-Worker-Allowed": "/"},
+    )
+
+
+@router.get("/offline", include_in_schema=False)
+async def offline(request: Request):
+    return responder_template(request, "offline.html", {})
+
+
+@router.get("/robots.txt", include_in_schema=False)
+async def robots():
+    # a área do aluno e o admin não têm nada a fazer em buscador
+    linhas = [
+        "User-agent: *",
+        "Allow: /$",
+        "Disallow: /admin",
+        "Disallow: /painel",
+        "Disallow: /api/",
+        "Disallow: /webhooks/",
+        "Disallow: /ativar/",
+        "Disallow: /redefinir/",
+        "",
+        f"Sitemap: {config.app_url}/sitemap.xml",
+        "",
+    ]
+    return PlainTextResponse("\n".join(linhas))
+
+
+@router.get("/sitemap.xml", include_in_schema=False)
+async def sitemap():
+    publicas = ("/", "/entrar", "/termos", "/privacidade")
+    urls = "".join(
+        f"<url><loc>{config.app_url}{caminho}</loc>"
+        f"<changefreq>{'daily' if caminho == '/' else 'yearly'}</changefreq>"
+        f"<priority>{'1.0' if caminho == '/' else '0.3'}</priority></url>"
+        for caminho in publicas
+    )
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        f"{urls}</urlset>"
+    )
+    return Response(xml, media_type="application/xml")

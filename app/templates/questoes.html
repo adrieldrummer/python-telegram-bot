@@ -13,7 +13,17 @@
     {% endif %}
   </div>
 
-  <form class="cartao mb-3" method="get" action="/questoes">
+  {# no celular o aluno quer responder, não configurar: os filtros começam
+     fechados e quem quiser trocar abre em um toque #}
+  <details class="filtros cartao mb-3">
+    <summary>
+      Filtros
+      <span class="apagado">
+        {{ MATERIAS|selectattr('id', 'equalto', materia)|map(attribute='curta')|first|default('Todas as matérias') }}
+        · {{ quantidade }} questões
+      </span>
+    </summary>
+    <form method="get" action="/questoes">
     <div class="grade grade-3" style="align-items:end">
       <label class="campo mb-0">
         <span>Matéria</span>
@@ -44,8 +54,9 @@
         </select>
       </label>
     </div>
-    <button class="btn btn-principal mt-2" type="submit">Gerar novo bloco</button>
-  </form>
+    <button class="btn btn-principal btn-largo mt-2" type="submit">Gerar novo bloco</button>
+    </form>
+  </details>
 
   <div data-player data-modo="treino" data-origem="treino">
     <div data-questao></div>

@@ -29,9 +29,29 @@
   --sombra-card: 0 10px 30px rgba(0, 0, 0, 0.45);
   --fonte: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --transicao: 180ms cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  /* Toque e telas pequenas.
+     --toque é o alvo mínimo confortável para o dedo (48px). --seguro-* respeita
+     o entalhe e a barra de gestos do iPhone. --altura-topo/--altura-barra
+     entram no cálculo de tudo que é sticky, para nada ficar escondido. */
+  --toque: 48px;
+  --seguro-topo: env(safe-area-inset-top, 0px);
+  --seguro-base: env(safe-area-inset-bottom, 0px);
+  --seguro-esq: env(safe-area-inset-left, 0px);
+  --seguro-dir: env(safe-area-inset-right, 0px);
+  --altura-topo: 68px;
+  --altura-barra: 0px;          /* vira 60px no celular, com a barra inferior */
+  --gutter: 1.25rem;
 }
 
 * { box-sizing: border-box; }
+
+html {
+  /* rolagem suave ao pular para âncoras, já descontando o topo fixo */
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--altura-topo) + 12px);
+  -webkit-text-size-adjust: 100%;
+}
 
 html, body {
   margin: 0;
@@ -42,6 +62,17 @@ html, body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  /* no celular, o cinza do toque atrapalha mais do que ajuda */
+  -webkit-tap-highlight-color: transparent;
+  /* `clip` e não `hidden`: hidden cria um contêiner de rolagem e mata todo
+     `position: sticky` da página (cronômetro do simulado, barra de ações da
+     questão, laterais do manual) */
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
 body { min-height: 100vh; display: flex; flex-direction: column; }
@@ -55,8 +86,13 @@ h3 { font-size: 1.15rem; }
 p { margin: 0 0 1em; }
 small { font-size: 0.8rem; }
 
-.container { width: min(1280px, 100% - 2.5rem); margin-inline: auto; }
-.container-estreito { width: min(760px, 100% - 2.5rem); margin-inline: auto; }
+.container {
+  width: min(1280px, 100% - (var(--gutter) * 2));
+  margin-inline: auto;
+  padding-left: var(--seguro-esq);
+  padding-right: var(--seguro-dir);
+}
+.container-estreito { width: min(760px, 100% - (var(--gutter) * 2)); margin-inline: auto; }
 .pilha > * + * { margin-top: 1rem; }
 .centro { text-align: center; }
 .suave { color: var(--suave); }
@@ -121,6 +157,8 @@ small { font-size: 0.8rem; }
   border: 1px solid transparent;
   font-weight: 700; font-size: 0.95rem; font-family: inherit;
   cursor: pointer; transition: var(--transicao); text-align: center;
+  min-height: var(--toque);          /* dedo, não cursor */
+  touch-action: manipulation;        /* mata o atraso de 300ms do duplo toque */
 }
 .btn-principal { background: var(--azul); color: #fff; box-shadow: 0 8px 24px rgba(10, 92, 255, 0.32); }
 .btn-principal:hover { background: var(--azul-claro); transform: translateY(-1px); }
@@ -128,7 +166,7 @@ small { font-size: 0.8rem; }
 .btn-claro:hover { background: #d8dce4; }
 .btn-fantasma { background: rgba(255, 255, 255, 0.08); color: var(--branco); border-color: var(--linha-forte); }
 .btn-fantasma:hover { background: rgba(255, 255, 255, 0.16); }
-.btn-pequeno { padding: 0.45rem 0.85rem; font-size: 0.83rem; }
+.btn-pequeno { padding: 0.45rem 0.9rem; font-size: 0.83rem; min-height: 38px; }
 .btn-largo { width: 100%; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
@@ -146,6 +184,13 @@ small { font-size: 0.8rem; }
 .grade-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 .grade-3 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
 .grade-4 { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+
+/* conteúdo principal + coluna lateral (aula, apostila, módulo).
+   Vira uma coluna só no celular — daí a classe, e não um grid inline que
+   nenhuma media query alcança. */
+.grade-conteudo { display: grid; gap: 1.5rem; align-items: start; grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr); }
+.grade-leitura { display: grid; gap: 2rem; align-items: start; grid-template-columns: minmax(240px, 300px) minmax(0, 1fr); }
+.coluna-fixa { position: sticky; top: calc(var(--altura-topo) + 20px); }
 
 .etiqueta {
   display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px;
@@ -291,8 +336,10 @@ small { font-size: 0.8rem; }
   border: 1px solid var(--linha); border-radius: var(--raio-p);
   background: rgba(255, 255, 255, 0.03);
   cursor: pointer; transition: var(--transicao); text-align: left; width: 100%;
-  color: var(--claro); font-family: inherit; font-size: 0.95rem; line-height: 1.5;
+  color: var(--claro); font-family: inherit; font-size: 0.97rem; line-height: 1.5;
+  min-height: 56px; touch-action: manipulation;
 }
+.alternativa:active:not(:disabled) { transform: scale(0.99); background: rgba(255, 255, 255, 0.1); }
 .alternativa:hover:not(:disabled) { border-color: var(--linha-forte); background: rgba(255, 255, 255, 0.07); }
 .alternativa .letra {
   flex: 0 0 28px; height: 28px; border-radius: 50%;
@@ -353,10 +400,13 @@ small { font-size: 0.8rem; }
 .campo { display: block; margin-bottom: 1rem; }
 .campo span { display: block; font-size: 0.82rem; font-weight: 700; color: var(--suave); margin-bottom: 0.35rem; }
 input[type="text"], input[type="email"], input[type="password"], input[type="search"], input[type="number"], select, textarea {
-  width: 100%; padding: 0.8rem 0.95rem;
+  width: 100%; padding: 0.85rem 0.95rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--linha-forte); border-radius: var(--raio-p);
-  color: var(--branco); font-family: inherit; font-size: 0.95rem;
+  color: var(--branco); font-family: inherit;
+  /* 16px é o mínimo: abaixo disso o Safari do iPhone dá zoom ao focar o campo */
+  font-size: 16px;
+  min-height: var(--toque);
   transition: var(--transicao);
 }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--azul); background: rgba(255, 255, 255, 0.08); }
@@ -427,21 +477,320 @@ select option { background: var(--preto-800); }
 .mt-0 { margin-top: 0; } .mt-1 { margin-top: 0.6rem; } .mt-2 { margin-top: 1.2rem; } .mt-3 { margin-top: 2rem; } .mt-4 { margin-top: 3rem; }
 .mb-0 { margin-bottom: 0; } .mb-1 { margin-bottom: 0.6rem; } .mb-2 { margin-bottom: 1.2rem; } .mb-3 { margin-bottom: 2rem; }
 .esconder { display: none !important; }
+.so-celular { display: none; }
+
+/* contagem regressiva do hero: nunca deixa um número cair sozinho na linha */
+.contagem { display: grid; grid-template-columns: repeat(3, auto); gap: 1.6rem; justify-content: start; }
+.contagem strong { display: block; font-size: 2rem; font-weight: 800; line-height: 1; }
+.contagem span { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--apagado); margin-top: 0.2rem; }
 .secao { padding: 2.6rem 0; }
 
-@media (max-width: 860px) {
+/* ---------- faixa de demonstração e blocos recolhíveis ---------- */
+
+.faixa-demo {
+  background: #f0a92b; color: #050505;
+  font-size: 0.84rem; font-weight: 700;
+}
+.faixa-demo > summary {
+  list-style: none; cursor: pointer; text-align: center;
+  padding: 0.5rem 1rem; min-height: 40px;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+}
+.faixa-demo > summary::-webkit-details-marker { display: none; }
+.faixa-demo > summary::after { content: "▾"; }
+.faixa-demo[open] > summary::after { content: "▴"; }
+.faixa-demo > div { padding: 0 1rem 0.7rem; text-align: center; font-weight: 600; }
+
+details.filtros > summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+  font-weight: 700; min-height: var(--toque);
+}
+details.filtros > summary::-webkit-details-marker { display: none; }
+details.filtros > summary::after { content: "▾"; color: var(--suave); }
+details.filtros[open] > summary::after { content: "▴"; }
+details.filtros[open] > summary { margin-bottom: 0.9rem; border-bottom: 1px solid var(--linha); padding-bottom: 0.7rem; }
+details.filtros > summary span { font-weight: 600; font-size: 0.84rem; }
+
+/* ==========================================================================
+   BARRA INFERIOR — a navegação do aluno no celular
+   O polegar alcança a base da tela; o topo, não. Por isso a navegação
+   principal do aluno mora embaixo no celular e some no desktop.
+   ========================================================================== */
+
+.barra-inferior { display: none; }
+.gaveta { display: none; }
+.cta-fixo { display: none; }
+
+/* ==========================================================================
+   CELULAR (até 760px) — a maioria dos alunos estuda por aqui
+   ========================================================================== */
+
+@media (max-width: 760px) {
+  :root { --gutter: 1rem; --altura-topo: 58px; }
+  body.com-barra { --altura-barra: 62px; }
+
+  /* --- topo enxuto: marca, pontos e avatar. O resto desce para a barra --- */
+  .topo { padding-top: var(--seguro-topo); }
+  .topo-interno { height: var(--altura-topo); gap: 0.75rem; }
+  .marca img { width: 30px; height: 30px; }
+  .marca span { font-size: 0.9rem; }
+  .topo-direita { gap: 0.5rem; margin-left: auto; }
+  .avatar { width: 36px; height: 36px; font-size: 0.85rem; }
+  .pontos-topo { display: inline-flex; padding: 0.28rem 0.6rem; font-size: 0.78rem; }
+
+  /* menu do visitante: gaveta a partir do topo */
   .menu {
-    position: fixed; inset: 68px 0 auto; flex-direction: column; gap: 0;
+    position: fixed; inset: calc(var(--altura-topo) + var(--seguro-topo)) 0 auto;
+    flex-direction: column; gap: 0;
     background: var(--preto-850); border-bottom: 1px solid var(--linha);
-    padding: 0.5rem 1.25rem 1.25rem; display: none;
+    padding: 0.25rem var(--gutter) 1rem; display: none;
+    max-height: calc(100dvh - var(--altura-topo)); overflow-y: auto;
   }
   .menu.aberto { display: flex; }
-  .menu a { padding: 0.75rem 0; border-bottom: 1px solid var(--linha); }
-  .abre-menu { display: block; }
+  .menu a { padding: 0.95rem 0; border-bottom: 1px solid var(--linha); font-size: 1rem; min-height: var(--toque); display: flex; align-items: center; }
+  .abre-menu { display: grid; place-items: center; width: var(--toque); height: var(--toque); }
+
+  /* o aluno navega pela barra inferior, então o menu do topo some de vez */
+  body.com-barra .menu, body.com-barra .abre-menu { display: none !important; }
+
+  /* --- a barra inferior --- */
+  body.com-barra .barra-inferior {
+    display: grid;
+    grid-auto-flow: column; grid-auto-columns: 1fr;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    background: rgba(8, 8, 10, 0.97);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid var(--linha);
+    padding-bottom: var(--seguro-base);
+  }
+  .barra-inferior a, .barra-inferior button {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    min-height: 62px; padding: 0.4rem 0.2rem;
+    background: none; border: 0; font-family: inherit;
+    color: var(--apagado); font-size: 0.66rem; font-weight: 700;
+    letter-spacing: 0.01em; cursor: pointer;
+    touch-action: manipulation; position: relative;
+  }
+  .barra-inferior svg { width: 22px; height: 22px; stroke-width: 1.9; }
+  .barra-inferior .ativo { color: var(--azul); }
+  .barra-inferior .ativo::before {
+    content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 26px; height: 3px; border-radius: 0 0 3px 3px; background: var(--azul);
+  }
+  .barra-inferior .selo {
+    position: absolute; top: 6px; left: 54%;
+    background: var(--azul); color: #fff; font-size: 0.6rem; line-height: 1;
+    padding: 0.16rem 0.3rem; border-radius: 999px; font-weight: 800; min-width: 16px; text-align: center;
+  }
+
+  /* espaço para a barra não cobrir o fim do conteúdo */
+  body.com-barra { padding-bottom: calc(var(--altura-barra) + var(--seguro-base)); }
+  body.com-barra .rodape { padding-bottom: 2rem; }
+
+  /* --- gaveta "Mais" --- */
+  .gaveta {
+    display: block; position: fixed; inset: 0; z-index: 70;
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 0; pointer-events: none; transition: opacity 200ms ease;
+  }
+  .gaveta.aberta { opacity: 1; pointer-events: auto; }
+  .gaveta-painel {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: var(--preto-850); border-top: 1px solid var(--linha-forte);
+    border-radius: 18px 18px 0 0;
+    padding: 0.6rem var(--gutter) calc(1rem + var(--seguro-base));
+    transform: translateY(100%); transition: transform 240ms cubic-bezier(0.2, 0.8, 0.3, 1);
+    max-height: 82dvh; overflow-y: auto;
+  }
+  .gaveta.aberta .gaveta-painel { transform: none; }
+  .gaveta-puxador { width: 40px; height: 4px; border-radius: 999px; background: var(--grafite-500); margin: 0.4rem auto 1rem; }
+  .gaveta-itens { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  .gaveta-itens a, .gaveta-itens button {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.45rem;
+    padding: 0.95rem 0.4rem; border-radius: var(--raio-p);
+    background: rgba(255, 255, 255, 0.05); border: 1px solid var(--linha);
+    color: var(--claro); font-size: 0.76rem; font-weight: 700; text-align: center;
+    font-family: inherit; cursor: pointer; min-height: 84px;
+  }
+  .gaveta-itens svg { width: 22px; height: 22px; stroke-width: 1.9; }
+  .gaveta-itens .ativo { border-color: var(--azul); color: var(--azul); }
+
+  /* --- tipografia e espaçamento --- */
+  h1 { font-size: clamp(1.6rem, 7.5vw, 2.1rem); }
+  h2 { font-size: clamp(1.2rem, 5.4vw, 1.5rem); }
+  h3 { font-size: 1.05rem; }
+  .secao { padding: 1.8rem 0; }
+  .fileira { margin: 1.9rem 0; }
+  .cartao { padding: 1.1rem; border-radius: 12px; }
+  .mt-3 { margin-top: 1.5rem; } .mt-4 { margin-top: 2rem; }
+  .mb-3 { margin-bottom: 1.5rem; }
+
+  .so-desktop { display: none !important; }
+  .so-celular { display: revert; }
+
+  .contagem { grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+  .contagem strong { font-size: 1.45rem; }
+  .contagem span { font-size: 0.62rem; letter-spacing: 0.06em; }
+
+  /* --- hero: menos altura, leitura em cima do fundo --- */
+  .hero { min-height: auto; }
+  .hero-conteudo { padding: 2.2rem 0 2.6rem; max-width: none; }
+  .hero::after { background: linear-gradient(0deg, var(--preto-900) 14%, rgba(5, 5, 5, 0.72) 100%); }
+  .hero-fundo { background-position: center 30%; }
+  .hero-acoes { margin-top: 1.3rem; gap: 0.6rem; }
+  .hero-acoes .btn { flex: 1 1 100%; }
+  .hero-linha { margin-bottom: 1rem; }
+
+  /* --- trilhos: capas menores, com respiro nas bordas da tela --- */
+  .trilho {
+    grid-auto-columns: 45vw;
+    gap: 0.7rem;
+    scroll-snap-type: x mandatory;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    /* o dedo rola horizontalmente sem "prender" a página */
+    overscroll-behavior-x: contain;
+  }
+  .trilho::-webkit-scrollbar { display: none; }
+  .trilho { scrollbar-width: none; }
+  .capa:hover { transform: none; box-shadow: none; }
+  .capa:active { transform: scale(0.98); }
+  .capa-sobreposicao { padding: 0.7rem; }
+  .capa-sobreposicao h3 { font-size: 0.88rem; }
+  .capa-sobreposicao p { font-size: 0.72rem; }
+
+  /* --- grades viram coluna única quando o conteúdo pede leitura --- */
+  .grade { gap: 0.75rem; }
+  .grade-2, .grade-3 { grid-template-columns: 1fr; }
+  .grade-4 { grid-template-columns: repeat(2, 1fr); }
+  .dias-grade { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+  .metrica .valor { font-size: 1.5rem; }
+  .metrica { padding: 0.75rem 0.4rem; }
+
+  /* uma coluna só; e nada de lateral "grudenta" em tela estreita */
+  .grade-conteudo, .grade-leitura { grid-template-columns: minmax(0, 1fr); gap: 1.1rem; }
+  .coluna-fixa { position: static; }
+  /* a lateral de índice vem depois do conteúdo no celular */
+  .grade-leitura > aside { order: 2; }
+
+  /* --- questões: o alvo é o dedo --- */
+  .questao-cabecalho { padding: 0.7rem 0.9rem; gap: 0.45rem; }
+  .questao-corpo { padding: 1rem 0.9rem; }
+  .questao-enunciado { font-size: 1.02rem; line-height: 1.62; }
+  .alternativa { padding: 0.9rem 0.85rem; gap: 0.65rem; }
+  .alternativa .letra { flex-basis: 30px; height: 30px; }
+  .categoria-btn { min-height: 42px; padding: 0.5rem 0.95rem; }
+  .pontinho { width: 14px; height: 14px; }
+  /* as ações da questão ficam ao alcance do polegar, sem rolar atrás delas */
+  .navegacao-questoes {
+    position: sticky;
+    bottom: calc(var(--altura-barra) + var(--seguro-base));
+    z-index: 40;
+    margin: 1rem calc(var(--gutter) * -1) 0;
+    padding: 0.6rem var(--gutter) 0.7rem;
+    /* opaco de verdade: com fundo translúcido o texto da alternativa de baixo
+       aparece atrás dos botões e vira sopa visual */
+    background: #0b0b0e;
+    border-top: 1px solid var(--linha-forte);
+    gap: 0.5rem;
+    /* pontinhos em cima, botões embaixo — a linha de baixo é a do polegar */
+    flex-wrap: wrap;
+  }
+  .navegacao-questoes .flex-centro { flex: 1 1 100%; gap: 0.5rem; order: 2; }
+  .navegacao-questoes .flex-centro .btn { flex: 1; min-height: 46px; font-size: 0.9rem; }
+  .navegacao-questoes > .btn { order: 2; flex: 1 1 100%; min-height: 46px; }
+  .navegacao-questoes > [data-contador] { order: 1; }
+  /* uma fila só, rolando na horizontal: 30 pontinhos quebrados em 3 linhas
+     empurrariam o resto da barra para fora da tela */
+  .pontinhos {
+    order: 1; width: 100%; flex-wrap: nowrap; overflow-x: auto;
+    justify-content: flex-start; padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+  .pontinhos::-webkit-scrollbar { display: none; }
+  .pontinho { flex: 0 0 auto; }
+
+  /* links de texto também precisam de área de toque */
+  .rodape a, .fileira-cabecalho a { display: inline-flex; align-items: center; min-height: 40px; }
+
+  /* cronômetro do simulado acompanha o topo reduzido */
+  .cronometro {
+    top: calc(var(--altura-topo) + var(--seguro-topo));
+    padding: 0.65rem 0.85rem; border-radius: 10px;
+  }
+  .cronometro .tempo { font-size: 1.25rem; }
+
+  /* --- tabelas do admin viram cartões: rolagem lateral em tabela é armadilha --- */
+  .tabela-cartoes thead { display: none; }
+  .tabela-cartoes, .tabela-cartoes tbody, .tabela-cartoes tr, .tabela-cartoes td { display: block; width: 100%; }
+  .tabela-cartoes tr {
+    border: 1px solid var(--linha); border-radius: var(--raio-p);
+    padding: 0.75rem 0.9rem; margin-bottom: 0.7rem;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .tabela-cartoes td { border: 0; padding: 0.3rem 0; display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+  .tabela-cartoes td::before {
+    content: attr(data-rotulo);
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--apagado); font-weight: 700; flex: 0 0 auto;
+  }
+  .tabela-cartoes td:empty { display: none; }
+
+  /* --- CTA fixo da página de vendas --- */
+  .cta-fixo {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 55;
+    background: rgba(8, 8, 10, 0.97); backdrop-filter: blur(14px);
+    border-top: 1px solid var(--linha-forte);
+    padding: 0.7rem var(--gutter) calc(0.7rem + var(--seguro-base));
+  }
+  .cta-fixo strong { display: block; font-size: 0.92rem; line-height: 1.2; }
+  .cta-fixo span { font-size: 0.75rem; }
+  .cta-fixo .btn { white-space: nowrap; }
+  /* o CTA some quando os planos já estão na tela — insistir ali seria ruído */
+  #planos:target ~ .cta-fixo { display: none; }
+
+  /* --- avisos, toasts e rodapé --- */
+  /* no celular o aviso desce do topo: embaixo ele cobriria justamente os
+     botões de responder e concluir */
+  .toaster {
+    right: var(--gutter); left: var(--gutter); max-width: none;
+    top: calc(var(--altura-topo) + var(--seguro-topo) + 0.5rem);
+    bottom: auto;
+  }
+  .toast { animation: entrada-topo 260ms ease; }
+  @keyframes entrada-topo { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+  .rodape { padding: 1.8rem 0 2rem; }
+  .rodape-grade { flex-direction: column; gap: 1.4rem; }
+  .caixa-auth .cartao { padding: 1.4rem; }
+  .aula-texto { font-size: 1.02rem; }
+  .flex-entre { gap: 0.7rem; }
+}
+
+/* Telas bem pequenas (iPhone SE e afins) */
+@media (max-width: 380px) {
+  :root { --gutter: 0.85rem; }
+  .trilho { grid-auto-columns: 52vw; }
+  .gaveta-itens { grid-template-columns: repeat(2, 1fr); }
+  .barra-inferior a, .barra-inferior button { font-size: 0.6rem; }
+  .metrica .valor { font-size: 1.3rem; }
+}
+
+/* Tablet / celular deitado */
+@media (min-width: 761px) and (max-width: 1024px) {
+  .menu { gap: 0.9rem; }
+  .menu a { font-size: 0.85rem; }
+  .trilho { grid-auto-columns: minmax(165px, 1fr); }
   .hero { min-height: 62vh; }
-  .hero::after { background: linear-gradient(0deg, var(--preto-900) 12%, rgba(5, 5, 5, 0.6) 100%); }
-  .pontos-topo { display: none; }
-  .trilho { grid-auto-columns: minmax(148px, 1fr); }
+}
+
+/* Ponteiro grosso (dedo) em qualquer largura: sem estados de hover enganosos */
+@media (hover: none) {
+  .capa:hover { transform: none; box-shadow: none; border-color: var(--linha); }
+  .capa:hover img { transform: none; }
+  .dia-cartao:hover { transform: none; }
+  .btn-principal:hover { transform: none; }
 }
 
 @media print {

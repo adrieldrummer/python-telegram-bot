@@ -132,6 +132,17 @@ def bloqueio_por_plano(request: Request, aluno, recurso: str):
     )
 
 
+def _pendentes_de_revisao(aluno_id: int) -> int:
+    from .srs import total_vencidas
+
+    try:
+        with sessao() as con:
+            return total_vencidas(con, aluno_id)
+    except Exception:
+        # um contador decorativo nunca pode derrubar a página
+        return 0
+
+
 def csrf_do(request: Request) -> str:
     return request.cookies.get(COOKIE_CSRF, "") or gerar_csrf()
 
@@ -153,6 +164,10 @@ def responder_template(
         dados["aluno"] = aluno
     if aluno is not None:
         dados.setdefault("patente", resumo_patente(int(aluno["pontos"])))
+        # o selo de revisões atrasadas aparece na barra inferior de toda tela:
+        # é o empurrão que faz o aluno voltar ao caderno de erros
+        if "pendentes_revisao" not in dados:
+            dados["pendentes_revisao"] = _pendentes_de_revisao(int(aluno["id"]))
     token = csrf_do(request)
     dados["csrf_token"] = token
     resposta = templates.TemplateResponse(request, nome, dados, status_code=status_code)

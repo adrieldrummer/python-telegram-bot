@@ -18,20 +18,20 @@
     </p>
 
     {% if ed.dias_prova > 0 %}
-    <div class="flex-centro mt-2" style="gap:1.6rem;flex-wrap:wrap">
+    <div class="contagem mt-2">
       <div>
-        <div style="font-size:2rem;font-weight:800;line-height:1" class="destaque-azul">{{ ed.dias_prova }}</div>
-        <div class="apagado" style="font-size:.76rem;text-transform:uppercase;letter-spacing:.1em">dias para a prova</div>
+        <strong class="destaque-azul">{{ ed.dias_prova }}</strong>
+        <span>dias p/ a prova</span>
       </div>
       {% if ed.dias_inscricao > 0 %}
       <div>
-        <div style="font-size:2rem;font-weight:800;line-height:1">{{ ed.dias_inscricao }}</div>
-        <div class="apagado" style="font-size:.76rem;text-transform:uppercase;letter-spacing:.1em">dias para se inscrever</div>
+        <strong>{{ ed.dias_inscricao }}</strong>
+        <span>dias p/ inscrição</span>
       </div>
       {% endif %}
       <div>
-        <div style="font-size:2rem;font-weight:800;line-height:1">R$ {{ '%.2f'|format(ed.salario)|replace('.', ',') }}</div>
-        <div class="apagado" style="font-size:.76rem;text-transform:uppercase;letter-spacing:.1em">salário inicial</div>
+        <strong>{{ ed.salario | int }}</strong>
+        <span>salário inicial (R$)</span>
       </div>
     </div>
     {% endif %}
@@ -223,5 +223,15 @@
     </div>
   </section>
 
+</div>
+
+{# No celular a pessoa rola muito antes de chegar aos planos. Este botão
+   acompanha a rolagem e leva direto para a oferta de entrada. #}
+<div class="cta-fixo">
+  <div>
+    <strong>Comece por R$ 47/mês</strong>
+    <span class="apagado">{{ ed.dias_prova }} dias para a prova</span>
+  </div>
+  <a class="btn btn-principal btn-pequeno" href="#planos">Ver planos</a>
 </div>
 {% endblock %}

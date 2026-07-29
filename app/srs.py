@@ -107,6 +107,19 @@ def vencidas(con: sqlite3.Connection, aluno_id: int, limite: int = 20) -> list[s
     )
 
 
+def total_vencidas(con: sqlite3.Connection, aluno_id: int) -> int:
+    """Quantas revisões estão atrasadas. COUNT em vez de contar linhas trazidas."""
+    return int(
+        valor(
+            con,
+            """SELECT COUNT(*) FROM caderno_erros
+               WHERE aluno_id = ? AND status='aberto'
+                 AND (proxima_revisao IS NULL OR proxima_revisao <= ?)""",
+            (aluno_id, hoje_txt()),
+        )
+    )
+
+
 def abertas(con: sqlite3.Connection, aluno_id: int, materia: str = "") -> list[sqlite3.Row]:
     if materia:
         return buscar_todos(
@@ -129,7 +142,7 @@ def resumo(con: sqlite3.Connection, aluno_id: int) -> dict:
     dominados = int(
         valor(con, "SELECT COUNT(*) FROM caderno_erros WHERE aluno_id=? AND status='dominado'", (aluno_id,))
     )
-    pendentes = len(vencidas(con, aluno_id, limite=999))
+    pendentes = total_vencidas(con, aluno_id)
     por_categoria = {
         chave: int(
             valor(
@@ -170,5 +183,6 @@ __all__ = [
     "registrar_acerto",
     "registrar_erro",
     "resumo",
+    "total_vencidas",
     "vencidas",
 ]

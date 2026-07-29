@@ -1,14 +1,37 @@
 {% set caminho = request.url.path %}
+{% import "_icones.html" as ic %}
 <!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {# viewport-fit=cover deixa o app pintar atrás do entalhe do iPhone; o CSS
+     devolve o respiro com env(safe-area-inset-*) #}
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="csrf-token" content="{{ csrf_token }}">
   <meta name="theme-color" content="#050505">
+  <meta name="color-scheme" content="dark">
   <meta name="description" content="{% block descricao %}{{ config.app_subtitulo }}{% endblock %}">
   <title>{% block titulo %}{{ config.app_nome }}{% endblock %}</title>
+  <link rel="canonical" href="{{ config.app_url }}{{ caminho }}">
   <link rel="icon" href="/static/img/favicon.png" type="image/png">
+
+  {# instalar na tela de início: o aluno abre como aplicativo, sem barra do navegador #}
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/static/img/icone-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Operação Aprovação">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <meta property="og:site_name" content="{{ config.app_nome }}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="{{ self.titulo() }}">
+  <meta property="og:description" content="{{ self.descricao() }}">
+  <meta property="og:url" content="{{ config.app_url }}{{ caminho }}">
+  <meta property="og:image" content="{{ config.app_url }}/static/img/hero.webp">
+  <meta name="twitter:card" content="summary_large_image">
+
   <link rel="stylesheet" href="/static/css/app.css">
   {% if config.meta_verificacao_dominio %}
   <meta name="facebook-domain-verification" content="{{ config.meta_verificacao_dominio }}">
@@ -29,12 +52,18 @@
   {% endif %}
   {% block cabecalho %}{% endblock %}
 </head>
-<body>
+<body class="{{ 'com-barra' if aluno }}">
 {% if config.modo_demo %}
-<div style="background:#f0a92b;color:#050505;text-align:center;padding:.5rem 1rem;font-size:.84rem;font-weight:700">
-  MODO DEMONSTRAÇÃO — sem banco configurado, os dados somem a cada reinício.
-  Contas de teste: admin@teste.com / admin1234 · aluno@teste.com / aluno1234
-</div>
+{# no celular a faixa some depois de lida: ocupar meia tela em todo carregamento
+   é pior que o aviso resolve #}
+<details class="faixa-demo">
+  <summary>MODO DEMONSTRAÇÃO — os dados somem a cada reinício</summary>
+  <div>
+    Sem banco configurado. Contas de teste:
+    <b>admin@teste.com</b>/admin1234 · <b>aluno@teste.com</b>/aluno1234 ·
+    <b>recruta@teste.com</b>/recruta1234
+  </div>
+</details>
 {% endif %}
 {% block topo %}
 <header class="topo">
@@ -64,7 +93,6 @@
         </span>
       {% endif %}
       <a class="avatar" href="/conta" title="{{ aluno['nome'] }}">{{ aluno['nome'][0]|upper }}</a>
-      <button class="abre-menu" type="button" aria-label="Menu">☰</button>
     </div>
     {% else %}
     <nav class="menu">
@@ -74,7 +102,9 @@
     </nav>
     <div class="topo-direita">
       <a class="btn btn-fantasma btn-pequeno" href="/entrar">Entrar</a>
-      <a class="btn btn-principal btn-pequeno" href="{{ config.cakto_checkout_url }}">Quero começar</a>
+      {# no celular o "quero começar" vive no CTA fixo do rodapé; aqui ele só
+         espremeria a marca #}
+      <a class="btn btn-principal btn-pequeno so-desktop" href="/#planos">Quero começar</a>
       <button class="abre-menu" type="button" aria-label="Menu">☰</button>
     </div>
     {% endif %}
@@ -87,6 +117,65 @@
   {% block conteudo %}{% endblock %}
 </main>
 {% endblock %}
+
+{% if aluno %}
+{# Navegação principal do aluno no celular. Fica na base porque é onde o
+   polegar chega sem trocar a mão de posição. No desktop, o CSS esconde. #}
+{% set na_trilha = caminho.startswith('/jornada') or caminho.startswith('/dia') %}
+<nav class="barra-inferior" aria-label="Navegação principal">
+  <a href="/painel" class="{{ 'ativo' if caminho == '/painel' }}">
+    {{ ic.icone('inicio') }}<span>Início</span>
+  </a>
+  <a href="/jornada" class="{{ 'ativo' if na_trilha }}">
+    {{ ic.icone('trilha') }}<span>Trilha</span>
+  </a>
+  <a href="/questoes" class="{{ 'ativo' if caminho.startswith('/questoes') }}">
+    {{ ic.icone('questoes') }}<span>Questões</span>
+  </a>
+  <a href="/erros" class="{{ 'ativo' if caminho.startswith('/erros') }}">
+    {{ ic.icone('erros') }}<span>Erros</span>
+    {% if pendentes_revisao %}<span class="selo">{{ pendentes_revisao }}</span>{% endif %}
+  </a>
+  <button type="button" class="abre-gaveta" aria-expanded="false" aria-controls="gaveta">
+    {{ ic.icone('mais') }}<span>Mais</span>
+  </button>
+</nav>
+
+<div class="gaveta" id="gaveta" hidden>
+  <div class="gaveta-painel" role="dialog" aria-modal="true" aria-label="Mais opções">
+    <div class="gaveta-puxador"></div>
+    <div class="gaveta-itens">
+      <a href="/simulados" class="{{ 'ativo' if caminho.startswith('/simulado') }}">
+        {{ ic.icone('simulados') }}<span>Simulados</span>
+      </a>
+      <a href="/modulos" class="{{ 'ativo' if caminho.startswith('/modulos') }}">
+        {{ ic.icone('modulos') }}<span>Módulos</span>
+      </a>
+      <a href="/manual" class="{{ 'ativo' if caminho.startswith('/manual') }}">
+        {{ ic.icone('apostila') }}<span>Apostila</span>
+      </a>
+      <a href="/pontos" class="{{ 'ativo' if caminho.startswith('/pontos') }}">
+        {{ ic.icone('pontos') }}<span>Pontos</span>
+      </a>
+      <a href="/planos" class="{{ 'ativo' if caminho == '/planos' }}">
+        {{ ic.icone('planos') }}<span>Meu plano</span>
+      </a>
+      <a href="/conta" class="{{ 'ativo' if caminho.startswith('/conta') }}">
+        {{ ic.icone('conta') }}<span>Conta</span>
+      </a>
+      {% if aluno['admin'] %}
+      <a href="/admin" class="{{ 'ativo' if caminho.startswith('/admin') }}">
+        {{ ic.icone('admin') }}<span>Admin</span>
+      </a>
+      {% endif %}
+      <form method="post" action="/sair" style="display:contents">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit">{{ ic.icone('sair') }}<span>Sair</span></button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
 
 {% block rodape %}
 <footer class="rodape">
