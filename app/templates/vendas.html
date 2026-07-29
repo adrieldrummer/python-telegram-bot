@@ -157,6 +157,41 @@
     </div>
   </section>
 
+  <!-- o que está no fim da trilha -->
+  <section class="secao" id="farda">
+    <div class="fileira-cabecalho">
+      <div>
+        <h2 class="mb-1">O que está no fim dessa trilha</h2>
+        <p class="apagado mb-0" style="font-size:.9rem">
+          {{ ed.vagas }} vagas. Salário inicial de
+          R$ {{ '%.2f'|format(ed.salario)|replace('.', ',') }}. Estabilidade e carreira.
+        </p>
+      </div>
+    </div>
+    <div class="vitrine-farda">
+      <figure>
+        <img src="{{ CAPAS.farda }}" alt="Farda de gala pendurada" loading="lazy" width="800" height="1200">
+        <figcaption><strong>A farda</strong><span>O uniforme que 2000 pessoas vão vestir em 2026.</span></figcaption>
+      </figure>
+      <figure>
+        <img src="{{ CAPAS.formatura }}" alt="Formatura de recrutas em posição de sentido" loading="lazy" width="800" height="1200">
+        <figcaption><strong>A formatura</strong><span>Depois da objetiva vêm redação, TAF e as etapas eliminatórias.</span></figcaption>
+      </figure>
+      <figure>
+        <img src="{{ CAPAS.viatura }}" alt="Viatura de patrulhamento em avenida à noite" loading="lazy" width="800" height="1200">
+        <figcaption><strong>A rua</strong><span>Policiamento ostensivo: a função que o edital está selecionando.</span></figcaption>
+      </figure>
+      <figure>
+        <img src="{{ CAPAS.bota }}" alt="Coturno e boina sobre um banco de vestiário" loading="lazy" width="800" height="1200">
+        <figcaption><strong>O começo</strong><span>Tudo isso passa por {{ ed.total_questoes }} questões em uma manhã de setembro.</span></figcaption>
+      </figure>
+    </div>
+    <p class="apagado centro mt-2" style="font-size:.78rem">
+      Imagens ilustrativas. Material educacional independente, sem vínculo com a
+      Polícia Militar do Estado de São Paulo ou com a banca examinadora.
+    </p>
+  </section>
+
   <!-- planos -->
   <section class="secao" id="planos">
     <div class="fileira-cabecalho">
