@@ -174,6 +174,24 @@ class Config:
         return bool(self.smtp_host)
 
     @property
+    def smtp_senha_plausivel(self) -> bool:
+        """A senha SMTP tem cara de credencial, e não de erro de cópia.
+
+        Não valida a credencial — só descarta os enganos que a Vercel não tem
+        como pegar: campo vazio, os pontinhos da máscara copiados no lugar do
+        valor, espaço colado junto, ou uma chave cortada pela metade. Sem isso
+        a única pista é um `535` do servidor, que não distingue "chave errada"
+        de "chave colada errado" — e a variável fica marcada como Sensitive,
+        então nem quem configurou consegue reler o que salvou.
+        """
+        senha = self.smtp_senha
+        if not senha or len(senha) < 12:
+            return False
+        if senha != senha.strip() or any(c.isspace() for c in senha):
+            return False
+        return not any(c in senha for c in "•●*…")
+
+    @property
     def modo_caixa_saida(self) -> bool:
         """Sem SMTP, os e-mails ficam registrados no banco para consulta no admin."""
         return not self.smtp_configurado

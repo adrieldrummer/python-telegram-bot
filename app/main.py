@@ -145,4 +145,5 @@ async def saude():
         "banco_persistente": not config.modo_demo,
         "webhook_protegido": bool(config.cakto_webhook_segredo),
         "email_configurado": config.smtp_configurado,
+        "email_credencial_plausivel": config.smtp_senha_plausivel,
     }

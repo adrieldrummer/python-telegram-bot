@@ -89,3 +89,23 @@ def test_assinatura_hmac_do_webhook():
     esperado = security.assinatura_hmac(b'{"a":1}', "segredo")
     assert esperado == security.assinatura_hmac(b'{"a":1}', "segredo")
     assert esperado != security.assinatura_hmac(b'{"a":2}', "segredo")
+
+
+def test_senha_smtp_plausivel_rejeita_erro_de_copia():
+    """Marcada como Sensitive, a senha não pode ser relida — o engano some.
+
+    O servidor devolve o mesmo 535 para "chave errada" e para "colou os
+    pontinhos da máscara". Só o segundo caso dá para detectar aqui.
+    """
+    from app.config import config
+
+    original = config.smtp_senha
+    try:
+        for ruim in ("", "re_curta", "••••••••••••••••", "re_abc123def456 ", "re_abc 123def456"):
+            object.__setattr__(config, "smtp_senha", ruim)
+            assert not config.smtp_senha_plausivel, f"deveria recusar {ruim!r}"
+
+        object.__setattr__(config, "smtp_senha", "re_A1b2C3d4E5f6G7h8")
+        assert config.smtp_senha_plausivel
+    finally:
+        object.__setattr__(config, "smtp_senha", original)
