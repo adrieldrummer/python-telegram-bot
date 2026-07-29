@@ -290,3 +290,103 @@ def test_segredo_nao_fica_guardado_no_historico(cliente):
         guardado = buscar_um(con, "SELECT payload FROM webhooks ORDER BY id DESC")["payload"]
     assert "chave-do-painel-da-cakto" not in guardado
     assert '"secret": "***"' in guardado
+
+
+# Payload de exemplo do próprio painel da Cakto, copiado inteiro. Guardar o
+# formato completo aqui evita a regressão mais cara possível: uma venda real
+# recusada em produção porque um campo novo mudou a leitura.
+PAYLOAD_PAINEL = {
+    "secret": "chave-do-painel-da-cakto",
+    "event": "purchase_approved",
+    "data": {
+        "id": "87956abe-940e-4e8b-8a27-82c482920f64",
+        "refId": "9vbgfmg",
+        "customer": {
+            "name": "John Doe",
+            "email": "john.doe@example.com",
+            "phone": "34999999999",
+            "docNumber": "12345678909",
+            "birthDate": None,
+            "docType": "cpf",
+        },
+        "address": None,
+        "shipping": None,
+        "affiliate": "affiliate@example.com",
+        "offer": {"id": "B8BcHrY", "name": "Special Offer", "price": 100, "image": None},
+        "offer_type": "main",
+        "product": {
+            "name": "Produto Teste",
+            "id": "ff3fdf61-e88f-43b5-982a-32d50f112414",
+            "short_id": "AckhQ75",
+            "supportEmail": "suporte@seudominio.com",
+            "type": "unique",
+            "invoiceDescription": "",
+        },
+        "checkout": 12345,
+        "subscription": None,
+        "subscription_period": 1,
+        "parent_order": None,
+        "checkoutUrl": "https://pay.cakto.com.br/EXAMPLE",
+        "status": "paid",
+        "baseAmount": 100,
+        "discount": 10,
+        "amount": 90,
+        "commissions": [
+            {"user": "produtor@seudominio.com", "totalAmount": 85.5,
+             "type": "producer", "percentage": 95}
+        ],
+        "fees": 4.5,
+        "couponCode": None,
+        "reason": None,
+        "refund_reason": None,
+        "installments": 1,
+        "paymentMethod": "credit_card",
+        "paymentMethodName": "Cartão de Crédito",
+        "paidAt": "2026-06-26T12:00:00.000000+00:00",
+        "createdAt": "2026-06-26T12:00:00.000000+00:00",
+        "due_date": None,
+        "refundedAt": None,
+        "chargedbackAt": None,
+        "canceledAt": None,
+        "utm_source": None, "utm_medium": None, "utm_campaign": None,
+        "utm_term": None, "utm_content": None,
+        "sck": None, "fbc": None, "fbp": None,
+        "card": {"lastDigits": "4323", "holderName": "Card Example", "brand": "visa"},
+    },
+}
+
+
+def test_payload_completo_do_painel_libera_o_acesso(cliente):
+    """Campos que a plataforma não usa (comissão, cartão, UTM) não atrapalham."""
+    com_segredo("chave-do-painel-da-cakto")
+    resposta = enviar_bruto(cliente, PAYLOAD_PAINEL)
+    assert resposta.status_code == 200, resposta.text
+
+    with sessao() as con:
+        aluno = servico_alunos.por_email(con, "john.doe@example.com")
+        assert aluno is not None
+        assert aluno["status"] == "ativo"
+        assert aluno["senha_hash"], "sem senha o comprador não entra"
+
+
+def test_valor_com_desconto_define_o_plano(cliente):
+    """`amount` é o que o cliente pagou; `baseAmount` é o preço de tabela.
+
+    Com cupom de 10, uma Operação Completa de 97 chega como 87. Ler o
+    `baseAmount` daria o plano certo pelo preço cheio, mas erraria quando a
+    oferta em si mudasse de preço — e o link do checkout, quando existe, já
+    resolve antes. O valor só decide quando o link não é reconhecido, e aí o
+    que vale é a faixa do que foi pago.
+    """
+    com_segredo("chave-do-painel-da-cakto")
+    corpo = json.loads(json.dumps(PAYLOAD_PAINEL))
+    corpo["data"]["id"] = "tx-com-desconto"
+    corpo["data"]["customer"]["email"] = "desconto@example.com"
+    corpo["data"]["baseAmount"] = 97
+    corpo["data"]["discount"] = 10
+    corpo["data"]["amount"] = 87
+    assert enviar_bruto(cliente, corpo).status_code == 200
+
+    with sessao() as con:
+        aluno = servico_alunos.por_email(con, "desconto@example.com")
+        assert aluno["plano"] == "operacao"
