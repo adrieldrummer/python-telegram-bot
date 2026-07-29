@@ -1,0 +1,32 @@
+{# Relógio regressivo para o dia da prova.
+
+   O servidor entrega o instante-alvo com fuso explícito e o navegador conta a
+   partir dele. Assim a contagem fica certa para quem abrir de outro fuso, e o
+   relógio continua andando mesmo com a aba aberta a tarde inteira — coisa que
+   um número renderizado no servidor não faz.
+
+   Uso:  {{ rel.relogio(ed.instante_prova) }}
+         {{ rel.relogio(ed.instante_prova, compacto=True) }}
+#}
+
+{% macro relogio(instante, compacto=False, rotulo="para a prova") -%}
+<div class="relogio {{ 'relogio-compacto' if compacto }}"
+     data-relogio="{{ instante.isoformat() }}"
+     role="timer" aria-live="off"
+     aria-label="Contagem regressiva {{ rotulo }}">
+  <div class="relogio-casas">
+    <div class="casa"><strong data-dias>--</strong><span>dias</span></div>
+    <div class="dois-pontos">:</div>
+    <div class="casa"><strong data-horas>--</strong><span>horas</span></div>
+    <div class="dois-pontos">:</div>
+    <div class="casa"><strong data-minutos>--</strong><span>min</span></div>
+    <div class="dois-pontos">:</div>
+    <div class="casa"><strong data-segundos>--</strong><span>seg</span></div>
+  </div>
+  {% if not compacto %}
+  <p class="relogio-rodape apagado" data-relogio-rodape>
+    {{ rotulo }} · {{ instante.strftime('%d/%m/%Y') }}, {{ instante.strftime('%Hh') }} (horário de Brasília)
+  </p>
+  {% endif %}
+</div>
+{%- endmacro %}

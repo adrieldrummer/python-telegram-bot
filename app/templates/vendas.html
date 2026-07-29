@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "_relogio.html" as rel %}
 {% block titulo %}{{ config.app_nome }} — Edital PM-SP 2026 explicado em 7 dias{% endblock %}
 {% block descricao %}Entenda o edital inteiro do concurso de Soldado PM-SP 2026 em 7 dias, treine com questões comentadas e chegue pronto para a prova de 20 de setembro.{% endblock %}
 
@@ -18,17 +19,20 @@
     </p>
 
     {% if ed.dias_prova > 0 %}
+    <div class="mt-2">
+      {{ rel.relogio(ed.instante_prova) }}
+    </div>
     <div class="contagem mt-2">
-      <div>
-        <strong class="destaque-azul pulsa-uma-vez" data-contar="{{ ed.dias_prova }}">0</strong>
-        <span>dias p/ a prova</span>
-      </div>
       {% if ed.dias_inscricao > 0 %}
       <div>
         <strong data-contar="{{ ed.dias_inscricao }}">0</strong>
         <span>dias p/ inscrição</span>
       </div>
       {% endif %}
+      <div>
+        <strong data-contar="{{ ed.vagas }}">0</strong>
+        <span>vagas</span>
+      </div>
       <div>
         <strong data-contar="{{ ed.salario | int }}">0</strong>
         <span>salário inicial (R$)</span>

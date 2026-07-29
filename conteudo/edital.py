@@ -11,7 +11,7 @@ mudou o edital, muda um arquivo.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 
 
 @dataclass(frozen=True)
@@ -32,6 +32,12 @@ TAXA_INSCRICAO = 100.00
 
 DATA_PROVA = date(2026, 9, 20)
 FIM_INSCRICOES = date(2026, 8, 21)
+
+# Horário de aplicação, para a contagem regressiva em tempo real.
+# ⚠️ Confirme no edital: a VUNESP costuma aplicar à tarde, mas a hora exata só
+# sai no documento oficial. Mudar aqui muda o relógio em todas as telas.
+HORA_PROVA = 13
+FUSO_BRASILIA = timezone(timedelta(hours=-3))
 
 REQUISITOS = (
     "Ensino médio completo",
@@ -116,6 +122,24 @@ def dias_para_prova(hoje: date | None = None) -> int:
     return (DATA_PROVA - (hoje or date.today())).days
 
 
+def instante_da_prova() -> datetime:
+    """O momento exato da prova, com fuso — base do relógio regressivo.
+
+    Devolver o instante com deslocamento explícito (-03:00) faz a contagem
+    ficar certa para quem abrir a plataforma de outro fuso: o navegador compara
+    dois instantes absolutos, não duas leituras de relógio de parede.
+    """
+    return datetime(
+        DATA_PROVA.year, DATA_PROVA.month, DATA_PROVA.day,
+        HORA_PROVA, 0, 0, tzinfo=FUSO_BRASILIA,
+    )
+
+
+def segundos_para_prova(agora: datetime | None = None) -> int:
+    referencia = agora or datetime.now(timezone.utc)
+    return int((instante_da_prova() - referencia).total_seconds())
+
+
 def dias_para_inscricao(hoje: date | None = None) -> int:
     return (FIM_INSCRICOES - (hoje or date.today())).days
 
@@ -137,6 +161,7 @@ def resumo() -> dict:
         "salario": SALARIO_INICIAL,
         "taxa": TAXA_INSCRICAO,
         "data_prova": DATA_PROVA,
+        "instante_prova": instante_da_prova(),
         "fim_inscricoes": FIM_INSCRICOES,
         "dias_prova": dias_para_prova(),
         "dias_inscricao": dias_para_inscricao(),

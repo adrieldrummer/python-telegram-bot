@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "_relogio.html" as rel %}
 {% block titulo %}Painel — {{ config.app_nome }}{% endblock %}
 
 {% set atual = resumo.atual %}
@@ -59,31 +60,26 @@
   </section>
   {% endif %}
 
-  <!-- contagem regressiva do concurso -->
+  <!-- relógio regressivo do concurso -->
   <div class="cartao mt-3" style="border-color:rgba(10,92,255,.4)">
-    <div class="flex-entre" style="gap:1.4rem;flex-wrap:wrap">
-      <div class="flex-centro" style="gap:1.6rem;flex-wrap:wrap">
-        <div>
-          <div class="valor destaque-azul pulsa-uma-vez" style="font-size:1.9rem;font-weight:800;line-height:1"
-               data-contar="{{ edital.dias_prova if edital.dias_prova > 0 else 0 }}">0</div>
-          <div class="rotulo apagado" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em">
-            {{ 'dias para a prova' if edital.dias_prova > 0 else 'a prova já foi' }}
-          </div>
-        </div>
+    <div class="flex-entre" style="gap:1.4rem;flex-wrap:wrap;align-items:flex-start">
+      <div>
+        {{ rel.relogio(edital.instante_prova) }}
+      </div>
+      <div class="flex-centro" style="gap:1.4rem;flex-wrap:wrap">
         {% if edital.dias_inscricao > 0 %}
         <div>
-          <div style="font-size:1.9rem;font-weight:800;line-height:1" data-contar="{{ edital.dias_inscricao }}">0</div>
-          <div class="apagado" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em">dias p/ se inscrever</div>
+          <div style="font-size:1.5rem;font-weight:800;line-height:1">{{ edital.dias_inscricao }}</div>
+          <div class="apagado" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em">dias p/ se inscrever</div>
         </div>
         {% endif %}
         <div>
-          <div style="font-size:1.9rem;font-weight:800;line-height:1">{{ edital.total_questoes }}</div>
-          <div class="apagado" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em">questões na prova</div>
+          <div style="font-size:1.5rem;font-weight:800;line-height:1">{{ edital.total_questoes }}</div>
+          <div class="apagado" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em">questões na prova</div>
         </div>
       </div>
-      <p class="apagado mb-0" style="font-size:.82rem;max-width:340px">
-        {{ edital.concurso }} · {{ edital.banca }} · prova em
-        {{ edital.data_prova.strftime('%d/%m/%Y') }}. Mínimo de {{ edital.nota_minima }} pontos
+      <p class="apagado mb-0" style="font-size:.8rem;max-width:300px">
+        {{ edital.concurso }} · {{ edital.banca }}. Mínimo de {{ edital.nota_minima }} pontos
         para seguir no concurso.
       </p>
     </div>

@@ -246,3 +246,40 @@ def test_correcao_do_simulado_cobre_acertos_e_erros(cliente):
     for item in correcao:
         assert item["texto_gabarito"], item["questao"].id
         assert item["questao"].comentario
+
+
+def test_relogio_regressivo_aparece_nas_duas_telas(cliente):
+    """O relógio precisa levar o instante-alvo com fuso, não um número de dias.
+
+    Renderizar "52 dias" no servidor congela a informação: quem deixa a aba
+    aberta a tarde inteira continua vendo o mesmo número. O navegador é quem
+    conta, a partir de um instante absoluto.
+    """
+    from conteudo import edital
+
+    alvo = edital.instante_da_prova().isoformat()
+    assert alvo.endswith("-03:00"), "o instante precisa carregar o fuso explícito"
+
+    venda = cliente.get("/").text
+    assert f'data-relogio="{alvo}"' in venda
+    for casa in ("data-dias", "data-horas", "data-minutos", "data-segundos"):
+        assert casa in venda, casa
+
+    criar_conta()
+    entrar(cliente, "aluna@teste.com", "blindagem30")
+    painel = cliente.get("/painel").text
+    assert f'data-relogio="{alvo}"' in painel
+
+
+def test_instante_da_prova_bate_com_a_data_do_edital():
+    from conteudo import edital
+
+    i = edital.instante_da_prova()
+    assert (i.year, i.month, i.day) == (
+        edital.DATA_PROVA.year, edital.DATA_PROVA.month, edital.DATA_PROVA.day
+    )
+    assert i.hour == edital.HORA_PROVA
+    # e a contagem em segundos precisa bater com a contagem em dias
+    assert edital.segundos_para_prova() // 86400 in (
+        edital.dias_para_prova(), edital.dias_para_prova() - 1
+    )

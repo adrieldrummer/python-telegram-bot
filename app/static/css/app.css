@@ -536,6 +536,55 @@ select option { background: var(--preto-800); }
 .medalha .desc { font-size: 0.75rem; color: var(--apagado); margin-top: 0.25rem; }
 .medalha.bloqueada { opacity: 0.35; filter: grayscale(1); }
 
+/* ---------- relógio regressivo ----------
+   Números com largura fixa (tabular-nums) para o relógio não "pular" a cada
+   segundo — o dígito 1 é mais estreito que os demais e isso balança a caixa
+   inteira se a fonte não for tabular. */
+
+.relogio { display: inline-block; }
+.relogio-casas { display: flex; align-items: flex-start; gap: 0.35rem; }
+.relogio .casa {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 62px; padding: 0.5rem 0.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--linha-forte); border-radius: 10px;
+}
+.relogio .casa strong {
+  font-size: 1.75rem; font-weight: 800; line-height: 1;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+}
+.relogio .casa span {
+  font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--apagado); margin-top: 0.3rem; font-weight: 700;
+}
+.relogio .dois-pontos {
+  font-size: 1.4rem; font-weight: 800; color: var(--grafite-500);
+  padding-top: 0.55rem;
+}
+.relogio-rodape { font-size: 0.76rem; margin: 0.55rem 0 0; }
+
+/* o segundo pulsa a cada batida — é o que faz parecer um relógio, e não um número */
+.relogio [data-segundos].bate { animation: batida 900ms ease-out; }
+@keyframes batida {
+  0% { color: var(--azul); transform: scale(1.1); }
+  100% { color: inherit; transform: scale(1); }
+}
+
+/* última semana: o relógio inteiro muda de tom */
+.relogio.urgente .casa { border-color: rgba(224, 59, 59, 0.5); background: rgba(224, 59, 59, 0.1); }
+.relogio.urgente .casa strong { color: #ff9a9a; }
+
+.relogio-fim { font-size: 1.15rem; }
+
+.relogio-compacto .casa { min-width: 48px; padding: 0.35rem 0.3rem; border-radius: 8px; }
+.relogio-compacto .casa strong { font-size: 1.25rem; }
+.relogio-compacto .casa span { font-size: 0.56rem; }
+.relogio-compacto .dois-pontos { font-size: 1rem; padding-top: 0.35rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .relogio [data-segundos].bate { animation: none; }
+}
+
 /* ---------- sino e lembretes ---------- */
 
 .sino {
@@ -814,6 +863,14 @@ details.filtros > summary span { font-weight: 600; font-size: 0.84rem; }
 
   .so-desktop { display: none !important; }
   .so-celular { display: revert; }
+
+  /* o relógio encolhe para caber nos 4 blocos sem quebrar linha */
+  .relogio .casa { min-width: 0; flex: 1; padding: 0.45rem 0.2rem; }
+  .relogio-casas { gap: 0.25rem; width: 100%; }
+  .relogio .casa strong { font-size: 1.35rem; }
+  .relogio .casa span { font-size: 0.55rem; letter-spacing: 0.06em; }
+  .relogio .dois-pontos { font-size: 1rem; padding-top: 0.45rem; }
+  .relogio { display: block; width: 100%; }
 
   .contagem { grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
   .contagem strong { font-size: 1.45rem; }

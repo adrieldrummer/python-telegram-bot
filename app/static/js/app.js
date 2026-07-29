@@ -305,3 +305,73 @@ window.MAPA = {
   }, { threshold: 0.5 });
   document.querySelectorAll('[data-contar]').forEach((el) => contadores.observe(el));
 })();
+
+/* --- relógio regressivo -----------------------------------------------------
+   Conta até o instante da prova, atualizando a cada segundo. O alvo vem do
+   servidor com fuso explícito, então a conta usa dois instantes absolutos e
+   fica certa em qualquer fuso do aluno.
+   ------------------------------------------------------------------------- */
+(function () {
+  const relogios = document.querySelectorAll('[data-relogio]');
+  if (!relogios.length) return;
+
+  function dois(n) {
+    return String(n).padStart(2, '0');
+  }
+
+  function pintar(el, restante) {
+    const casas = {
+      dias: Math.floor(restante / 86400),
+      horas: Math.floor((restante % 86400) / 3600),
+      minutos: Math.floor((restante % 3600) / 60),
+      segundos: Math.floor(restante % 60),
+    };
+    Object.keys(casas).forEach(function (nome) {
+      const alvo = el.querySelector('[data-' + nome + ']');
+      if (!alvo) return;
+      // dias sem zero à esquerda: "52" lê melhor que "052"
+      const texto = nome === 'dias' ? String(casas[nome]) : dois(casas[nome]);
+      if (alvo.textContent !== texto) {
+        alvo.textContent = texto;
+        if (nome === 'segundos') {
+          alvo.classList.remove('bate');
+          // reinicia a animação: sem o reflow o navegador ignora a reaplicação
+          void alvo.offsetWidth;
+          alvo.classList.add('bate');
+        }
+      }
+    });
+    // a última semana acende o relógio
+    el.classList.toggle('urgente', restante < 7 * 86400);
+  }
+
+  function encerrar(el, texto) {
+    el.classList.add('encerrado');
+    el.innerHTML = '<strong class="relogio-fim">' + texto + '</strong>';
+  }
+
+  function tique() {
+    const agora = Date.now();
+    let ativos = 0;
+    relogios.forEach(function (el) {
+      if (el.classList.contains('encerrado')) return;
+      const alvo = new Date(el.dataset.relogio).getTime();
+      if (Number.isNaN(alvo)) return;
+      const restante = Math.floor((alvo - agora) / 1000);
+      if (restante <= 0) {
+        // até 6 horas depois do início ainda é "hoje"; passou disso, acabou
+        encerrar(el, restante > -6 * 3600 ? 'É agora. Boa prova. 🎯' : 'A prova já foi.');
+        return;
+      }
+      pintar(el, restante);
+      ativos += 1;
+    });
+    if (ativos) setTimeout(tique, 1000);
+  }
+
+  tique();
+  // ao voltar para a aba, corrige o atraso acumulado enquanto ela estava oculta
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') tique();
+  });
+})();
