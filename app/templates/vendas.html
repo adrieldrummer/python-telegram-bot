@@ -20,17 +20,17 @@
     {% if ed.dias_prova > 0 %}
     <div class="contagem mt-2">
       <div>
-        <strong class="destaque-azul">{{ ed.dias_prova }}</strong>
+        <strong class="destaque-azul pulsa-uma-vez" data-contar="{{ ed.dias_prova }}">0</strong>
         <span>dias p/ a prova</span>
       </div>
       {% if ed.dias_inscricao > 0 %}
       <div>
-        <strong>{{ ed.dias_inscricao }}</strong>
+        <strong data-contar="{{ ed.dias_inscricao }}">0</strong>
         <span>dias p/ inscrição</span>
       </div>
       {% endif %}
       <div>
-        <strong>{{ ed.salario | int }}</strong>
+        <strong data-contar="{{ ed.salario | int }}">0</strong>
         <span>salário inicial (R$)</span>
       </div>
     </div>
@@ -49,7 +49,7 @@
 <div class="container">
 
   <!-- a prova de verdade -->
-  <section class="secao" id="prova">
+  <section class="secao revela" id="prova">
     <div class="fileira-cabecalho">
       <div>
         <h2 class="mb-1">A prova que você vai fazer</h2>
@@ -80,14 +80,14 @@
   </section>
 
   <!-- os 7 dias -->
-  <section class="secao" id="trilha">
+  <section class="secao revela" id="trilha">
     <div class="fileira-cabecalho">
       <div>
         <h2 class="mb-1">Os 7 dias</h2>
         <p class="apagado mb-0" style="font-size:.9rem">Uma grande área do edital por dia, com explicação e questões.</p>
       </div>
     </div>
-    <div class="grade grade-3">
+    <div class="grade grade-3 revela-fila">
       {% for d in dias %}
       <div class="cartao">
         <span class="etiqueta">Dia {{ d.numero }}</span>
@@ -99,9 +99,9 @@
   </section>
 
   <!-- plataforma -->
-  <section class="secao" id="plataforma">
+  <section class="secao revela" id="plataforma">
     <div class="fileira-cabecalho"><h2>Não é PDF. É treino.</h2></div>
-    <div class="grade grade-3">
+    <div class="grade grade-3 revela-fila">
       <div class="cartao">
         <h3>📖 Explicação, não decoreba</h3>
         <p class="suave">Cada tópico do edital explicado em linguagem clara. Você entende o
@@ -143,7 +143,7 @@
         <p class="apagado mb-0" style="font-size:.9rem">Todas as etapas são eliminatórias.</p>
       </div>
     </div>
-    <div class="grade grade-3">
+    <div class="grade grade-3 revela-fila">
       {% for e in ed.etapas %}
       <div class="cartao">
         <div class="flex-centro mb-1">
@@ -158,7 +158,7 @@
   </section>
 
   <!-- a linha do tempo: de onde o aluno parte até onde ele quer chegar -->
-  <section class="secao" id="jornada">
+  <section class="secao revela" id="jornada">
     <div class="fileira-cabecalho">
       <div>
         <h2 class="mb-1">De onde você está até a farda</h2>
@@ -186,7 +186,7 @@
   </section>
 
   <!-- planos -->
-  <section class="secao" id="planos">
+  <section class="secao revela" id="planos">
     <div class="fileira-cabecalho">
       <div>
         <h2 class="mb-1">Comece por R$ 47</h2>
@@ -195,9 +195,9 @@
         </p>
       </div>
     </div>
-    <div class="grade grade-3">
+    <div class="grade grade-3 revela-fila">
       {% for p in planos %}
-      <div class="cartao" style="{{ 'border-color:var(--azul);box-shadow:0 0 0 1px rgba(10,92,255,.35),0 16px 40px rgba(10,92,255,.14)' if p.destaque }}">
+      <div class="cartao {{ 'brilha' if p.destaque }}" style="{{ 'border-color:var(--azul);box-shadow:0 0 0 1px rgba(10,92,255,.35),0 16px 40px rgba(10,92,255,.14)' if p.destaque }}">
         {% if p.destaque %}<span class="etiqueta etiqueta-azul mb-1">Mais escolhido</span>{% endif %}
         <h3 style="font-size:1.25rem">{{ p.nome }}</h3>
         <p class="suave" style="font-size:.9rem;min-height:2.6em">{{ p.chamada }}</p>
@@ -224,7 +224,7 @@
   </section>
 
   <!-- faq -->
-  <section class="secao" id="faq">
+  <section class="secao revela" id="faq">
     <div class="fileira-cabecalho"><h2>Perguntas frequentes</h2></div>
     <div class="grade grade-2">
       <div class="cartao">

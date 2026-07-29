@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block titulo %}Avisos — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <div class="flex-entre mb-3">
+    <div>
+      <h1 class="mb-1">Seus lembretes</h1>
+      <p class="suave mb-0">
+        {% if avisos %}
+          {{ avisos|length }} coisa(s) pedindo sua atenção hoje.
+        {% else %}
+          Nada pendente. Isso é bom sinal.
+        {% endif %}
+      </p>
+    </div>
+    {% if avisos|selectattr('fixo', 'equalto', false)|list %}
+    <button class="btn btn-fantasma btn-pequeno" type="button" data-dispensar-todas>
+      Marcar tudo como lido
+    </button>
+    {% endif %}
+  </div>
+
+  {% if avisos %}
+  <div class="pilha" data-lista-avisos>
+    {% for a in avisos %}
+    <article class="cartao aviso-item aviso-{{ a.tipo }}" data-chave="{{ a.chave }}">
+      <div class="aviso-icone">{{ a.icone }}</div>
+      <div class="aviso-corpo">
+        <strong>{{ a.titulo }}</strong>
+        <p class="suave mb-0">{{ a.texto }}</p>
+        {% if a.url %}
+        <a class="btn btn-principal btn-pequeno mt-2" href="{{ a.url }}">{{ a.acao or 'Abrir' }}</a>
+        {% endif %}
+      </div>
+      {% if not a.fixo %}
+      <button class="aviso-fechar" type="button" data-dispensar="{{ a.chave }}"
+              aria-label="Dispensar este aviso">✕</button>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="cartao centro">
+    <div style="font-size:2.4rem">✅</div>
+    <h2 style="font-size:1.2rem">Tudo em dia</h2>
+    <p class="suave">
+      Sem revisão atrasada, sem prazo estourando e sua sequência está viva.
+      Faltam <strong>{{ dias_para_prova() }}</strong> dias para a prova — use bem.
+    </p>
+    <a class="btn btn-principal" href="/painel">Voltar ao painel</a>
+  </div>
+  {% endif %}
+
+  <div class="cartao mt-3">
+    <h3 style="font-size:1rem">Como esses lembretes funcionam</h3>
+    <p class="suave mb-0" style="font-size:.88rem">
+      Eles são calculados na hora, a partir do seu progresso real — não são mensagens
+      programadas. Se você revisar o que está atrasado, o aviso some sozinho. Se a
+      condição voltar a acontecer, ele reaparece.
+    </p>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    async function dispensar(corpo, alvo) {
+      try {
+        const r = await window.MAPA.postJSON('/api/avisos/dispensar', corpo);
+        if (alvo) {
+          alvo.style.transition = 'opacity 200ms, transform 200ms';
+          alvo.style.opacity = '0';
+          alvo.style.transform = 'translateX(20px)';
+          setTimeout(() => { alvo.remove(); atualizarSino(r.restantes); }, 210);
+        } else {
+          location.reload();
+        }
+      } catch (e) {
+        window.MAPA.aviso(e.message);
+      }
+    }
+
+    function atualizarSino(restantes) {
+      const contador = document.querySelector('.sino-contador');
+      const sino = document.querySelector('.sino');
+      if (!restantes) {
+        if (contador) contador.remove();
+        if (sino) sino.classList.remove('tem-aviso');
+      } else if (contador) {
+        contador.textContent = restantes < 10 ? restantes : '9+';
+      }
+      const lista = document.querySelector('[data-lista-avisos]');
+      if (lista && !lista.children.length) location.reload();
+    }
+
+    document.querySelectorAll('[data-dispensar]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        dispensar({ chave: b.dataset.dispensar }, b.closest('.aviso-item'));
+      });
+    });
+    const todas = document.querySelector('[data-dispensar-todas]');
+    if (todas) todas.addEventListener('click', function () { dispensar({ todas: true }, null); });
+  })();
+</script>
+{% endblock %}

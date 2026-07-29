@@ -143,6 +143,17 @@ def _pendentes_de_revisao(aluno_id: int) -> int:
         return 0
 
 
+def _contar_avisos(aluno_id: int) -> int:
+    from .notificacoes import contar
+
+    try:
+        with sessao() as con:
+            return contar(con, aluno_id)
+    except Exception:
+        # o sino é um extra; ele nunca pode derrubar a página
+        return 0
+
+
 def csrf_do(request: Request) -> str:
     return request.cookies.get(COOKIE_CSRF, "") or gerar_csrf()
 
@@ -168,6 +179,8 @@ def responder_template(
         # é o empurrão que faz o aluno voltar ao caderno de erros
         if "pendentes_revisao" not in dados:
             dados["pendentes_revisao"] = _pendentes_de_revisao(int(aluno["id"]))
+        if "total_avisos" not in dados:
+            dados["total_avisos"] = _contar_avisos(int(aluno["id"]))
     token = csrf_do(request)
     dados["csrf_token"] = token
     resposta = templates.TemplateResponse(request, nome, dados, status_code=status_code)

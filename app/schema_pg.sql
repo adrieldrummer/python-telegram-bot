@@ -202,3 +202,14 @@ CREATE TABLE IF NOT EXISTS assinaturas (
     atualizado_em TEXT    NOT NULL DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
 CREATE INDEX IF NOT EXISTS idx_assinaturas_aluno ON assinaturas(aluno_id, status);
+
+-- Notificações são derivadas do estado do aluno a cada carregamento; o que
+-- fica guardado aqui é apenas o que ele já dispensou, pela chave do aviso.
+CREATE TABLE IF NOT EXISTS notificacoes_lidas (
+    id       SERIAL PRIMARY KEY,
+    aluno_id INTEGER NOT NULL REFERENCES alunos(id) ON DELETE CASCADE,
+    chave    TEXT    NOT NULL,
+    lida_em  TEXT    NOT NULL DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+    UNIQUE (aluno_id, chave)
+);
+CREATE INDEX IF NOT EXISTS idx_notificacoes_aluno ON notificacoes_lidas(aluno_id);

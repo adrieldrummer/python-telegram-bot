@@ -536,6 +536,53 @@ select option { background: var(--preto-800); }
 .medalha .desc { font-size: 0.75rem; color: var(--apagado); margin-top: 0.25rem; }
 .medalha.bloqueada { opacity: 0.35; filter: grayscale(1); }
 
+/* ---------- sino e lembretes ---------- */
+
+.sino {
+  position: relative; display: grid; place-items: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid var(--linha-forte); color: var(--suave);
+  transition: var(--transicao);
+}
+.sino svg { width: 19px; height: 19px; stroke-width: 1.8; }
+.sino:hover { color: var(--branco); border-color: var(--linha-forte); background: rgba(255,255,255,.06); }
+.sino.tem-aviso { color: var(--azul); border-color: rgba(10, 92, 255, 0.5); }
+/* a badge chama sem gritar: pulsa duas vezes e para */
+.sino.tem-aviso svg { animation: sineta 1.4s ease 2; transform-origin: 50% 15%; }
+@keyframes sineta {
+  0%, 60%, 100% { transform: rotate(0); }
+  8%  { transform: rotate(11deg); }
+  16% { transform: rotate(-9deg); }
+  24% { transform: rotate(6deg); }
+  32% { transform: rotate(-4deg); }
+}
+.sino-contador {
+  position: absolute; top: -3px; right: -3px;
+  background: var(--azul); color: #fff;
+  font-size: 0.63rem; font-weight: 800; line-height: 1;
+  min-width: 17px; padding: 0.18rem 0.25rem; border-radius: 999px;
+  text-align: center; border: 2px solid var(--preto-900);
+}
+
+.aviso-item {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.9rem; align-items: start; position: relative;
+  border-left: 3px solid var(--grafite-500);
+}
+.aviso-icone { font-size: 1.5rem; line-height: 1.2; }
+.aviso-corpo strong { display: block; font-size: 1rem; margin-bottom: 0.2rem; }
+.aviso-fechar {
+  background: none; border: 0; color: var(--apagado); font-size: 1rem;
+  cursor: pointer; padding: 0.2rem 0.35rem; border-radius: 6px; line-height: 1;
+  min-width: 32px; min-height: 32px;
+}
+.aviso-fechar:hover { color: var(--branco); background: rgba(255,255,255,.08); }
+/* a borda diz o tipo do aviso sem precisar de texto */
+.aviso-prazo    { border-left-color: var(--perigo); }
+.aviso-habito   { border-left-color: var(--ambar); }
+.aviso-estudo   { border-left-color: var(--azul); }
+.aviso-plano    { border-left-color: var(--verde); }
+
 /* ---------- notificações ---------- */
 
 .toaster { position: fixed; right: 1.2rem; bottom: 1.2rem; z-index: 90; display: grid; gap: 0.6rem; max-width: 330px; }
@@ -553,6 +600,60 @@ select option { background: var(--preto-800); }
 .rodape a { color: var(--suave); }
 .rodape a:hover { color: var(--branco); }
 .rodape-grade { display: flex; flex-wrap: wrap; gap: 1.6rem; justify-content: space-between; }
+
+/* ==========================================================================
+   MOVIMENTO
+   Regra: animação só entra onde ela informa alguma coisa — que um número
+   está subindo, que um bloco novo chegou, que algo foi liberado. Movimento
+   decorativo em plataforma de estudo cansa o aluno que abre a tela 40 vezes
+   por semana. Tudo aqui respeita `prefers-reduced-motion`.
+   ========================================================================== */
+
+/* revelação ao rolar: o bloco sobe 14px enquanto aparece */
+.revela { opacity: 0; transform: translateY(14px); }
+.revela.visivel {
+  opacity: 1; transform: none;
+  transition: opacity 520ms cubic-bezier(.2,.7,.3,1), transform 520ms cubic-bezier(.2,.7,.3,1);
+}
+/* em fila, cada item entra logo depois do anterior */
+.revela-fila > * { opacity: 0; transform: translateY(14px); }
+.revela-fila.visivel > * {
+  opacity: 1; transform: none;
+  transition: opacity 460ms cubic-bezier(.2,.7,.3,1), transform 460ms cubic-bezier(.2,.7,.3,1);
+}
+.revela-fila.visivel > *:nth-child(2) { transition-delay: 70ms; }
+.revela-fila.visivel > *:nth-child(3) { transition-delay: 140ms; }
+.revela-fila.visivel > *:nth-child(4) { transition-delay: 210ms; }
+.revela-fila.visivel > *:nth-child(5) { transition-delay: 280ms; }
+.revela-fila.visivel > *:nth-child(6) { transition-delay: 350ms; }
+
+/* entrada imediata, para blocos que chegam já na primeira tela */
+.entra { animation: sobe 460ms cubic-bezier(.2,.7,.3,1) both; }
+@keyframes sobe { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* brilho de destaque no plano recomendado e no cartão do dia atual */
+.brilha { position: relative; }
+.brilha::before {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; z-index: -1;
+  background: linear-gradient(135deg, rgba(10,92,255,.55), rgba(10,92,255,0) 45%, rgba(10,92,255,.35));
+  opacity: .8;
+}
+
+/* o número da contagem regressiva pulsa uma vez ao carregar */
+.pulsa-uma-vez { animation: pulso 900ms ease 1; }
+@keyframes pulso {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+/* barra de progresso que preenche quando entra na tela */
+.barra span { transition: width 700ms cubic-bezier(.2,.7,.3,1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .revela, .revela-fila > * { opacity: 1 !important; transform: none !important; }
+  .entra, .pulsa-uma-vez, .sino.tem-aviso svg { animation: none !important; }
+}
 
 /* ---------- utilitários ---------- */
 

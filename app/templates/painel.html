@@ -35,21 +35,44 @@
   </div>
   {% endif %}
 
+  {% if avisos %}
+  <!-- lembretes: o que precisa da atenção do aluno hoje -->
+  <section class="fileira mt-3" style="margin-top:1.5rem">
+    <div class="fileira-cabecalho">
+      <h2>Para hoje</h2>
+      {% if avisos|length > 2 %}<a href="/avisos">ver todos ({{ avisos|length }}) →</a>{% endif %}
+    </div>
+    <div class="grade grade-2">
+      {% for a in avisos[:2] %}
+      <article class="cartao aviso-item aviso-{{ a.tipo }} entra">
+        <div class="aviso-icone">{{ a.icone }}</div>
+        <div class="aviso-corpo">
+          <strong>{{ a.titulo }}</strong>
+          <p class="suave mb-0" style="font-size:.88rem">{{ a.texto }}</p>
+          {% if a.url %}
+          <a class="btn btn-principal btn-pequeno mt-2" href="{{ a.url }}">{{ a.acao or 'Abrir' }}</a>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   <!-- contagem regressiva do concurso -->
   <div class="cartao mt-3" style="border-color:rgba(10,92,255,.4)">
     <div class="flex-entre" style="gap:1.4rem;flex-wrap:wrap">
       <div class="flex-centro" style="gap:1.6rem;flex-wrap:wrap">
         <div>
-          <div class="valor destaque-azul" style="font-size:1.9rem;font-weight:800;line-height:1">
-            {{ edital.dias_prova if edital.dias_prova > 0 else 0 }}
-          </div>
+          <div class="valor destaque-azul pulsa-uma-vez" style="font-size:1.9rem;font-weight:800;line-height:1"
+               data-contar="{{ edital.dias_prova if edital.dias_prova > 0 else 0 }}">0</div>
           <div class="rotulo apagado" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em">
             {{ 'dias para a prova' if edital.dias_prova > 0 else 'a prova já foi' }}
           </div>
         </div>
         {% if edital.dias_inscricao > 0 %}
         <div>
-          <div style="font-size:1.9rem;font-weight:800;line-height:1">{{ edital.dias_inscricao }}</div>
+          <div style="font-size:1.9rem;font-weight:800;line-height:1" data-contar="{{ edital.dias_inscricao }}">0</div>
           <div class="apagado" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em">dias p/ se inscrever</div>
         </div>
         {% endif %}
@@ -93,8 +116,8 @@
   {% endif %}
 
   <!-- métricas -->
-  <section class="fileira">
-    <div class="grade grade-4">
+  <section class="fileira revela">
+    <div class="grade grade-4 revela-fila">
       <div class="cartao metrica">
         <div class="valor">{{ resumo.concluidos }}<span class="apagado" style="font-size:1rem">/{{ resumo.total }}</span></div>
         <div class="rotulo">Dias concluídos</div>
@@ -137,7 +160,7 @@
   {% endif %}
 
   <!-- fases -->
-  <section class="fileira">
+  <section class="fileira revela">
     <div class="fileira-cabecalho">
       <h2>Sua jornada em 4 fases</h2>
       <a href="/jornada">ver todos os dias →</a>
@@ -162,7 +185,7 @@
   </section>
 
   <!-- treinos -->
-  <section class="fileira">
+  <section class="fileira revela">
     <div class="fileira-cabecalho"><h2>Treinos e ferramentas</h2></div>
     <div class="trilho">
       {% for t in treinos %}
@@ -182,7 +205,7 @@
   </section>
 
   <!-- módulos avançados -->
-  <section class="fileira">
+  <section class="fileira revela">
     <div class="fileira-cabecalho">
       <h2>Módulos avançados</h2>
       <a href="/modulos">{{ 'ver todos →' if modulos_liberados else 'como liberar →' }}</a>
@@ -213,7 +236,7 @@
   </section>
 
   <!-- prioridades e evolução -->
-  <section class="fileira grade grade-2">
+  <section class="fileira grade grade-2 revela">
     <div class="cartao">
       <div class="flex-entre mb-2">
         <h3 class="mb-0">Seu mapa de prioridades</h3>

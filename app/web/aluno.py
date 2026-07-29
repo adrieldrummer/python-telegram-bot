@@ -14,7 +14,7 @@ from conteudo.materias import IDS as MATERIAS_IDS
 from conteudo.materias import POR_ID as MATERIAS_POR_ID
 from conteudo.questoes import POR_MATERIA, questao as buscar_questao, selecionar
 
-from .. import estudo, jornada, planos as servico_planos, srs
+from .. import estudo, jornada, notificacoes, planos as servico_planos, srs
 from ..config import config
 from ..db import buscar_um, executar, sessao
 from ..deps import bloqueio_por_plano, exigir_aluno, redirecionar, responder_template, validar_csrf
@@ -70,6 +70,7 @@ async def painel(request: Request, aluno=Depends(exigir_aluno), boasvindas: int 
 
     with sessao() as con:
         saldo = servico_planos.saldo_de_questoes(con, aluno)
+        avisos = notificacoes.gerar(con, aluno_id)
 
     return responder_template(
         request,
@@ -90,6 +91,7 @@ async def painel(request: Request, aluno=Depends(exigir_aluno), boasvindas: int 
             "treinos": treinos,
             "plano": servico_planos.resumo(aluno),
             "boasvindas": bool(boasvindas),
+            "avisos": avisos,
             "patente": resumo_patente(int(aluno["pontos"])),
         },
     )
@@ -577,6 +579,37 @@ async def ver_modulo(request: Request, modulo_id: str, aluno=Depends(exigir_alun
     if bloqueio is not None:
         return bloqueio
     return responder_template(request, "modulo.html", {"aluno": aluno, "m": m})
+
+
+# --- notificações e lembretes ----------------------------------------------
+
+
+@router.get("/avisos")
+async def central_de_avisos(request: Request, aluno=Depends(exigir_aluno)):
+    with sessao() as con:
+        avisos = notificacoes.gerar(con, int(aluno["id"]))
+    return responder_template(
+        request, "avisos.html", {"aluno": aluno, "avisos": avisos}
+    )
+
+
+class DispensaEntrada(BaseModel):
+    chave: str = ""
+    todas: bool = False
+
+
+@router.post("/api/avisos/dispensar")
+async def api_dispensar_aviso(dados: DispensaEntrada, aluno=Depends(exigir_aluno)):
+    aluno_id = int(aluno["id"])
+    with sessao() as con:
+        if dados.todas:
+            notificacoes.dispensar_todas(con, aluno_id)
+        elif dados.chave:
+            notificacoes.dispensar(con, aluno_id, dados.chave)
+        else:
+            raise HTTPException(status_code=400, detail="Informe a chave ou peça todas.")
+        restantes = notificacoes.contar(con, aluno_id)
+    return JSONResponse({"ok": True, "restantes": restantes})
 
 
 @router.get("/planos")

@@ -92,6 +92,10 @@
           🔥 {{ aluno['streak_atual'] }}
         </span>
       {% endif %}
+      <a class="sino {{ 'tem-aviso' if total_avisos }}" href="/avisos" aria-label="Avisos e lembretes">
+        {{ ic.icone('sino') }}
+        {% if total_avisos %}<span class="sino-contador">{{ total_avisos if total_avisos < 10 else '9+' }}</span>{% endif %}
+      </a>
       <a class="avatar" href="/conta" title="{{ aluno['nome'] }}">{{ aluno['nome'][0]|upper }}</a>
     </div>
     {% else %}

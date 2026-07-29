@@ -253,3 +253,55 @@ window.MAPA = {
     tentar();
   });
 })();
+
+/* --- movimento -------------------------------------------------------------
+   Revelação ao rolar e contadores que sobem. Ambos degradam sozinhos: sem
+   IntersectionObserver, o conteúdo simplesmente aparece; com
+   prefers-reduced-motion, o número vai direto ao valor final.
+   ------------------------------------------------------------------------- */
+(function () {
+  const paradinho = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const alvos = document.querySelectorAll('.revela, .revela-fila');
+
+  if (paradinho || !('IntersectionObserver' in window)) {
+    alvos.forEach((el) => el.classList.add('visivel'));
+    document.querySelectorAll('[data-contar]').forEach((el) => {
+      el.textContent = Number(el.dataset.contar).toLocaleString('pt-BR');
+    });
+    return;
+  }
+
+  const observador = new IntersectionObserver(
+    (entradas) => {
+      entradas.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('visivel');
+        observador.unobserve(e.target);
+      });
+    },
+    // 12% do bloco visível já dispara: esperar metade faz o efeito chegar tarde
+    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+  );
+  alvos.forEach((el) => observador.observe(el));
+
+  /* contadores: sobem até o valor real quando entram na tela */
+  const contadores = new IntersectionObserver((entradas) => {
+    entradas.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      contadores.unobserve(el);
+      const destino = Number(el.dataset.contar || '0');
+      const duracao = 900;
+      const inicio = performance.now();
+      function passo(agora) {
+        const t = Math.min((agora - inicio) / duracao, 1);
+        // desacelera no fim: número que para de repente parece travado
+        const suave = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(destino * suave).toLocaleString('pt-BR');
+        if (t < 1) requestAnimationFrame(passo);
+      }
+      requestAnimationFrame(passo);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-contar]').forEach((el) => contadores.observe(el));
+})();
