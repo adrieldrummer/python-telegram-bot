@@ -1,0 +1,8 @@
+# não precisa ir para a função serverless
+tests/
+docs/
+deploy/
+scripts/
+dados/
+*.md
+requirements-dev.txt
