@@ -8,15 +8,15 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel
 
-from conteudo import TREINOS, manual, simulados as conteudo_simulados, trilha
+from conteudo import TREINOS, manual, planos as catalogo_planos, simulados as conteudo_simulados, trilha
 from conteudo.materias import IDS as MATERIAS_IDS
 from conteudo.materias import POR_ID as MATERIAS_POR_ID
 from conteudo.questoes import POR_MATERIA, questao as buscar_questao, selecionar
 
-from .. import estudo, jornada, srs
+from .. import estudo, jornada, planos as servico_planos, srs
 from ..config import config
 from ..db import buscar_um, executar, sessao
-from ..deps import exigir_aluno, redirecionar, responder_template, validar_csrf
+from ..deps import bloqueio_por_plano, exigir_aluno, redirecionar, responder_template, validar_csrf
 from ..gamificacao import estatisticas, extrato, medalhas_do_aluno, ranking, resumo_patente
 from ..mailer import enviar_conclusao, enviar_dia_concluido
 from ..security import agora_txt, conferir_senha, validar_senha
@@ -57,6 +57,19 @@ async def painel(request: Request, aluno=Depends(exigir_aluno), boasvindas: int 
         historico = estudo.historico_simulados(con, aluno_id)
         medalhas = [m for m in medalhas_do_aluno(con, aluno_id) if m["conquistada"]][-6:]
 
+    recurso_do_treino = {
+        "questoes": "questoes",
+        "erros": "erros",
+        "simulados": "simulados",
+        "manual": "manual",
+        "certificado": "certificado",
+    }
+    treinos = [
+        {**t, "bloqueado": not servico_planos.tem_recurso(aluno, recurso_do_treino.get(t["id"], ""))
+         if t["id"] in recurso_do_treino else False}
+        for t in TREINOS
+    ]
+
     return responder_template(
         request,
         "painel.html",
@@ -69,7 +82,8 @@ async def painel(request: Request, aluno=Depends(exigir_aluno), boasvindas: int 
             "evolucao": evolucao,
             "historico": historico,
             "medalhas": medalhas,
-            "treinos": TREINOS,
+            "treinos": treinos,
+            "plano": servico_planos.resumo(aluno),
             "boasvindas": bool(boasvindas),
             "patente": resumo_patente(int(aluno["pontos"])),
         },
@@ -345,6 +359,9 @@ async def revisar(request: Request, aluno=Depends(exigir_aluno)):
 
 @router.get("/simulados")
 async def lista_simulados(request: Request, aluno=Depends(exigir_aluno)):
+    bloqueio = bloqueio_por_plano(request, aluno, "simulados")
+    if bloqueio is not None:
+        return bloqueio
     aluno_id = int(aluno["id"])
     with sessao() as con:
         resumo = jornada.resumo_jornada(con, aluno_id)
@@ -371,6 +388,9 @@ async def lista_simulados(request: Request, aluno=Depends(exigir_aluno)):
 
 @router.get("/simulado/{simulado_id}")
 async def abrir_simulado(request: Request, simulado_id: str, aluno=Depends(exigir_aluno)):
+    bloqueio = bloqueio_por_plano(request, aluno, "simulados")
+    if bloqueio is not None:
+        return bloqueio
     s = conteudo_simulados.simulado(simulado_id)
     if s is None:
         raise HTTPException(status_code=404, detail="Simulado não encontrado")
@@ -446,7 +466,7 @@ async def pontos(request: Request, aluno=Depends(exigir_aluno)):
     with sessao() as con:
         medalhas = medalhas_do_aluno(con, aluno_id)
         historico = extrato(con, aluno_id)
-        tabela = ranking(con)
+        tabela = ranking(con) if servico_planos.tem_recurso(aluno, "ranking") else []
         stats = estatisticas(con, aluno_id)
     return responder_template(
         request,
@@ -464,6 +484,9 @@ async def pontos(request: Request, aluno=Depends(exigir_aluno)):
 
 @router.get("/manual")
 async def ver_manual(request: Request, aluno=Depends(exigir_aluno)):
+    bloqueio = bloqueio_por_plano(request, aluno, "manual")
+    if bloqueio is not None:
+        return bloqueio
     return responder_template(
         request,
         "manual.html",
@@ -481,6 +504,9 @@ async def baixar_manual(aluno=Depends(exigir_aluno)):
 
 @router.get("/certificado")
 async def certificado(request: Request, aluno=Depends(exigir_aluno)):
+    bloqueio = bloqueio_por_plano(request, aluno, "certificado")
+    if bloqueio is not None:
+        return bloqueio
     aluno_id = int(aluno["id"])
     with sessao() as con:
         resumo = jornada.resumo_jornada(con, aluno_id)
@@ -497,9 +523,31 @@ async def certificado(request: Request, aluno=Depends(exigir_aluno)):
     )
 
 
+@router.get("/planos")
+async def meus_planos(request: Request, aluno=Depends(exigir_aluno)):
+    resumo = servico_planos.resumo(aluno)
+    return responder_template(
+        request,
+        "upgrade.html",
+        {
+            "aluno": aluno,
+            "recurso": "",
+            "recurso_nome": "Planos e assinatura",
+            "meu_plano": resumo["plano"],
+            "vencido": resumo["vencido"],
+            "expira_em": resumo["expira_em"],
+            "planos": catalogo_planos.PLANOS,
+        },
+    )
+
+
 @router.get("/conta")
 async def conta(request: Request, aluno=Depends(exigir_aluno), aviso: str = ""):
-    return responder_template(request, "conta.html", {"aluno": aluno, "aviso": aviso})
+    return responder_template(
+        request,
+        "conta.html",
+        {"aluno": aluno, "aviso": aviso, "plano": servico_planos.resumo(aluno)},
+    )
 
 
 @router.post("/conta/senha")

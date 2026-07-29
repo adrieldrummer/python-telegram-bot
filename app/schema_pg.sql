@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS alunos (
     inicio_jornada    TEXT,
     concluido_em      TEXT,
     lembretes_email   INTEGER NOT NULL DEFAULT 1,
+    plano             TEXT    NOT NULL DEFAULT 'operacao',
+    plano_ate         TEXT,
     criado_em         TEXT    NOT NULL DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
     ativado_em        TEXT,
     ultimo_login      TEXT,
@@ -185,3 +187,18 @@ CREATE TABLE IF NOT EXISTS tentativas_login (
     criado_em TEXT NOT NULL DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
 CREATE INDEX IF NOT EXISTS idx_tentativas ON tentativas_login(email, criado_em);
+
+CREATE TABLE IF NOT EXISTS assinaturas (
+    id            SERIAL PRIMARY KEY,
+    aluno_id      INTEGER NOT NULL REFERENCES alunos(id) ON DELETE CASCADE,
+    provedor      TEXT    NOT NULL DEFAULT 'cakto',
+    referencia    TEXT,
+    plano         TEXT    NOT NULL,
+    ciclo         TEXT    NOT NULL DEFAULT 'único',
+    status        TEXT    NOT NULL DEFAULT 'ativa',
+    inicio        TEXT    NOT NULL DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+    renova_em     TEXT,
+    cancelada_em  TEXT,
+    atualizado_em TEXT    NOT NULL DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
+);
+CREATE INDEX IF NOT EXISTS idx_assinaturas_aluno ON assinaturas(aluno_id, status);

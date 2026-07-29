@@ -6,8 +6,9 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import RedirectResponse
 
 from conteudo import TOTAL_QUESTOES, trilha
+from conteudo import planos as catalogo_planos
 
-from .. import alunos, mailer
+from .. import alunos, mailer, marketing
 from ..config import config
 from ..db import buscar_um, sessao
 from ..deps import (
@@ -47,6 +48,7 @@ async def vendas(request: Request):
             "fases": trilha.FASES,
             "total_questoes": TOTAL_QUESTOES,
             "checkout": config.cakto_checkout_url,
+            "planos": catalogo_planos.PLANOS,
         },
     )
 
@@ -177,6 +179,8 @@ async def ativar_post(
             )
         aluno = alunos.ativar(con, aluno_id, senha)
         iniciar_jornada(con, aluno_id)
+        if aluno is not None:
+            marketing.acesso_ativado(con, aluno)
         cookie = abrir_sessao(con, aluno_id, request.headers.get("user-agent", ""), ip_do(request))
 
     resposta = RedirectResponse("/painel?boasvindas=1", status_code=303)

@@ -109,12 +109,15 @@
     <div class="fileira-cabecalho"><h2>Treinos e ferramentas</h2></div>
     <div class="trilho">
       {% for t in treinos %}
-      <a class="capa" href="{{ t.url }}">
+      <a class="capa {{ 'capa-bloqueada' if t.bloqueado }}" href="{{ '/planos' if t.bloqueado else t.url }}">
         <img src="{{ t.capa }}" alt="{{ t.titulo }}">
-        <div class="capa-topo"><span class="etiqueta etiqueta-azul">{{ t.etiqueta }}</span></div>
+        <div class="capa-topo">
+          <span class="etiqueta {{ 'etiqueta-azul' if not t.bloqueado }}">{{ 'Upgrade' if t.bloqueado else t.etiqueta }}</span>
+        </div>
+        {% if t.bloqueado %}<div class="cadeado">🔒</div>{% endif %}
         <div class="capa-sobreposicao">
           <h3>{{ t.titulo }}</h3>
-          <p>{{ t.descricao }}</p>
+          <p>{{ 'Disponível nos planos superiores' if t.bloqueado else t.descricao }}</p>
         </div>
       </a>
       {% endfor %}

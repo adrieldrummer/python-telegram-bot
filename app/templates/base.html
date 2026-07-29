@@ -10,6 +10,23 @@
   <title>{% block titulo %}{{ config.app_nome }}{% endblock %}</title>
   <link rel="icon" href="/static/img/favicon.png" type="image/png">
   <link rel="stylesheet" href="/static/css/app.css">
+  {% if config.meta_verificacao_dominio %}
+  <meta name="facebook-domain-verification" content="{{ config.meta_verificacao_dominio }}">
+  {% endif %}
+  {% if config.pixel_ativo %}
+  <!-- Meta Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '{{ config.meta_pixel_id }}');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none" alt=""
+    src="https://www.facebook.com/tr?id={{ config.meta_pixel_id }}&ev=PageView&noscript=1"></noscript>
+  {% endif %}
   {% block cabecalho %}{% endblock %}
 </head>
 <body>
@@ -108,6 +125,20 @@
 {% endblock %}
 
 <script src="/static/js/app.js"></script>
+{% if config.pixel_ativo %}
+<script>
+  // Todo botão de compra avisa o Meta que a pessoa foi para o checkout.
+  document.querySelectorAll('[data-checkout]').forEach(function (elemento) {
+    elemento.addEventListener('click', function () {
+      var plano = elemento.dataset.plano || 'operacao';
+      var valor = parseFloat(elemento.dataset.valor || '0');
+      window.fbq && fbq('track', 'InitiateCheckout', {
+        content_name: plano, content_type: 'product', currency: 'BRL', value: valor
+      }, { eventID: 'checkout-' + plano + '-' + Date.now() });
+    });
+  });
+</script>
+{% endif %}
 {% block scripts %}{% endblock %}
 </body>
 </html>

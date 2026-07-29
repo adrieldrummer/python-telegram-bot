@@ -14,7 +14,7 @@
       e revisão espaçada.
     </p>
     <div class="hero-acoes">
-      <a class="btn btn-principal" href="{{ checkout }}">Garantir meu acesso</a>
+      <a class="btn btn-principal" href="#planos" data-checkout data-plano="hero">Garantir meu acesso</a>
       <a class="btn btn-fantasma" href="#metodo">Ver como funciona</a>
     </div>
     <p class="apagado mt-2" style="font-size:.84rem">
@@ -88,9 +88,52 @@
             esse método — em 30 dias, com a plataforma fazendo a parte chata.
           </p>
         </div>
-        <a class="btn btn-principal" href="{{ checkout }}">Começar agora</a>
+        <a class="btn btn-principal" href="#planos" data-checkout data-plano="prova-social">Começar agora</a>
       </div>
     </div>
+  </section>
+
+  <section class="secao" id="planos">
+    <div class="fileira-cabecalho">
+      <div>
+        <h2 class="mb-1">Escolha a sua operação</h2>
+        <p class="apagado mb-0" style="font-size:.9rem">
+          Acesso liberado por e-mail assim que o pagamento é aprovado.
+        </p>
+      </div>
+    </div>
+    <div class="grade grade-3">
+      {% for p in planos %}
+      <div class="cartao" style="{{ 'border-color:var(--azul);box-shadow:0 0 0 1px rgba(10,92,255,.35),0 16px 40px rgba(10,92,255,.14)' if p.destaque }}">
+        {% if p.destaque %}<span class="etiqueta etiqueta-azul mb-1">Mais escolhido</span>{% endif %}
+        <h3 style="font-size:1.25rem">{{ p.nome }}</h3>
+        <p class="suave" style="font-size:.9rem;min-height:2.6em">{{ p.chamada }}</p>
+        <div class="flex-centro" style="align-items:baseline;gap:.5rem">
+          {% if p.preco_de %}<span class="apagado" style="text-decoration:line-through;font-size:.9rem">{{ p.preco_de }}</span>{% endif %}
+          <span style="font-size:1.9rem;font-weight:800">{{ p.preco }}</span>
+        </div>
+        {% set meses = (p.duracao_dias / 30)|round|int %}
+        <p class="apagado" style="font-size:.78rem">
+          {%- if p.ciclo == 'único' -%}
+            pagamento único{% if meses %} · acesso por {{ meses }} {{ 'mês' if meses == 1 else 'meses' }}{% endif %}
+          {%- else -%}
+            cobrança {{ p.ciclo }} · acesso enquanto a assinatura estiver ativa
+          {%- endif -%}
+        </p>
+        <ul class="checklist mb-2">
+          {% for b in p.beneficios %}<li>{{ b }}</li>{% endfor %}
+        </ul>
+        <a class="btn {{ 'btn-principal' if p.destaque else 'btn-fantasma' }} btn-largo"
+           href="{{ p.checkout_url or checkout }}"
+           data-checkout data-plano="{{ p.id }}" data-valor="{{ p.preco|replace('R$','')|replace('/mês','')|replace(',','.')|trim }}">
+          Quero o plano {{ p.nome }}
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    <p class="apagado centro mt-2" style="font-size:.8rem">
+      Compra com garantia legal de 7 dias. Pagamento processado pela Cakto.
+    </p>
   </section>
 
   <section class="secao" id="faq">

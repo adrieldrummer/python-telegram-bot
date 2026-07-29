@@ -25,7 +25,9 @@ fazia à mão (diagnóstico, caderno de erros e revisão espaçada).
 | **Pontos e patentes** | XP por ação, streak, 20 medalhas, 9 patentes (Recruta → Subtenente), ranking da turma |
 | **Manual do Mapa** | O e-book revisado e ampliado: 16 capítulos, 6 deles novos, com download em Markdown |
 | **Certificado** | Liberado ao concluir os 30 dias, com as estatísticas reais do aluno |
-| **Painel do admin** | Métricas, funil da jornada, alunos, liberação manual de acesso, compras, webhooks, caixa de e-mails, conteúdo e diagnóstico de configuração |
+| **Planos e assinaturas** | 3 planos com recursos próprios, mapeamento automático produto Cakto → plano, renovação, cancelamento e expiração, tela de upgrade |
+| **Meta Ads** | Pixel na página de vendas + API de Conversões server-side (Purchase, CompleteRegistration e Refund saindo do webhook) |
+| **Painel do admin** | Métricas, funil da jornada, alunos por plano, vencimentos, liberação manual de acesso, compras, webhooks, caixa de e-mails, conteúdo e diagnóstico de configuração |
 
 ## Como rodar (2 minutos)
 
@@ -48,7 +50,7 @@ python run.py                 # http://localhost:8000
 ### Testes
 
 ```bash
-python -m pytest tests/ -q                      # 71 testes, SQLite
+python -m pytest tests/ -q                      # 89 testes, SQLite
 DATABASE_URL="postgres://..." python -m pytest  # mesma suíte, Postgres
 ```
 
@@ -87,13 +89,16 @@ app/            aplicação FastAPI
   alunos.py     ciclo de vida: compra → aprovação → ativação → suspensão
   jornada.py    prioridades, desbloqueio, missões, conclusão de dia
   srs.py        caderno de erros e revisão espaçada
+  planos.py     assinaturas, validade e liberação de recursos
+  marketing.py  pixel do Meta e API de Conversões
   estudo.py     respostas, simulados, relatórios
   gamificacao.py pontos, streak, patentes, medalhas
   mailer.py     fila de e-mails (SMTP ou caixa de saída)
   web/          rotas: publico, aluno, admin, webhooks
   templates/    Jinja2 (interface + e-mails)
   static/       CSS, JS e as artes geradas
-conteudo/       o curso, versionado em git (sem banco):
+conteudo/       o curso e a oferta, versionados em git (sem banco):
+  planos.py     planos, preços e recursos de cada um
   trilha/       30 dias em 4 fases
   questoes/     banco por matéria
   simulados.py  montagem determinística das provas
@@ -102,7 +107,7 @@ conteudo/       o curso, versionado em git (sem banco):
   patentes.py   patentes e medalhas
 deploy/         Dockerfile, docker-compose, Caddy (HTTPS automático)
 docs/           deploy, Cakto, domínio e operação
-tests/          71 testes automatizados
+tests/          89 testes automatizados
 ```
 
 Duas decisões que valem explicação:
@@ -120,6 +125,8 @@ Duas decisões que valem explicação:
 * **VPS com Docker + HTTPS automático**: [`docs/DEPLOY.md`](docs/DEPLOY.md)
 * **Integração com a Cakto**: [`docs/CAKTO.md`](docs/CAKTO.md)
 * **Domínio e DNS**: [`docs/DOMINIO.md`](docs/DOMINIO.md)
+* **Planos e assinaturas**: [`docs/PLANOS.md`](docs/PLANOS.md)
+* **Meta Ads (pixel, CAPI e campanhas)**: [`docs/META.md`](docs/META.md)
 * **Operação do dia a dia**: [`docs/OPERACAO.md`](docs/OPERACAO.md)
 
 ## Aviso

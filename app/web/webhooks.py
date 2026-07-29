@@ -15,7 +15,11 @@ from typing import Any, Optional
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
+from conteudo import planos as catalogo_planos
+
 from .. import alunos as servico_alunos
+from .. import marketing
+from .. import planos as servico_planos
 from ..config import config
 from ..db import buscar_um, executar, sessao
 from ..security import assinatura_hmac, email_valido, normalizar_email
@@ -32,6 +36,13 @@ STATUS_APROVADO = {
     "payment_approved",
     "waiting_payment_confirmed",
     "authorized",
+}
+# cancelamento de assinatura: mantém o acesso até o fim do período já pago
+STATUS_ASSINATURA_CANCELADA = {
+    "subscription_canceled",
+    "subscription_cancelled",
+    "assinatura_cancelada",
+    "canceled_subscription",
 }
 STATUS_CANCELADO = {
     "refunded",
@@ -185,6 +196,12 @@ async def cakto(request: Request):
             marcador = f"{dados['status']} {dados['evento']}"
             aprovado = any(chave in marcador for chave in STATUS_APROVADO)
             cancelado = any(chave in marcador for chave in STATUS_CANCELADO)
+            assinatura_cancelada = any(
+                chave in marcador for chave in STATUS_ASSINATURA_CANCELADA
+            )
+            if assinatura_cancelada:
+                cancelado = False   # o acesso continua até o fim do período pago
+            plano_id = catalogo_planos.identificar(dados["produto"], dados["oferta"])
 
             aluno = servico_alunos.por_email(con, dados["email"])
             if aprovado:
@@ -202,11 +219,21 @@ async def cakto(request: Request):
                     dados["oferta"],
                     dados["valor"],
                 )
+                plano = servico_planos.aplicar(
+                    con, int(aluno["id"]), plano_id, dados["referencia"] or ""
+                )
+                marketing.compra_aprovada(
+                    con,
+                    aluno,
+                    dados["referencia"] or f"aluno-{aluno['id']}",
+                    dados["valor"],
+                    plano.nome,
+                )
                 if aluno["status"] != "ativo":
                     servico_alunos.aprovar_acesso(con, aluno)
-                    resultado = "acesso aprovado e e-mail enviado"
+                    resultado = f"acesso aprovado ({plano.nome}) e e-mail enviado"
                 else:
-                    resultado = "compra registrada (aluno já ativo)"
+                    resultado = f"compra registrada — plano {plano.nome}"
             elif cancelado:
                 if aluno is not None:
                     servico_alunos.registrar_compra(
@@ -219,10 +246,22 @@ async def cakto(request: Request):
                         dados["oferta"],
                         dados["valor"],
                     )
+                    servico_planos.encerrar_agora(con, int(aluno["id"]))
+                    marketing.reembolso(
+                        con, aluno, dados["referencia"] or f"aluno-{aluno['id']}", dados["valor"]
+                    )
                     servico_alunos.suspender(con, int(aluno["id"]), f"evento Cakto: {marcador.strip()}")
-                    resultado = "acesso suspenso"
+                    resultado = "acesso suspenso e assinatura encerrada"
                 else:
                     resultado = "evento de cancelamento sem aluno correspondente"
+            elif assinatura_cancelada:
+                if aluno is not None:
+                    servico_planos.cancelar(
+                        con, int(aluno["id"]), f"assinatura cancelada na Cakto ({marcador.strip()})"
+                    )
+                    resultado = "assinatura cancelada — acesso mantido até o fim do período"
+                else:
+                    resultado = "cancelamento de assinatura sem aluno correspondente"
             else:
                 resultado = f"evento ignorado ({marcador.strip() or 'sem status'})"
 

@@ -6,6 +6,34 @@
   <h1 class="mb-3">Minha conta</h1>
   {% if aviso %}<div class="aviso mb-3">{{ aviso }}</div>{% endif %}
 
+  {% if plano %}
+  <div class="cartao mb-3" style="border-color:{{ 'var(--ambar)' if plano.vencido else 'var(--azul)' }}">
+    <div class="flex-entre">
+      <div>
+        <span class="etiqueta {{ 'etiqueta-ambar' if plano.vencido else 'etiqueta-azul' }}">Seu plano</span>
+        <h3 class="mt-1 mb-1">{{ plano.plano.nome }}</h3>
+        <p class="suave mb-0" style="font-size:.9rem">
+          {% if plano.expira_em %}
+            {% if plano.vencido %}Venceu em {{ plano.expira_em }} — renove para voltar a estudar.
+            {% else %}Acesso até {{ plano.expira_em }}{% if plano.dias_restantes is not none %} ({{ plano.dias_restantes }} dias){% endif %}.{% endif %}
+          {% else %}Acesso sem data de expiração.{% endif %}
+        </p>
+      </div>
+      <a class="btn {{ 'btn-principal' if plano.vencido else 'btn-fantasma' }}" href="/planos">
+        {{ 'Renovar acesso' if plano.vencido else 'Ver planos' }}
+      </a>
+    </div>
+    <div class="grade grade-3 mt-2">
+      {% for chave, nome in plano.recursos.items() %}
+      <div style="font-size:.85rem"><span class="destaque-azul">✓</span> {{ nome }}</div>
+      {% endfor %}
+      {% for chave, nome in plano.bloqueados.items() %}
+      <div class="apagado" style="font-size:.85rem">🔒 {{ nome }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
   <div class="grade grade-2">
     <div class="cartao">
       <h3>Dados de acesso</h3>

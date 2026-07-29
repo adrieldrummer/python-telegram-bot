@@ -50,6 +50,46 @@
     </div>
 
     <div class="cartao">
+      <h3>Plano e assinaturas</h3>
+      <div class="flex-entre mb-2">
+        <div>
+          <span class="etiqueta {{ 'etiqueta-ambar' if plano.vencido else 'etiqueta-azul' }}">{{ plano.plano.nome }}</span>
+          <span class="apagado" style="font-size:.82rem">
+            {% if plano.expira_em %}até {{ plano.expira_em }}{% else %}sem expiração{% endif %}
+          </span>
+        </div>
+        <form method="post" action="/admin/aluno/{{ alvo['id'] }}/acao" class="flex-centro">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <select name="novo_plano" style="width:auto">
+            {% for p in planos %}
+            <option value="{{ p.id }}" {{ 'selected' if p.id == plano.plano.id }}>{{ p.nome }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-fantasma btn-pequeno" name="acao" value="plano" type="submit">Aplicar</button>
+          <button class="btn btn-fantasma btn-pequeno" name="acao" value="encerrar_plano" type="submit">Encerrar</button>
+        </form>
+      </div>
+      <div class="tabela-rolagem">
+        <table class="tabela">
+          <thead><tr><th>Início</th><th>Plano</th><th>Ciclo</th><th>Status</th><th>Renova</th></tr></thead>
+          <tbody>
+            {% for a in assinaturas %}
+            <tr>
+              <td class="apagado">{{ a['inicio'][:10] }}</td>
+              <td>{{ a['plano'] }}</td>
+              <td class="apagado">{{ a['ciclo'] }}</td>
+              <td><span class="etiqueta {{ 'etiqueta-verde' if a['status'] == 'ativa' else 'etiqueta-ambar' }}">{{ a['status'] }}</span></td>
+              <td class="mono">{{ a['renova_em'] or '—' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="suave">Sem assinaturas registradas.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="cartao">
       <h3>Compras</h3>
       <div class="tabela-rolagem">
         <table class="tabela">

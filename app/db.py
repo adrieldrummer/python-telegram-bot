@@ -184,6 +184,33 @@ def criar_esquema() -> None:
         )
     with sessao() as con:
         con.executescript(sql)
+    aplicar_migracoes()
+
+
+# colunas acrescentadas depois da primeira versão do esquema
+COLUNAS_NOVAS: tuple[tuple[str, str, str], ...] = (
+    ("alunos", "plano", "TEXT NOT NULL DEFAULT 'operacao'"),
+    ("alunos", "plano_ate", "TEXT"),
+)
+
+
+def aplicar_migracoes() -> list[str]:
+    """Acrescenta colunas que faltam em bancos criados por versões anteriores."""
+    aplicadas: list[str] = []
+    with sessao() as con:
+        for tabela, coluna, definicao in COLUNAS_NOVAS:
+            if usando_postgres():
+                con.execute(
+                    f"ALTER TABLE {tabela} ADD COLUMN IF NOT EXISTS {coluna} {definicao}"
+                )
+                continue
+            existentes = {
+                linha["name"] for linha in con.execute(f"PRAGMA table_info({tabela})").fetchall()
+            }
+            if coluna not in existentes:
+                con.execute(f"ALTER TABLE {tabela} ADD COLUMN {coluna} {definicao}")
+                aplicadas.append(f"{tabela}.{coluna}")
+    return aplicadas
 
 
 # --- helpers de consulta ---------------------------------------------------

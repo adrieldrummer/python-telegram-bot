@@ -53,6 +53,42 @@
 
 <div class="grade grade-2 mt-3">
   <div class="cartao">
+    <h3>Alunos por plano</h3>
+    <table class="tabela">
+      <tbody>
+        {% for d in distribuicao %}
+        <tr>
+          <td>{{ d.plano.nome }}<br><span class="apagado" style="font-size:.76rem">{{ d.plano.preco }} · {{ d.plano.ciclo }}</span></td>
+          <td class="mono negrito">{{ d.total }}</td>
+        </tr>
+        {% else %}
+        <tr><td class="suave">Nenhum aluno ainda.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cartao">
+    <h3>Acessos vencendo em 7 dias</h3>
+    <table class="tabela">
+      <tbody>
+        {% for a in vencendo %}
+        <tr>
+          <td><a href="/admin/aluno/{{ a['id'] }}">{{ a['nome'] }}</a><br>
+              <span class="apagado" style="font-size:.76rem">{{ a['email'] }}</span></td>
+          <td class="mono">{{ a['plano_ate'] }}</td>
+        </tr>
+        {% else %}
+        <tr><td class="suave">Ninguém vencendo nos próximos 7 dias.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="apagado mt-1 mb-0" style="font-size:.78rem">Lista pronta para uma campanha de renovação.</p>
+  </div>
+</div>
+
+<div class="grade grade-2 mt-3">
+  <div class="cartao">
     <div class="flex-entre mb-2"><h3 class="mb-0">Últimos alunos</h3><a class="suave" href="/admin/alunos">ver todos →</a></div>
     <div class="tabela-rolagem">
       <table class="tabela">

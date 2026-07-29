@@ -96,6 +96,13 @@ class Config:
     cakto_header_assinatura: str = os.getenv("CAKTO_HEADER_ASSINATURA", "x-cakto-signature")
     cakto_permitir_sem_assinatura: bool = _bool("CAKTO_PERMITIR_SEM_ASSINATURA", False)
 
+    # Meta (Facebook/Instagram) — pixel do navegador + API de Conversões
+    meta_pixel_id: str = os.getenv("META_PIXEL_ID", "").strip()
+    meta_capi_token: str = os.getenv("META_CAPI_TOKEN", "").strip()
+    meta_test_event_code: str = os.getenv("META_TEST_EVENT_CODE", "").strip()
+    meta_api_versao: str = os.getenv("META_API_VERSAO", "v21.0").strip()
+    meta_verificacao_dominio: str = os.getenv("META_VERIFICACAO_DOMINIO", "").strip()
+
     # Jornada
     jornada_drip_diario: bool = _bool("JORNADA_DRIP_DIARIO", True)
     custo_chave_antecipacao: int = _int("CUSTO_CHAVE_ANTECIPACAO", 250)
@@ -115,6 +122,15 @@ class Config:
         sozinho e os dados passam a persistir.
         """
         return self.serverless and not self.database_url
+
+    @property
+    def pixel_ativo(self) -> bool:
+        return bool(self.meta_pixel_id)
+
+    @property
+    def capi_ativa(self) -> bool:
+        """Eventos server-side sobrevivem a bloqueador de anúncio e iOS."""
+        return bool(self.meta_pixel_id and self.meta_capi_token)
 
     @property
     def smtp_configurado(self) -> bool:

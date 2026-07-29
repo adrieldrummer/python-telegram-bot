@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
 
-from conteudo import TOTAL_QUESTOES, simulados as conteudo_simulados, trilha
+from conteudo import TOTAL_QUESTOES, planos as catalogo_planos, simulados as conteudo_simulados, trilha
 from conteudo.questoes import total_por_materia
 
 from .. import alunos as servico_alunos
 from .. import mailer
+from .. import planos as servico_planos
 from ..config import config
 from ..db import buscar_todos, buscar_um, executar, sessao, valor
 from ..deps import exigir_admin, redirecionar, responder_template, validar_csrf
@@ -47,6 +48,8 @@ async def inicio(request: Request, admin=Depends(exigir_admin)):
         webhooks = buscar_todos(
             con, "SELECT * FROM webhooks ORDER BY id DESC LIMIT 5"
         )
+        distribuicao = servico_planos.distribuicao(con)
+        vencendo = servico_planos.vencendo(con, dias=7)
         ativos_7d = int(
             valor(
                 con,
@@ -63,6 +66,8 @@ async def inicio(request: Request, admin=Depends(exigir_admin)):
             "funil": funil,
             "recentes": recentes,
             "webhooks": webhooks,
+            "distribuicao": distribuicao,
+            "vencendo": vencendo,
             "total_dias": trilha.TOTAL_DIAS,
         },
     )
@@ -110,6 +115,8 @@ async def detalhe_aluno(request: Request, aluno_id: int, admin=Depends(exigir_ad
         pontos = buscar_todos(
             con, "SELECT * FROM eventos_pontos WHERE aluno_id=? ORDER BY id DESC LIMIT 20", (aluno_id,)
         )
+        assinaturas = servico_planos.assinaturas_do_aluno(con, aluno_id)
+        plano = servico_planos.resumo(alvo)
     return responder_template(
         request,
         "admin/aluno.html",
@@ -122,6 +129,9 @@ async def detalhe_aluno(request: Request, aluno_id: int, admin=Depends(exigir_ad
             "compras": compras,
             "emails": emails,
             "pontos": pontos,
+            "assinaturas": assinaturas,
+            "plano": plano,
+            "planos": catalogo_planos.PLANOS,
         },
     )
 
@@ -132,6 +142,7 @@ async def acao_aluno(
     aluno_id: int,
     acao: str = Form(""),
     motivo: str = Form(""),
+    novo_plano: str = Form(""),
     csrf_token: str = Form(""),
     admin=Depends(exigir_admin),
 ):
@@ -149,6 +160,12 @@ async def acao_aluno(
         elif acao == "reativar":
             servico_alunos.reativar(con, aluno_id)
             aviso = "Acesso reativado."
+        elif acao == "plano":
+            plano = servico_planos.aplicar(con, aluno_id, novo_plano, "ajuste manual", "manual")
+            aviso = f"Plano alterado para {plano.nome}."
+        elif acao == "encerrar_plano":
+            servico_planos.encerrar_agora(con, aluno_id)
+            aviso = "Assinatura encerrada."
         elif acao == "tornar_admin":
             executar(con, "UPDATE alunos SET admin=1 WHERE id=?", (aluno_id,))
             aviso = "Aluno virou administrador."

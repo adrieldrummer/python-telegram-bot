@@ -102,6 +102,31 @@ def exigir_admin(request: Request) -> sqlite3.Row:
     return aluno
 
 
+def bloqueio_por_plano(request: Request, aluno, recurso: str):
+    """Devolve a tela de upgrade quando o plano do aluno não cobre o recurso."""
+    from conteudo import planos as catalogo
+
+    from . import planos as servico_planos
+
+    if servico_planos.tem_recurso(aluno, recurso):
+        return None
+    resumo = servico_planos.resumo(aluno)
+    return responder_template(
+        request,
+        "upgrade.html",
+        {
+            "aluno": aluno,
+            "recurso": recurso,
+            "recurso_nome": catalogo.nome_do_recurso(recurso),
+            "meu_plano": resumo["plano"],
+            "vencido": resumo["vencido"],
+            "expira_em": resumo["expira_em"],
+            "planos": catalogo.PLANOS,
+        },
+        status_code=402,
+    )
+
+
 def csrf_do(request: Request) -> str:
     return request.cookies.get(COOKIE_CSRF, "") or gerar_csrf()
 
