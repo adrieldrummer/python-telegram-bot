@@ -280,7 +280,15 @@ async def cakto(request: Request):
                 )
                 if aluno["status"] != "ativo":
                     servico_alunos.aprovar_acesso(con, aluno)
-                    resultado = f"acesso aprovado ({plano.nome}) e e-mail enviado"
+                    # sem SMTP o e-mail é gravado e não sai; dizer "enviado" no
+                    # histórico esconderia justamente o problema que faz o
+                    # comprador pagar e nunca receber a senha
+                    destino = (
+                        "e-mail enviado"
+                        if config.smtp_configurado
+                        else "e-mail SÓ NA CAIXA DE SAÍDA — sem SMTP não foi entregue"
+                    )
+                    resultado = f"acesso aprovado ({plano.nome}) e {destino}"
                 else:
                     resultado = f"compra registrada — plano {plano.nome}"
             elif cancelado:
