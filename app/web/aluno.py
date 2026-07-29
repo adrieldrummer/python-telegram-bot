@@ -464,6 +464,8 @@ async def relatorio(request: Request, simulado_id: str, sessao_id: int, aluno=De
     if atual is None:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
     anteriores = [h for h in historico if h["id"] != sessao_id]
+    with sessao() as con:
+        correcao = estudo.correcao_da_sessao(con, aluno_id, sessao_id)
     return responder_template(
         request,
         "relatorio.html",
@@ -471,6 +473,8 @@ async def relatorio(request: Request, simulado_id: str, sessao_id: int, aluno=De
             "aluno": aluno,
             "atual": atual,
             "anteriores": anteriores,
+            "correcao": correcao,
+            "erradas": [i for i in correcao if not i["acertou"]],
             "materias": MATERIAS_POR_ID,
         },
     )

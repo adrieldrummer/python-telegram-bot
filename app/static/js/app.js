@@ -83,6 +83,31 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+/* --- fila de respostas pendentes -------------------------------------------
+   No celular a conexão cai no meio do bloco de questões: túnel, elevador,
+   4G ruim. Sem isso, a resposta some e o aluno refaz a questão achando que
+   o site "perdeu" o estudo dele. A resposta fica guardada no aparelho e sobe
+   sozinha quando a conexão volta.
+   ------------------------------------------------------------------------- */
+
+const FILA = 'oa_respostas_pendentes';
+
+function lerFila() {
+  try {
+    return JSON.parse(localStorage.getItem(FILA) || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function gravarFila(itens) {
+  try {
+    localStorage.setItem(FILA, JSON.stringify(itens.slice(-200)));
+  } catch (e) {
+    /* aparelho sem espaço: melhor perder a fila do que travar a tela */
+  }
+}
+
 window.MAPA = {
   csrf() {
     const meta = document.querySelector('meta[name="csrf-token"]');
@@ -107,6 +132,79 @@ window.MAPA = {
       throw erro;
     }
     return corpo;
+  },
+
+  /* Guarda uma resposta que não conseguiu subir. */
+  enfileirar(url, dados) {
+    const itens = lerFila();
+    // a mesma questão não entra duas vezes: reenviar duplicaria pontos
+    const chave = (d) => `${d.questao_id}|${d.sessao_id || ''}|${d.dia || ''}`;
+    if (itens.some((i) => chave(i.dados) === chave(dados))) return;
+    itens.push({ url: url, dados: dados, em: Date.now() });
+    gravarFila(itens);
+    this.mostrarPendentes();
+  },
+
+  pendentes() {
+    return lerFila().length;
+  },
+
+  mostrarPendentes() {
+    const total = this.pendentes();
+    let selo = document.querySelector('[data-pendentes]');
+    if (!total) {
+      if (selo) selo.remove();
+      return;
+    }
+    if (!selo) {
+      selo = document.createElement('div');
+      selo.className = 'selo-pendentes';
+      selo.setAttribute('data-pendentes', '');
+      document.body.appendChild(selo);
+    }
+    selo.textContent = `${total} resposta${total > 1 ? 's' : ''} aguardando conexão`;
+  },
+
+  /* Tenta subir tudo que ficou para trás. Silencioso: se falhar de novo,
+     continua guardado para a próxima tentativa. */
+  async esvaziarFila() {
+    const itens = lerFila();
+    if (!itens.length || !navigator.onLine) return;
+    const restantes = [];
+    let enviadas = 0;
+    for (const item of itens) {
+      try {
+        const resposta = await fetch(item.url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': this.csrf() },
+          body: JSON.stringify(item.dados),
+        });
+        // 4xx que não é de rede: a resposta não vai ser aceita nunca,
+        // insistir só encheria a fila para sempre
+        if (resposta.ok || (resposta.status >= 400 && resposta.status < 500)) {
+          if (resposta.ok) {
+            enviadas += 1;
+            // o placar do topo precisa refletir os pontos que acabaram de entrar
+            try {
+              const corpo = await resposta.json();
+              this.atualizarPontos(corpo.pontos_totais);
+              this.medalhas(corpo.medalhas);
+            } catch (e) {
+              /* resposta sem corpo útil não impede a fila de andar */
+            }
+          }
+        } else {
+          restantes.push(item);
+        }
+      } catch (e) {
+        restantes.push(item);
+      }
+    }
+    gravarFila(restantes);
+    this.mostrarPendentes();
+    if (enviadas) {
+      this.aviso(`${enviadas} resposta(s) guardada(s) foram salvas agora.`, 'ok');
+    }
   },
 
   aviso(texto, tipo) {
@@ -140,3 +238,18 @@ window.MAPA = {
     }
   },
 };
+
+/* Sobe o que ficou pendente ao abrir a página e assim que a conexão voltar. */
+(function () {
+  function tentar() {
+    if (window.MAPA) window.MAPA.esvaziarFila();
+  }
+  window.addEventListener('online', tentar);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') tentar();
+  });
+  window.addEventListener('load', function () {
+    window.MAPA.mostrarPendentes();
+    tentar();
+  });
+})();

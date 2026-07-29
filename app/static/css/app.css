@@ -419,6 +419,41 @@ small { font-size: 0.8rem; }
 .pontinho.ok { background: var(--verde); }
 .pontinho.nok { background: var(--azul); }
 .pontinho.atual { outline: 2px solid var(--branco); outline-offset: 2px; }
+/* respondida sem conexão: ainda vai subir */
+.pontinho.pendente { background: var(--ambar); }
+
+/* selo discreto de respostas guardadas no aparelho */
+.selo-pendentes {
+  position: fixed; z-index: 80;
+  left: 50%; transform: translateX(-50%);
+  bottom: calc(var(--altura-barra) + var(--seguro-base) + 0.7rem);
+  background: rgba(240, 169, 43, 0.16); border: 1px solid rgba(240, 169, 43, 0.5);
+  color: #ffe0ad; border-radius: 999px;
+  padding: 0.4rem 0.9rem; font-size: 0.78rem; font-weight: 700;
+  pointer-events: none; max-width: calc(100% - 2rem); text-align: center;
+}
+
+/* ---------- correção comentada do simulado ---------- */
+
+.correcao-item { border-left: 3px solid var(--grafite-500); }
+.correcao-item.errou { border-left-color: var(--azul); }
+.correcao-item.acertou { border-left-color: var(--verde); }
+
+.respostas-lado-a-lado { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.resposta {
+  border: 1px solid var(--linha); border-radius: var(--raio-p);
+  padding: 0.75rem 0.9rem; font-size: 0.92rem; line-height: 1.45;
+}
+.resposta .rotulo {
+  display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.09em;
+  font-weight: 800; margin-bottom: 0.3rem;
+}
+/* o que ele marcou em azul, o gabarito em verde: a mesma convenção de cor
+   que ele já viu ao responder a questão */
+.resposta.marcada { border-color: rgba(10, 92, 255, 0.5); background: rgba(10, 92, 255, 0.08); }
+.resposta.marcada .rotulo { color: var(--azul-claro); }
+.resposta.gabarito { border-color: rgba(31, 184, 122, 0.5); background: rgba(31, 184, 122, 0.09); }
+.resposta.gabarito .rotulo { color: #6ddcae; }
 
 /* ---------- simulado ---------- */
 

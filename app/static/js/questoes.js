@@ -49,7 +49,8 @@
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'pontinho';
-      if (item.respondida) b.classList.add(simulado ? 'ok' : item.correta ? 'ok' : 'nok');
+      if (item.pendente) b.classList.add('pendente');
+      else if (item.respondida) b.classList.add(simulado ? 'ok' : item.correta ? 'ok' : 'nok');
       if (i === indice) b.classList.add('atual');
       b.title = `Questão ${i + 1}`;
       b.addEventListener('click', () => {
@@ -221,6 +222,23 @@
         }, 180);
       }
     } catch (erro) {
+      // sem status = a requisição não chegou ao servidor (rede caiu).
+      // A resposta fica guardada no aparelho e sobe sozinha depois.
+      if (!erro.status) {
+        window.MAPA.enfileirar('/api/responder', {
+          questao_id: item.questao.id,
+          alternativa: letra,
+          origem: origem,
+          dia: dia,
+          tempo_seg: tempo,
+          sessao_id: sessaoId,
+        });
+        item.respondida = letra;
+        item.pendente = true;
+        desenhar();
+        window.MAPA.aviso('Sem conexão agora. Sua resposta foi guardada e sobe assim que a internet voltar.');
+        return;
+      }
       window.MAPA.aviso(erro.message);
       // 402 é sempre limite de plano: leva o aluno para onde ele resolve isso
       if (erro.status === 402) setTimeout(() => { window.location.href = '/planos'; }, 2200);

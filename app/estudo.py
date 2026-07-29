@@ -6,7 +6,7 @@ import json
 import sqlite3
 from typing import Optional
 
-from conteudo.questoes import Questao
+from conteudo.questoes import Questao, questao as buscar_questao
 from conteudo.simulados import montar, simulado as buscar_simulado
 
 from . import srs
@@ -196,6 +196,51 @@ def respostas_da_sessao(con: sqlite3.Connection, aluno_id: int, sessao_id: int) 
             (aluno_id, sessao_id),
         )
     }
+
+
+def correcao_da_sessao(con: sqlite3.Connection, aluno_id: int, sessao_id: int) -> list[dict]:
+    """A prova inteira corrigida, questão a questão.
+
+    Simulado sem correção comentada é só um número: o aluno descobre que tirou
+    60% e não sabe o que fazer com isso. Aqui vem cada questão na ordem em que
+    ela caiu, o que ele marcou, o gabarito, o comentário e a armadilha da banca
+    — inclusive nas que ele acertou, porque acerto por sorte também precisa
+    virar acerto por entendimento.
+    """
+    linhas = buscar_todos(
+        con,
+        """SELECT questao_id, alternativa, correta, tempo_seg FROM respostas
+           WHERE aluno_id=? AND sessao_id=? ORDER BY id""",
+        (aluno_id, sessao_id),
+    )
+    itens: list[dict] = []
+    for numero, linha in enumerate(linhas, start=1):
+        q = buscar_questao(linha["questao_id"])
+        if q is None:  # questão saiu do banco depois da prova
+            continue
+        marcada = linha["alternativa"]
+        acertou = bool(linha["correta"])
+        itens.append(
+            {
+                "numero": numero,
+                "questao": q,
+                "marcada": marcada,
+                "texto_marcada": next(
+                    (texto for letra, texto in q.alternativas if letra == marcada), ""
+                ),
+                "gabarito": q.correta,
+                "texto_gabarito": next(
+                    (texto for letra, texto in q.alternativas if letra == q.correta), ""
+                ),
+                "acertou": acertou,
+                "tempo_seg": int(linha["tempo_seg"] or 0),
+                # o tempo também ensina: acerto correndo e erro demorado
+                # pedem correções diferentes de estratégia
+                "correu": not acertou and int(linha["tempo_seg"] or 0) < 30,
+                "demorou": int(linha["tempo_seg"] or 0) > 150,
+            }
+        )
+    return itens
 
 
 def respondidas_do_dia(con: sqlite3.Connection, aluno_id: int, dia: int) -> dict[str, dict]:

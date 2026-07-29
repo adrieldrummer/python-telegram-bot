@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+from html import unescape
 
 from app import alunos as servico_alunos
 from app.db import sessao
@@ -177,3 +178,71 @@ def test_admin_libera_acesso_manual(cliente):
     with sessao() as con:
         novo = servico_alunos.por_email(con, "convidado@teste.com")
         assert novo is not None and novo["status"] == "pendente"
+
+
+def test_simulado_corrigido_explica_cada_erro(cliente):
+    """Simulado sem correção comentada é só um número — e número não ensina."""
+    from app import estudo, planos as servico_planos
+    from app.db import buscar_um, sessao as abrir
+    from conteudo.simulados import montar
+
+    criar_conta()
+    with abrir() as con:
+        alvo = servico_alunos.por_email(con, "aluna@teste.com")
+        aluno_id = int(alvo["id"])
+        servico_planos.aplicar(con, aluno_id, "operacao")   # simulados liberados
+
+        sessao_id = estudo.iniciar_simulado(con, aluno_id, "sim-diagnostico")
+        questoes = montar("sim-diagnostico")
+        # acerta a primeira metade, erra a segunda de propósito
+        for i, q in enumerate(questoes):
+            if i % 2 == 0:
+                letra = q.correta
+            else:
+                letra = next(l for l, _ in q.alternativas if l != q.correta)
+            estudo.responder(
+                con, aluno_id, q, letra, origem="simulado",
+                sessao_id=sessao_id, tempo_seg=20 if i % 4 == 1 else 60,
+            )
+        estudo.finalizar_simulado(con, aluno_id, sessao_id, 900)
+        erradas = [q for i, q in enumerate(questoes) if i % 2 == 1]
+
+    entrar(cliente, "aluna@teste.com", "blindagem30")
+    pagina = cliente.get(f"/simulado/sim-diagnostico/relatorio/{sessao_id}")
+    assert pagina.status_code == 200
+    # aspas e acentos saem escapados no HTML; comparar o texto cru dá falso negativo
+    html = unescape(pagina.text)
+
+    assert "Correção comentada" in html
+    # toda questão errada precisa trazer gabarito e explicação
+    for q in erradas:
+        assert q.enunciado[:40] in html, q.id
+        assert q.comentario[:40] in html, q.id
+    assert "Gabarito" in html and "Você marcou" in html
+    # e o aviso de quem respondeu rápido demais
+    assert "leitura do enunciado" in html
+
+
+def test_correcao_do_simulado_cobre_acertos_e_erros(cliente):
+    """A correção devolve a prova inteira, não só o que o aluno errou."""
+    from app import estudo, planos as servico_planos
+    from app.db import sessao as abrir
+    from conteudo.simulados import montar
+
+    criar_conta("outra@teste.com")
+    with abrir() as con:
+        alvo = servico_alunos.por_email(con, "outra@teste.com")
+        aluno_id = int(alvo["id"])
+        servico_planos.aplicar(con, aluno_id, "operacao")
+        sessao_id = estudo.iniciar_simulado(con, aluno_id, "sim-diagnostico")
+        questoes = montar("sim-diagnostico")
+        for q in questoes:
+            estudo.responder(con, aluno_id, q, q.correta, origem="simulado", sessao_id=sessao_id)
+        correcao = estudo.correcao_da_sessao(con, aluno_id, sessao_id)
+
+    assert len(correcao) == len(questoes)
+    assert all(i["acertou"] for i in correcao)
+    assert [i["numero"] for i in correcao] == list(range(1, len(questoes) + 1))
+    for item in correcao:
+        assert item["texto_gabarito"], item["questao"].id
+        assert item["questao"].comentario
