@@ -70,7 +70,7 @@ Recomendadas:
 | `CAKTO_CHECKOUT_URL` | link do checkout nos botões de compra |
 | `CAKTO_WEBHOOK_SEGREDO` | valida a assinatura do webhook |
 | `SMTP_HOST`, `SMTP_PORTA`, `SMTP_USUARIO`, `SMTP_SENHA` | envio real de e-mail |
-| `EMAIL_REMETENTE` | `Mapa da Aprovação <acesso@seudominio.com.br>` |
+| `EMAIL_REMETENTE` | `Operação Aprovação <acesso@seudominio.com.br>` |
 | `SUPORTE_EMAIL` | e-mail que aparece para o aluno |
 | `JORNADA_DRIP_DIARIO` | `false` libera o próximo dia assim que o anterior é concluído |
 
@@ -85,7 +85,7 @@ Confira `/admin/configuracao` — a tela lista o que ainda falta ajustar.
 
 ## 5. Domínio próprio
 
-Em **Settings → Domains**, adicione `mapadaaprovacao.com.br`. A Vercel mostra
+Em **Settings → Domains**, adicione `opaprova.com`. A Vercel mostra
 os registros DNS; o passo a passo está em [`DOMINIO.md`](DOMINIO.md). Depois,
 atualize `APP_URL` para o domínio final — ele é usado nos links dos e-mails.
 

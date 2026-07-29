@@ -1,7 +1,12 @@
-"""Otimiza as artes geradas: recorta o logo, gera o emblema e converte capas para WebP.
+"""Otimiza as artes da marca: converte capas para WebP e gera emblema/favicon.
 
 Uso:  python scripts/otimizar_imagens.py
-As artes originais (PNG 1k) devem estar em app/static/img/ como *-src.png.
+
+Espera os arquivos originais (PNG) em app/static/img/ com o sufixo `-src`:
+    capa-*-src.png, hero-src.png, textura-src.png, emblema-src.png
+
+Para trocar a marca por um arquivo seu, basta salvar o PNG quadrado como
+`app/static/img/emblema-src.png` e rodar este script — nada no código muda.
 """
 
 from __future__ import annotations
@@ -63,27 +68,17 @@ def main() -> int:
             img = img.resize((largura, round(img.height * largura / img.width)), Image.LANCZOS)
         salvar_webp(img, IMG / f"{nome}.webp", qualidade)
 
-    origem_logo = IMG / "logo-src.png"
-    if origem_logo.exists():
-        print("Logo e emblema:")
-        base = Image.open(origem_logo).convert("RGBA")
-        w, h = base.size
-        # recorte do lockup completo (emblema + wordmark), com respiro
-        logo = base.crop((int(w * 0.17), int(h * 0.14), int(w * 0.83), int(h * 0.86)))
-        logo.thumbnail((720, 720), Image.LANCZOS)
-        logo.save(IMG / "logo.png", optimize=True)
-        print(f"  logo.png: {(IMG / 'logo.png').stat().st_size // 1024} KB")
-
-        # emblema quadrado (só o escudo)
-        emblema = base.crop((int(w * 0.38), int(h * 0.15), int(w * 0.62), int(h * 0.60)))
-        lado = max(emblema.size)
-        quadro = Image.new("RGBA", (lado, lado), (11, 27, 51, 255))
-        quadro.paste(
-            emblema, ((lado - emblema.width) // 2, (lado - emblema.height) // 2), emblema
-        )
-        quadro.resize((256, 256), Image.LANCZOS).save(IMG / "emblema.png", optimize=True)
-        quadro.resize((64, 64), Image.LANCZOS).save(IMG / "favicon.png", optimize=True)
-        print("  emblema.png + favicon.png")
+    origem_emblema = IMG / "emblema-src.png"
+    if origem_emblema.exists():
+        print("Emblema e favicon:")
+        base = Image.open(origem_emblema).convert("RGBA")
+        lado = min(base.size)
+        esquerda = (base.width - lado) // 2
+        topo = (base.height - lado) // 2
+        quadrado = base.crop((esquerda, topo, esquerda + lado, topo + lado))
+        quadrado.resize((512, 512), Image.LANCZOS).save(IMG / "emblema.png", optimize=True)
+        quadrado.resize((64, 64), Image.LANCZOS).save(IMG / "favicon.png", optimize=True)
+        print("  emblema.png (512) + favicon.png (64)")
 
     return 0
 

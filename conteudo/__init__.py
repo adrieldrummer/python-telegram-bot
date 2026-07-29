@@ -40,7 +40,7 @@ CAPAS = {
     "manual": "/static/img/capa-manual.webp",
     "pontos": "/static/img/capa-pontos.webp",
     "hero": "/static/img/hero.webp",
-    "logo": "/static/img/logo.png",
+    "logo": "/static/img/emblema.png",
     "emblema": "/static/img/emblema.png",
     "textura": "/static/img/textura.webp",
 }

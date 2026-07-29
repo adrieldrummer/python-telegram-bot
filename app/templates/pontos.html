@@ -4,8 +4,8 @@
 {% block conteudo %}
 <section class="secao">
   <div class="grade grade-2 mb-3" style="grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)">
-    <div class="cartao" style="background:linear-gradient(140deg,var(--azul-700),var(--azul-850))">
-      <span class="etiqueta etiqueta-vermelha">Sua patente</span>
+    <div class="cartao" style="background:linear-gradient(140deg,var(--preto-700),var(--preto-850))">
+      <span class="etiqueta etiqueta-azul">Sua patente</span>
       <h1 class="mt-2 mb-1">{{ patente.atual.insignia }} {{ patente.atual.nome }}</h1>
       <p class="suave">{{ patente.atual.lema }}</p>
       <div class="flex-entre" style="font-size:.85rem">
@@ -59,7 +59,7 @@
             {% for e in extrato %}
             <tr>
               <td class="suave">{{ e['descricao'] or e['tipo'] }}</td>
-              <td class="mono {{ 'destaque-vermelho' if e['pontos'] < 0 }}">{{ '+' if e['pontos'] > 0 }}{{ e['pontos'] }}</td>
+              <td class="mono {{ 'destaque-azul' if e['pontos'] < 0 }}">{{ '+' if e['pontos'] > 0 }}{{ e['pontos'] }}</td>
               <td class="apagado" style="font-size:.78rem">{{ e['criado_em'][5:16] }}</td>
             </tr>
             {% else %}

@@ -1,4 +1,4 @@
-"""Trilha de 30 dias — a versão de plataforma do 'Mapa da Aprovação'.
+"""Trilha de 30 dias — a versão de plataforma do método 'Mapa da Aprovação'.
 
 O e-book original dividia 60 dias em quatro fases. Aqui o método foi
 recomprimido para 30 dias sem perder nenhuma das quatro etapas: o que muda é

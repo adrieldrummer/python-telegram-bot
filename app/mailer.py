@@ -252,7 +252,7 @@ def enviar_conclusao(con: sqlite3.Connection, aluno: sqlite3.Row) -> None:
     enfileirar(
         con,
         aluno["email"],
-        "🏁 Você concluiu o Mapa da Aprovação",
+        "🏁 Você concluiu o Operação Aprovação",
         corpo,
         tipo="conclusao",
         aluno_id=aluno["id"],

@@ -30,7 +30,7 @@ python3 -m venv /opt/mapa/.venv && /opt/mapa/.venv/bin/pip install -r requiremen
 cp deploy/mapa.service /etc/systemd/system/ && systemctl enable --now mapa
 cp deploy/nginx.conf /etc/nginx/sites-available/mapa
 ln -s /etc/nginx/sites-available/mapa /etc/nginx/sites-enabled/ && systemctl reload nginx
-certbot --nginx -d mapadaaprovacao.com.br -d www.mapadaaprovacao.com.br
+certbot --nginx -d opaprova.com -d www.opaprova.com
 ```
 
 ## Checklist do .env antes de vender

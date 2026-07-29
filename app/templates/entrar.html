@@ -5,7 +5,8 @@
 {% block corpo %}
 <div class="tela-auth" style="--textura:url('{{ CAPAS.textura }}')">
   <div class="caixa-auth">
-    <a class="marca" href="/"><img src="/static/img/emblema.png" alt=""><span>MAPA DA <b>APROVAÇÃO</b></span></a>
+    <a class="marca" href="/"><img src="/static/img/emblema.png" alt=""><span>OPERAÇÃO <b>APROVAÇÃO</b></span></a>
+    <p class="centro apagado" style="font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;margin:.4rem 0 1.2rem">{{ config.app_assinatura }}</p>
     <div class="cartao">
       <h1 style="font-size:1.5rem">Entrar na plataforma</h1>
       <p class="suave" style="font-size:.9rem">Use o e-mail da sua compra.</p>
@@ -31,7 +32,7 @@
       </p>
     </div>
     <p class="centro mt-2 apagado" style="font-size:.84rem">
-      Ainda não tem acesso? <a href="{{ config.cakto_checkout_url }}" class="destaque-vermelho">Garanta sua vaga</a>
+      Ainda não tem acesso? <a href="{{ config.cakto_checkout_url }}" class="destaque-azul">Garanta sua vaga</a>
     </p>
   </div>
 </div>

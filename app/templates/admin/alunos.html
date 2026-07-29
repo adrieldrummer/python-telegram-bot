@@ -34,10 +34,10 @@
           <td class="apagado">{{ a['id'] }}</td>
           <td>
             <a href="/admin/aluno/{{ a['id'] }}" class="negrito">{{ a['nome'] }}</a>
-            {% if a['admin'] %}<span class="etiqueta etiqueta-vermelha">admin</span>{% endif %}
+            {% if a['admin'] %}<span class="etiqueta etiqueta-azul">admin</span>{% endif %}
             <br><span class="apagado" style="font-size:.78rem">{{ a['email'] }}</span>
           </td>
-          <td><span class="etiqueta {{ 'etiqueta-verde' if a['status'] == 'ativo' else ('etiqueta-ambar' if a['status'] == 'pendente' else 'etiqueta-vermelha') }}">{{ a['status'] }}</span></td>
+          <td><span class="etiqueta {{ 'etiqueta-verde' if a['status'] == 'ativo' else ('etiqueta-ambar' if a['status'] == 'pendente' else 'etiqueta-perigo') }}">{{ a['status'] }}</span></td>
           <td class="apagado">{{ a['origem'] }}</td>
           <td class="mono">{{ a['pontos'] }}</td>
           <td class="mono">{{ a['streak_atual'] }}</td>

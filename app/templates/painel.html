@@ -8,7 +8,7 @@
   <div class="hero-fundo" style="background-image:url('{{ CAPAS[atual.dia.fase] }}')"></div>
   <div class="container hero-conteudo">
     <div class="hero-linha"></div>
-    <span class="etiqueta etiqueta-vermelha mb-2">
+    <span class="etiqueta etiqueta-azul mb-2">
       {{ 'Continue de onde parou' if resumo.concluidos else 'Comece por aqui' }} · Fase {{ atual.fase.numero }}
     </span>
     <h1 style="font-size:clamp(1.7rem,3.4vw,2.6rem)">Dia {{ atual.numero }} — {{ atual.dia.titulo }}</h1>
@@ -111,7 +111,7 @@
       {% for t in treinos %}
       <a class="capa" href="{{ t.url }}">
         <img src="{{ t.capa }}" alt="{{ t.titulo }}">
-        <div class="capa-topo"><span class="etiqueta etiqueta-vermelha">{{ t.etiqueta }}</span></div>
+        <div class="capa-topo"><span class="etiqueta etiqueta-azul">{{ t.etiqueta }}</span></div>
         <div class="capa-sobreposicao">
           <h3>{{ t.titulo }}</h3>
           <p>{{ t.descricao }}</p>
@@ -135,7 +135,7 @@
         <div class="mb-2">
           <div class="flex-entre" style="font-size:.9rem">
             <span>
-              {% if loop.index <= 3 %}<span class="destaque-vermelho">▲</span>{% endif %}
+              {% if loop.index <= 3 %}<span class="destaque-azul">▲</span>{% endif %}
               {{ p.materia.nome }}
             </span>
             <span class="mono suave">{{ p.acerto_pct }}% · {{ p.total }} q</span>

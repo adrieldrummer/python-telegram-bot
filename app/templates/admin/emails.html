@@ -29,7 +29,7 @@
           <td>{{ e['assunto'] }}</td>
           <td class="apagado">{{ e['tipo'] }}</td>
           <td>
-            <span class="etiqueta {{ 'etiqueta-verde' if e['status'] == 'enviado' else ('etiqueta-vermelha' if e['status'] == 'erro' else 'etiqueta-ambar') }}">
+            <span class="etiqueta {{ 'etiqueta-verde' if e['status'] == 'enviado' else ('etiqueta-perigo' if e['status'] == 'erro' else 'etiqueta-ambar') }}">
               {{ e['status'] }}
             </span>
             {% if e['erro'] %}<br><span class="apagado" style="font-size:.72rem">{{ e['erro'][:80] }}</span>{% endif %}

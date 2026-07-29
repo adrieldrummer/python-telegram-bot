@@ -12,7 +12,7 @@ import uvicorn
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Mapa da Aprovação — servidor de desenvolvimento")
+    parser = argparse.ArgumentParser(description="Operação Aprovação — servidor de desenvolvimento")
     parser.add_argument("--porta", type=int, default=8000)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--recarregar", action="store_true", help="reinicia ao salvar arquivos")

@@ -11,7 +11,7 @@
         <tbody>
           <tr><td class="apagado">E-mail</td><td>{{ alvo['email'] }}</td></tr>
           <tr><td class="apagado">Telefone</td><td>{{ alvo['telefone'] or '—' }}</td></tr>
-          <tr><td class="apagado">Situação</td><td><span class="etiqueta {{ 'etiqueta-verde' if alvo['status'] == 'ativo' else ('etiqueta-ambar' if alvo['status'] == 'pendente' else 'etiqueta-vermelha') }}">{{ alvo['status'] }}</span></td></tr>
+          <tr><td class="apagado">Situação</td><td><span class="etiqueta {{ 'etiqueta-verde' if alvo['status'] == 'ativo' else ('etiqueta-ambar' if alvo['status'] == 'pendente' else 'etiqueta-perigo') }}">{{ alvo['status'] }}</span></td></tr>
           <tr><td class="apagado">Origem</td><td>{{ alvo['origem'] }}</td></tr>
           <tr><td class="apagado">Cadastro</td><td>{{ alvo['criado_em'] }}</td></tr>
           <tr><td class="apagado">Ativação</td><td>{{ alvo['ativado_em'] or '—' }}</td></tr>

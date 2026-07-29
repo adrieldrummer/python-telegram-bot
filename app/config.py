@@ -59,12 +59,13 @@ def _caminho_do_banco() -> Path:
 @dataclass(frozen=True)
 class Config:
     # Produto
-    app_nome: str = os.getenv("APP_NOME", "Mapa da Aprovação")
+    app_nome: str = os.getenv("APP_NOME", "Operação Aprovação")
+    app_assinatura: str = os.getenv("APP_ASSINATURA", "Sua missão começa agora.")
     app_subtitulo: str = os.getenv(
-        "APP_SUBTITULO", "Método de 30 dias para Soldado PM 2ª Classe — SP"
+        "APP_SUBTITULO", "Operação de 30 dias para Soldado PM 2ª Classe — SP"
     )
     app_url: str = os.getenv("APP_URL", "http://localhost:8000").rstrip("/")
-    suporte_email: str = os.getenv("SUPORTE_EMAIL", "suporte@exemplo.com.br")
+    suporte_email: str = os.getenv("SUPORTE_EMAIL", "suporte@opaprova.com")
     suporte_whatsapp: str = os.getenv("SUPORTE_WHATSAPP", "")
 
     # Segurança
@@ -86,7 +87,7 @@ class Config:
     smtp_usuario: str = os.getenv("SMTP_USUARIO", "")
     smtp_senha: str = os.getenv("SMTP_SENHA", "")
     smtp_tls: bool = _bool("SMTP_TLS", True)
-    email_remetente: str = os.getenv("EMAIL_REMETENTE", "Mapa da Aprovação <nao-responda@localhost>")
+    email_remetente: str = os.getenv("EMAIL_REMETENTE", "Operação Aprovação <nao-responda@localhost>")
     email_responder_para: str = os.getenv("EMAIL_RESPONDER_PARA", "")
 
     # Cakto

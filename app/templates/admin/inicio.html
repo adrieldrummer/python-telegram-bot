@@ -61,7 +61,7 @@
           {% for a in recentes %}
           <tr>
             <td><a href="/admin/aluno/{{ a['id'] }}">{{ a['nome'] }}</a><br><span class="apagado" style="font-size:.78rem">{{ a['email'] }}</span></td>
-            <td><span class="etiqueta {{ 'etiqueta-verde' if a['status'] == 'ativo' else ('etiqueta-ambar' if a['status'] == 'pendente' else 'etiqueta-vermelha') }}">{{ a['status'] }}</span></td>
+            <td><span class="etiqueta {{ 'etiqueta-verde' if a['status'] == 'ativo' else ('etiqueta-ambar' if a['status'] == 'pendente' else 'etiqueta-perigo') }}">{{ a['status'] }}</span></td>
             <td class="mono">{{ a['pontos'] }}</td>
             <td class="apagado" style="font-size:.8rem">{{ a['ultimo_login'][:16] if a['ultimo_login'] else '—' }}</td>
           </tr>

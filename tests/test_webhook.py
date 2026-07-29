@@ -20,7 +20,7 @@ def payload_compra(email="comprador@teste.com", referencia="tx-1"):
         "status": "paid",
         "amount": 197.0,
         "customer": {"name": "Comprador Teste", "email": email, "phone": "11999999999"},
-        "product": {"name": "Mapa da Aprovação"},
+        "product": {"name": "Operação Aprovação"},
     }
 
 

@@ -1,5 +1,5 @@
 # Troque pelo seu domínio. O Caddy emite e renova o certificado sozinho.
-mapadaaprovacao.com.br, www.mapadaaprovacao.com.br {
+opaprova.com, www.opaprova.com {
     encode gzip zstd
 
     # cabeçalhos de segurança

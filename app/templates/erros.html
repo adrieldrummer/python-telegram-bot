@@ -24,7 +24,7 @@
   </div>
 
   {% if resumo.categoria_dominante %}
-  <div class="cartao mb-3" style="border-left:3px solid var(--vermelho)">
+  <div class="cartao mb-3" style="border-left:3px solid var(--azul)">
     <strong>Seu padrão de erro dominante: {{ CATEGORIAS_ERRO[resumo.categoria_dominante].nome }}</strong>
     <p class="suave mb-0" style="font-size:.9rem">{{ CATEGORIAS_ERRO[resumo.categoria_dominante].acao }}</p>
   </div>
@@ -59,7 +59,7 @@
                 {{ CATEGORIAS_ERRO[item.categoria].icone }} {{ CATEGORIAS_ERRO[item.categoria].nome }}
               </span>
             {% else %}
-              <span class="etiqueta etiqueta-vermelha">sem classificação</span>
+              <span class="etiqueta etiqueta-azul">sem classificação</span>
             {% endif %}
           </div>
           <span class="apagado" style="font-size:.8rem">

@@ -11,7 +11,7 @@
       <a class="btn btn-fantasma btn-pequeno btn-largo mb-2" href="/manual/download">⬇ Baixar em Markdown</a>
       <nav style="display:grid;gap:.35rem;font-size:.85rem;max-height:46vh;overflow-y:auto">
         {% for c in capitulos %}
-        <a href="#{{ c.id }}" class="suave">{{ c.numero }} — {{ c.titulo }}{% if c.novo %} <span class="destaque-vermelho">•</span>{% endif %}</a>
+        <a href="#{{ c.id }}" class="suave">{{ c.numero }} — {{ c.titulo }}{% if c.novo %} <span class="destaque-azul">•</span>{% endif %}</a>
         {% endfor %}
       </nav>
     </aside>
@@ -24,7 +24,7 @@
       <article class="cartao mb-3" id="{{ c.id }}">
         <div class="flex-centro mb-1" style="flex-wrap:wrap">
           <span class="etiqueta">{{ c.numero }}</span>
-          {% if c.novo %}<span class="etiqueta etiqueta-vermelha">novo nesta edição</span>{% endif %}
+          {% if c.novo %}<span class="etiqueta etiqueta-azul">novo nesta edição</span>{% endif %}
         </div>
         <h2 style="font-size:1.3rem">{{ c.titulo }}</h2>
         <p class="apagado" style="font-size:.88rem;font-style:italic">{{ c.resumo }}</p>

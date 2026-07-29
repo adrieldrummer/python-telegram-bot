@@ -11,7 +11,7 @@
       <tr><td class="apagado">Tipo</td><td>{{ linha['tipo'] }}</td></tr>
       <tr><td class="apagado">Status</td><td>{{ linha['status'] }} · {{ linha['tentativas'] }} tentativa(s)</td></tr>
       <tr><td class="apagado">Criado em</td><td>{{ linha['criado_em'] }}</td></tr>
-      {% if linha['erro'] %}<tr><td class="apagado">Erro</td><td class="destaque-vermelho">{{ linha['erro'] }}</td></tr>{% endif %}
+      {% if linha['erro'] %}<tr><td class="apagado">Erro</td><td class="destaque-azul">{{ linha['erro'] }}</td></tr>{% endif %}
     </tbody>
   </table>
   <a class="btn btn-fantasma btn-pequeno mt-2" href="/admin/emails">← voltar</a>

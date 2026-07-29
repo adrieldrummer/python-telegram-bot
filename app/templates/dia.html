@@ -7,7 +7,7 @@
 
   <div class="flex-entre mt-1 mb-3">
     <div>
-      <span class="etiqueta etiqueta-vermelha">Fase {{ fase.numero }} · {{ fase.nome }}</span>
+      <span class="etiqueta etiqueta-azul">Fase {{ fase.numero }} · {{ fase.nome }}</span>
       <h1 class="mt-1 mb-1">Dia {{ d.numero }} — {{ d.titulo }}</h1>
       <p class="suave mb-0">{{ d.promessa }}</p>
     </div>
@@ -44,7 +44,7 @@
       <article class="cartao mt-3" id="missao">
         <div class="flex-entre mb-2">
           <div>
-            <span class="etiqueta etiqueta-vermelha">Missão do dia</span>
+            <span class="etiqueta etiqueta-azul">Missão do dia</span>
             <h2 class="mt-1 mb-0" style="font-size:1.15rem">{{ d.missao.titulo }}</h2>
           </div>
           <span class="apagado" data-contador style="font-size:.85rem"></span>
@@ -115,7 +115,7 @@
       </div>
       {% endif %}
 
-      <div class="cartao" style="background:linear-gradient(150deg,var(--azul-700),var(--azul-850))">
+      <div class="cartao" style="background:linear-gradient(150deg,var(--preto-700),var(--preto-850))">
         <p class="mb-0" style="font-size:.98rem;font-weight:600;font-style:italic">“{{ d.frase }}”</p>
       </div>
     </aside>

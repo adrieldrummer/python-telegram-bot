@@ -66,6 +66,7 @@ def test_selecao_nao_repete_questao_excluida():
 
 def test_manual_exporta_markdown_completo():
     texto = manual.markdown()
+    # a plataforma se chama Operação Aprovação; o e-book mantém o título do autor
     assert "# O Mapa da Aprovação" in texto
     assert manual.NOVOS >= 5
     for capitulo in manual.CAPITULOS:

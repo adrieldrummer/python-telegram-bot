@@ -15,7 +15,7 @@
             {% if c['aluno_id'] %}<a href="/admin/aluno/{{ c['aluno_id'] }}">{{ c['nome'] or c['email'] }}</a>
             {% else %}<span class="suave">{{ c['email'] }}</span>{% endif %}
           </td>
-          <td><span class="etiqueta {{ 'etiqueta-verde' if c['status'] == 'aprovada' else 'etiqueta-vermelha' }}">{{ c['status'] }}</span></td>
+          <td><span class="etiqueta {{ 'etiqueta-verde' if c['status'] == 'aprovada' else 'etiqueta-perigo' }}">{{ c['status'] }}</span></td>
           <td class="suave">{{ c['produto'] or '—' }}</td>
           <td class="apagado" style="font-size:.78rem">{{ c['referencia'] }}</td>
           <td class="mono">R$ {{ '%.2f'|format(c['valor']) }}</td>

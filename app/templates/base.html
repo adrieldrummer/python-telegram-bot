@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token }}">
-  <meta name="theme-color" content="#0b1b33">
+  <meta name="theme-color" content="#050505">
   <meta name="description" content="{% block descricao %}{{ config.app_subtitulo }}{% endblock %}">
   <title>{% block titulo %}{{ config.app_nome }}{% endblock %}</title>
   <link rel="icon" href="/static/img/favicon.png" type="image/png">
@@ -14,7 +14,7 @@
 </head>
 <body>
 {% if config.modo_demo %}
-<div style="background:#f0a92b;color:#0b1b33;text-align:center;padding:.5rem 1rem;font-size:.84rem;font-weight:700">
+<div style="background:#f0a92b;color:#050505;text-align:center;padding:.5rem 1rem;font-size:.84rem;font-weight:700">
   MODO DEMONSTRAÇÃO — sem banco configurado, os dados somem a cada reinício.
   Contas de teste: admin@teste.com / admin1234 · aluno@teste.com / aluno1234
 </div>
@@ -24,7 +24,7 @@
   <div class="container topo-interno">
     <a class="marca" href="{{ '/painel' if aluno else '/' }}">
       <img src="/static/img/emblema.png" alt="">
-      <span>MAPA DA <b>APROVAÇÃO</b></span>
+      <span>OPERAÇÃO <b>APROVAÇÃO</b></span>
     </a>
 
     {% if aluno %}
@@ -75,7 +75,8 @@
 <footer class="rodape">
   <div class="container rodape-grade">
     <div style="max-width:320px">
-      <div class="marca mb-1"><img src="/static/img/emblema.png" alt=""><span>MAPA DA <b>APROVAÇÃO</b></span></div>
+      <div class="marca mb-1"><img src="/static/img/emblema.png" alt=""><span>OPERAÇÃO <b>APROVAÇÃO</b></span></div>
+      <p class="destaque-azul" style="font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin:.2rem 0 .6rem">{{ config.app_assinatura }}</p>
       <p class="apagado" style="font-size:.82rem">
         Plataforma de estudo do método de 30 dias. Conteúdo educacional independente,
         sem vínculo com qualquer instituição pública ou banca examinadora.

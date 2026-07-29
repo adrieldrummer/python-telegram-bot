@@ -1,4 +1,4 @@
-# Mapa da Aprovação — plataforma de estudo
+# Operação Aprovação — plataforma de estudo
 
 Curso completo, pronto para vender na **Cakto**, construído a partir do e-book
 *"O Mapa da Aprovação — como fui aprovado Soldado PM 2ª Classe em 60 dias"*.
@@ -7,7 +7,7 @@ plataforma: login por e-mail e senha, liberação diária com desbloqueio,
 pontos de estudo, aprovação de acesso por e-mail e as ferramentas que o autor
 fazia à mão (diagnóstico, caderno de erros e revisão espaçada).
 
-![interface](app/static/img/logo.png)
+![Operação Aprovação](app/static/img/emblema.png)
 
 ---
 

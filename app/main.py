@@ -1,4 +1,4 @@
-"""Aplicação FastAPI — Mapa da Aprovação."""
+"""Aplicação FastAPI — Operação Aprovação."""
 
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ async def ciclo_de_vida(app: FastAPI):
 
 app = FastAPI(
     title=config.app_nome,
-    description="Plataforma de estudo do método Mapa da Aprovação",
+    description="Plataforma de estudo do método Operação Aprovação",
     docs_url=None,
     redoc_url=None,
     lifespan=ciclo_de_vida,
