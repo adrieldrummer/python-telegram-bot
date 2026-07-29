@@ -128,4 +128,21 @@ app.include_router(webhooks.router)
 
 @app.get("/saude", include_in_schema=False)
 async def saude():
-    return {"ok": True, "app": config.app_nome}
+    """Prontidão da instalação, em booleanos.
+
+    Existe para responder de fora uma pergunta que só o servidor sabe: a
+    variável de ambiente entrou mesmo? Na Vercel a variável só passa a valer
+    depois de um redeploy, e não há sinal disso na tela — dá para salvar a
+    chave, achar que acabou, e descobrir na primeira venda que não.
+
+    Só booleanos: nenhum valor de segredo, nenhuma string de conexão. Saber
+    que a chave existe não ajuda ninguém a adivinhá-la.
+    """
+    return {
+        "ok": True,
+        "app": config.app_nome,
+        "versao": config.versao_estaticos,
+        "banco_persistente": not config.modo_demo,
+        "webhook_protegido": bool(config.cakto_webhook_segredo),
+        "email_configurado": config.smtp_configurado,
+    }
