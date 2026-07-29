@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import mimetypes
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -36,9 +37,28 @@ app = FastAPI(
     lifespan=ciclo_de_vida,
 )
 
+# o WebP não vem registrado em todo ambiente serverless — sem isto, as capas
+# são servidas como "application/octet-stream"
+mimetypes.add_type("image/webp", ".webp")
+mimetypes.add_type("image/svg+xml", ".svg")
+
+
+class EstaticosComCache(StaticFiles):
+    """Arte e CSS mudam raramente: uma semana de cache poupa banda e função.
+
+    Em página de venda paga isso vira dinheiro — sem cache, cada visitante
+    baixa as capas de novo e acorda a função a cada requisição.
+    """
+
+    def file_response(self, *args, **kwargs):  # type: ignore[override]
+        resposta = super().file_response(*args, **kwargs)
+        resposta.headers.setdefault("Cache-Control", "public, max-age=604800")
+        return resposta
+
+
 app.mount(
     "/static",
-    StaticFiles(directory=str(Path(__file__).parent / "static")),
+    EstaticosComCache(directory=str(Path(__file__).parent / "static")),
     name="static",
 )
 
