@@ -295,3 +295,33 @@ def test_identificacao_do_plano_segue_a_ordem_de_confianca():
     # e o valor só entra quando nome e link não dizem nada
     assert catalogo.identificar_por_valor(recruta.valor) == "recruta"
     assert catalogo.identificar_por_valor(elite.valor) == "elite"
+
+
+def test_link_do_checkout_casa_mesmo_alterado():
+    """Os três planos são ofertas do mesmo produto: só o link os distingue.
+
+    Como o nome do produto chega igual nas três vendas, se o link não casar a
+    venda cai no plano padrão — que é o mais barato. Vender Elite e entregar
+    Recruta é o erro mais caro que essa função pode cometer.
+    """
+    recruta = catalogo.POR_ID["recruta"]
+    elite = catalogo.POR_ID["elite"]
+
+    # exatamente como está cadastrado
+    assert catalogo.identificar_ou_nada(recruta.checkout_url) == "recruta"
+    # com barra no fim
+    assert catalogo.identificar_ou_nada(recruta.checkout_url + "/") == "recruta"
+    # com parâmetros de campanha grudados
+    assert catalogo.identificar_ou_nada(elite.checkout_url + "?utm_source=ig") == "elite"
+    # sem o sufixo da oferta, como alguns painéis devolvem
+    assert catalogo.identificar_ou_nada("https://pay.cakto.com.br/3b55ibi") == "recruta"
+    # só o slug, sem domínio
+    assert catalogo.identificar_ou_nada("y8zqtwu") == "elite"
+
+
+def test_codigo_numerico_nao_casa_no_meio_de_outro_numero():
+    """"47" dentro de "1470" ou de um id de oferta viraria Recruta por acidente."""
+    assert catalogo.identificar_ou_nada("pedido 1470 sem plano") == ""
+    assert catalogo.identificar_ou_nada("oferta B47xyz") == ""
+    # como palavra inteira continua valendo
+    assert catalogo.identificar_ou_nada("plano de R$ 47,00") == "recruta"

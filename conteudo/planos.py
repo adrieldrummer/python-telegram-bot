@@ -12,6 +12,7 @@ nunca "é do plano Y". Assim, criar oferta ou promoção não mexe em nenhuma te
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 # --- recursos disponíveis --------------------------------------------------
@@ -161,6 +162,38 @@ def identificar(*textos: str) -> str:
     return identificar_ou_nada(*textos) or PLANO_PADRAO
 
 
+def _slugs(url: str) -> tuple[str, ...]:
+    """Identificadores extraíveis de um link de checkout.
+
+    Os três planos são três ofertas do mesmo produto na Cakto, então o nome do
+    produto chega igual nas três vendas: o link é o único campo que diz qual
+    oferta foi comprada. Só que ele nem sempre volta idêntico ao divulgado —
+    pode vir sem o sufixo da oferta, com barra no fim ou com parâmetros de
+    campanha grudados. Comparar a URL inteira falharia em todos esses casos, e
+    falhar aqui é liberar o plano errado numa venda de verdade.
+    """
+    caminho = url.lower().split("?")[0].split("#")[0].rstrip("/")
+    slug = caminho.rsplit("/", 1)[-1]
+    if not slug:
+        return ()
+    base = slug.split("_")[0]
+    return (slug,) if base == slug else (slug, base)
+
+
+def _casa_codigo(codigo: str, alvo: str) -> bool:
+    """Código puramente numérico só casa como palavra inteira.
+
+    "47" solto casaria dentro de "1470" ou do id de uma oferta como "B47xyz" —
+    e aí uma venda de Elite viraria Recruta por acidente de substring.
+    """
+    codigo = (codigo or "").lower()
+    if not codigo:
+        return False
+    if codigo.isdigit():
+        return re.search(rf"\b{re.escape(codigo)}\b", alvo) is not None
+    return codigo in alvo
+
+
 def identificar_ou_nada(*textos: str) -> str:
     """Como `identificar`, mas devolve string vazia quando nada casa.
 
@@ -173,12 +206,18 @@ def identificar_ou_nada(*textos: str) -> str:
     if not alvo.strip():
         return ""
 
-    for p in PLANOS:
-        if p.checkout_url and p.checkout_url.lower().rstrip("/") in alvo:
-            return p.id
+    # do slug mais específico para o mais genérico: se um dia dois planos
+    # compartilharem o prefixo do link, casar pelo pedaço curto primeiro
+    # devolveria o plano errado
+    candidatos = [(slug, p.id) for p in PLANOS for slug in _slugs(p.checkout_url)]
+    candidatos.sort(key=lambda item: -len(item[0]))
+    for slug, plano_id in candidatos:
+        if slug in alvo:
+            return plano_id
+
     for p in PLANOS:
         for codigo in p.codigos_cakto:
-            if codigo and codigo.lower() in alvo:
+            if _casa_codigo(codigo, alvo):
                 return p.id
     return ""
 
