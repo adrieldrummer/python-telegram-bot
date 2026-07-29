@@ -317,8 +317,13 @@ async def serviceworker():
     Em /static/sw.js o escopo dele seria só /static/ — inútil.
     """
     arquivo = Path(__file__).resolve().parent.parent / "static" / "sw.js"
+    # a versão do deploy entra no nome dos caches: arquivo novo, caches antigos
+    # descartados na ativação
+    corpo = arquivo.read_text(encoding="utf-8").replace(
+        "__VERSAO__", f"oa-{config.versao_estaticos}"
+    )
     return Response(
-        arquivo.read_text(encoding="utf-8"),
+        corpo,
         media_type="application/javascript",
         headers={"Cache-Control": "no-cache", "Service-Worker-Allowed": "/"},
     )

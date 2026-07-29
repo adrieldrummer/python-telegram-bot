@@ -152,15 +152,35 @@ def limite_diario(plano_id: str) -> int:
 
 
 def identificar(*textos: str) -> str:
-    """Descobre o plano a partir do que a Cakto mandou (produto, oferta, valor)."""
+    """Descobre o plano pelo que a Cakto mandou: produto, oferta ou checkout.
+
+    O link do checkout é conferido primeiro porque é o identificador mais
+    estável — o vendedor renomeia produto e oferta quando quiser, mas o link
+    é o que ele divulgou e não muda sem trocar a campanha inteira.
+    """
+    return identificar_ou_nada(*textos) or PLANO_PADRAO
+
+
+def identificar_ou_nada(*textos: str) -> str:
+    """Como `identificar`, mas devolve string vazia quando nada casa.
+
+    A diferença importa: `identificar` devolve o plano padrão quando não
+    reconhece nada, e o padrão é justamente o plano de entrada. Quem precisa
+    saber se houve reconhecimento de verdade — para só então tentar pelo valor
+    pago — não consegue distinguir "achei recruta" de "não achei nada".
+    """
     alvo = " ".join(t.lower() for t in textos if t)
     if not alvo.strip():
-        return PLANO_PADRAO
+        return ""
+
+    for p in PLANOS:
+        if p.checkout_url and p.checkout_url.lower().rstrip("/") in alvo:
+            return p.id
     for p in PLANOS:
         for codigo in p.codigos_cakto:
             if codigo and codigo.lower() in alvo:
                 return p.id
-    return PLANO_PADRAO
+    return ""
 
 
 def identificar_por_valor(valor: float) -> str:

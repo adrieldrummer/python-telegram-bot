@@ -14,14 +14,18 @@
      pagamento nunca podem sair de cache.
 */
 
-const VERSAO = 'oa-v3';
+// __VERSAO__ é trocada pela rota /sw.js pela versão do deploy. Sem isso o
+// arquivo do service worker nunca muda, o navegador não o reinstala e os
+// caches antigos ficam servindo CSS e JS de versões passadas — foi o que
+// segurou o relógio regressivo com valores em branco depois de publicado.
+const VERSAO = '__VERSAO__';
 const CACHE_CASCO = `${VERSAO}-casco`;
 const CACHE_PAGINAS = `${VERSAO}-paginas`;
 
+// Só o que não muda de versão. CSS e JS ficam de fora de propósito: eles são
+// pedidos com ?v=<deploy> pelas páginas, e o cache deles acontece naturalmente
+// no primeiro acesso, já com a URL certa.
 const CASCO = [
-  '/static/css/app.css',
-  '/static/js/app.js',
-  '/static/js/questoes.js',
   '/static/img/emblema.png',
   '/static/img/favicon.png',
   '/static/img/icone-192.png',

@@ -269,3 +269,29 @@ def test_pagina_de_vendas_leva_para_os_checkouts_reais(cliente):
     html = cliente.get("/").text
     for plano, url in servico.checkouts().items():
         assert url in html, f"o botão do plano {plano} não aponta para o checkout"
+
+
+def test_identificacao_do_plano_segue_a_ordem_de_confianca():
+    """Link do checkout vence nome; nome vence valor; e nada é 'nada'.
+
+    A distinção entre "não reconheci" e "reconheci o plano de entrada" é
+    delicada porque o plano de entrada é o próprio padrão. Sem separar os dois,
+    uma compra do Recruta identificada corretamente pelo nome era tratada como
+    falha de reconhecimento e caía na identificação por valor.
+    """
+    recruta = catalogo.plano("recruta")
+    elite = catalogo.plano("elite")
+
+    # nada casa → string vazia, não o plano padrão
+    assert catalogo.identificar_ou_nada("produto qualquer") == ""
+    assert catalogo.identificar("produto qualquer") == catalogo.PLANO_PADRAO
+
+    # o nome reconhece
+    assert catalogo.identificar_ou_nada("Operação Aprovação — Recruta") == "recruta"
+
+    # o link vence o nome, porque o vendedor renomeia o produto quando quiser
+    assert catalogo.identificar_ou_nada(elite.checkout_url, "plano recruta") == "elite"
+
+    # e o valor só entra quando nome e link não dizem nada
+    assert catalogo.identificar_por_valor(recruta.valor) == "recruta"
+    assert catalogo.identificar_por_valor(elite.valor) == "elite"

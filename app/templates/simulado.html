@@ -33,7 +33,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/questoes.js"></script>
+<script src="/static/js/questoes.js?v={{ config.versao_estaticos }}"></script>
 <script>
 (function () {
   const raiz = document.querySelector('[data-player]');

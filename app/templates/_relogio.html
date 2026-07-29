@@ -10,18 +10,24 @@
 #}
 
 {% macro relogio(instante, compacto=False, rotulo="para a prova") -%}
+{# Os valores iniciais vêm do servidor, não em branco. Se o JavaScript demorar,
+   falhar ou vier de um cache antigo, o aluno ainda vê a contagem certa — só
+   não vê os segundos correndo. Melhor um relógio parado no horário certo que
+   quatro traços. #}
+{%- set _restante = (instante - agora_utc()).total_seconds() | int -%}
+{%- set _restante = _restante if _restante > 0 else 0 -%}
 <div class="relogio {{ 'relogio-compacto' if compacto }}"
      data-relogio="{{ instante.isoformat() }}"
      role="timer" aria-live="off"
      aria-label="Contagem regressiva {{ rotulo }}">
   <div class="relogio-casas">
-    <div class="casa"><strong data-dias>--</strong><span>dias</span></div>
+    <div class="casa"><strong data-dias>{{ _restante // 86400 }}</strong><span>dias</span></div>
     <div class="dois-pontos">:</div>
-    <div class="casa"><strong data-horas>--</strong><span>horas</span></div>
+    <div class="casa"><strong data-horas>{{ '%02d' % (_restante % 86400 // 3600) }}</strong><span>horas</span></div>
     <div class="dois-pontos">:</div>
-    <div class="casa"><strong data-minutos>--</strong><span>min</span></div>
+    <div class="casa"><strong data-minutos>{{ '%02d' % (_restante % 3600 // 60) }}</strong><span>min</span></div>
     <div class="dois-pontos">:</div>
-    <div class="casa"><strong data-segundos>--</strong><span>seg</span></div>
+    <div class="casa"><strong data-segundos>{{ '%02d' % (_restante % 60) }}</strong><span>seg</span></div>
   </div>
   {% if not compacto %}
   <p class="relogio-rodape apagado" data-relogio-rodape>

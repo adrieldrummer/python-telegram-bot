@@ -38,6 +38,7 @@ templates.env.globals.update(
         # a contagem regressiva aparece em várias telas; calcular na hora evita
         # cache de data errado em processo que fica dias no ar
         "dias_para_prova": edital.dias_para_prova,
+        "agora_utc": agora,
         "DATA_PROVA": edital.DATA_PROVA,
     }
 )

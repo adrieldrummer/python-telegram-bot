@@ -124,5 +124,5 @@
 {% endblock %}
 
 {% block scripts %}
-{% if d.missao.tipo != 'simulado' %}<script src="/static/js/questoes.js"></script>{% endif %}
+{% if d.missao.tipo != 'simulado' %}<script src="/static/js/questoes.js?v={{ config.versao_estaticos }}"></script>{% endif %}
 {% endblock %}

@@ -110,17 +110,24 @@ def extrair(payload: dict) -> dict:
     evento = _buscar(payload, "event", "type", "data.event", "webhook_event").lower()
     referencia = _buscar(
         payload,
-        "id",
         "data.id",
+        "id",
+        "data.refId",
         "transaction_id",
         "data.transaction_id",
         "order_id",
         "data.order.id",
         "reference",
     )
-    produto = _buscar(payload, "product.name", "data.product.name", "product_name", "offer.name")
-    oferta = _buscar(payload, "offer.name", "data.offer.name", "offer_id", "data.offer.id")
-    bruto = _buscar(payload, "amount", "data.amount", "value", "data.value", "total", "price")
+    produto = _buscar(payload, "data.product.name", "product.name", "product_name")
+    oferta = _buscar(payload, "data.offer.name", "offer.name", "data.offer.id", "offer_id")
+    # o link do checkout é o identificador mais estável da oferta: o vendedor
+    # renomeia produto e oferta quando quiser, mas o link é o que ele divulgou
+    checkout = _buscar(payload, "data.checkoutUrl", "checkoutUrl", "data.checkout_url")
+    bruto = _buscar(
+        payload, "data.amount", "amount", "data.baseAmount", "value", "data.value",
+        "total", "data.offer.price",
+    )
     try:
         valor_pago = float(str(bruto).replace(",", ".")) if bruto else 0.0
     except ValueError:
@@ -138,14 +145,34 @@ def extrair(payload: dict) -> dict:
         "referencia": referencia,
         "produto": produto,
         "oferta": oferta,
+        "checkout": checkout,
         "valor": valor_pago,
+        # assinatura: a Cakto manda o objeto quando o produto é recorrente
+        "assinatura": bool(_buscar(payload, "data.subscription.id", "data.subscription")),
     }
 
 
-def _assinatura_confere(request: Request, corpo: bytes) -> bool:
+def _assinatura_confere(request: Request, corpo: bytes, payload: dict) -> bool:
+    """Confere se a chamada veio mesmo da Cakto.
+
+    A Cakto manda a chave secreta **dentro do corpo**, no campo `secret` do
+    JSON — não como assinatura em cabeçalho. As outras formas continuam
+    aceitas porque o painel varia entre contas e porque outros provedores
+    (ou um proxy próprio) podem assinar por cabeçalho.
+
+    A comparação é sempre por `compare_digest`: comparar segredo com `==`
+    vaza, pelo tempo de resposta, quantos caracteres iniciais bateram.
+    """
     segredo = config.cakto_webhook_segredo
     if not segredo:
         return config.cakto_permitir_sem_assinatura
+
+    # 1) o jeito da Cakto: campo "secret" no corpo
+    do_corpo = _buscar(payload, "secret", "data.secret", "webhook_secret")
+    if do_corpo and hmac.compare_digest(do_corpo, segredo):
+        return True
+
+    # 2) cabeçalho: HMAC-SHA256 do corpo ou token compartilhado
     enviada = (
         request.headers.get(config.cakto_header_assinatura)
         or request.headers.get("x-webhook-signature")
@@ -156,16 +183,30 @@ def _assinatura_confere(request: Request, corpo: bytes) -> bool:
     if not enviada:
         return False
     enviada = enviada.split("=")[-1].strip()
-    # aceita tanto HMAC-SHA256 do corpo quanto token compartilhado simples
     if hmac.compare_digest(enviada, assinatura_hmac(corpo, segredo)):
         return True
     return hmac.compare_digest(enviada, segredo)
 
 
+def _sem_segredo(payload: dict) -> dict:
+    """Remove a chave secreta antes de guardar o payload.
+
+    O histórico em /admin/webhooks existe para conferência e fica visível para
+    qualquer administrador. Guardar o segredo ali seria deixá-lo em texto puro
+    no banco, à toa.
+    """
+    limpo = dict(payload)
+    for campo in ("secret", "webhook_secret"):
+        if campo in limpo:
+            limpo[campo] = "***"
+    if isinstance(limpo.get("data"), dict) and "secret" in limpo["data"]:
+        limpo["data"] = {**limpo["data"], "secret": "***"}
+    return limpo
+
+
 @router.post("/cakto")
 async def cakto(request: Request):
     corpo = await request.body()
-    valida = _assinatura_confere(request, corpo)
     try:
         payload = json.loads(corpo.decode("utf-8") or "{}")
     except (json.JSONDecodeError, UnicodeDecodeError):
@@ -173,6 +214,7 @@ async def cakto(request: Request):
     if not isinstance(payload, dict):
         payload = {"payload": payload}
 
+    valida = _assinatura_confere(request, corpo, payload)
     dados = extrair(payload)
     resultado = ""
     status_http = 200
@@ -201,7 +243,14 @@ async def cakto(request: Request):
             )
             if assinatura_cancelada:
                 cancelado = False   # o acesso continua até o fim do período pago
-            plano_id = catalogo_planos.identificar(dados["produto"], dados["oferta"])
+            # link do checkout > nome do produto/oferta > valor pago > padrão
+            plano_id = catalogo_planos.identificar_ou_nada(
+                dados["checkout"], dados["produto"], dados["oferta"]
+            )
+            if not plano_id and dados["valor"]:
+                plano_id = catalogo_planos.identificar_por_valor(dados["valor"])
+            if not plano_id:
+                plano_id = catalogo_planos.PLANO_PADRAO
 
             aluno = servico_alunos.por_email(con, dados["email"])
             if aprovado:
@@ -274,7 +323,7 @@ async def cakto(request: Request):
                 dados["referencia"] or None,
                 (dados["evento"] or dados["status"])[:80],
                 1 if valida else 0,
-                json.dumps(payload, ensure_ascii=False)[:8000],
+                json.dumps(_sem_segredo(payload), ensure_ascii=False)[:8000],
                 resultado,
             ),
         )

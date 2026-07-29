@@ -188,3 +188,105 @@ def test_comprador_entra_direto_com_a_senha_do_email(cliente):
     with sessao() as con:
         aluno = servico_alunos.por_email(con, "novato@teste.com")
         assert aluno["senha_temporaria"] == 0
+
+
+# --- o formato real da Cakto ----------------------------------------------
+
+PAYLOAD_CAKTO = {
+    "secret": "chave-do-painel-da-cakto",
+    "event": "purchase_approved",
+    "data": {
+        "id": "87956abe-940e-4e8b-8a27-82c482920f64",
+        "refId": "9vbgfmg",
+        "customer": {
+            "name": "Maria Souza",
+            "email": "maria.souza@example.com",
+            "phone": "34999999999",
+            "docNumber": "12345678909",
+            "docType": "cpf",
+        },
+        "offer": {"id": "B8BcHrY", "name": "Oferta principal", "price": 47},
+        "offer_type": "main",
+        "product": {"name": "Operação Aprovação", "id": "ff3fdf61", "type": "unique"},
+        "checkoutUrl": "https://pay.cakto.com.br/3b55ibi_1009316",
+        "status": "paid",
+        "baseAmount": 47,
+        "discount": 0,
+        "amount": 47,
+        "installments": 1,
+        "paymentMethod": "credit_card",
+        "paidAt": "2026-06-26T12:00:00.000000+00:00",
+    },
+}
+
+
+def enviar_bruto(cliente, corpo: dict):
+    """Sem cabeçalho de assinatura: a Cakto autentica pelo campo `secret`."""
+    return cliente.post(
+        "/webhooks/cakto",
+        content=json.dumps(corpo).encode(),
+        headers={"content-type": "application/json"},
+    )
+
+
+def test_cakto_autentica_pelo_segredo_no_corpo(cliente):
+    """A Cakto manda a chave dentro do JSON, não como assinatura no cabeçalho.
+
+    Este é o formato real do painel. Sem aceitá-lo, toda venda seria recusada
+    com 401 e nenhum acesso seria liberado.
+    """
+    com_segredo("chave-do-painel-da-cakto")
+    resposta = enviar_bruto(cliente, PAYLOAD_CAKTO)
+    assert resposta.status_code == 200, resposta.text
+
+    with sessao() as con:
+        aluno = servico_alunos.por_email(con, "maria.souza@example.com")
+        assert aluno is not None
+        assert aluno["status"] == "ativo"
+        assert aluno["nome"] == "Maria Souza"
+        # o link do checkout identificou o plano de entrada
+        assert aluno["plano"] == "recruta"
+
+
+def test_segredo_errado_no_corpo_e_recusado(cliente):
+    com_segredo("chave-do-painel-da-cakto")
+    intruso = {**PAYLOAD_CAKTO, "secret": "chave-errada"}
+    assert enviar_bruto(cliente, intruso).status_code == 401
+    with sessao() as con:
+        assert valor(con, "SELECT COUNT(*) FROM alunos") == 0
+
+
+def test_sem_segredo_nenhum_e_recusado(cliente):
+    com_segredo("chave-do-painel-da-cakto")
+    sem = {k: v for k, v in PAYLOAD_CAKTO.items() if k != "secret"}
+    assert enviar_bruto(cliente, sem).status_code == 401
+
+
+def test_link_do_checkout_define_o_plano(cliente):
+    """O vendedor renomeia produto e oferta; o link é o que ele divulgou."""
+    from conteudo import planos as catalogo
+
+    com_segredo("chave-do-painel-da-cakto")
+    for plano in catalogo.PLANOS:
+        corpo = json.loads(json.dumps(PAYLOAD_CAKTO))
+        corpo["data"]["id"] = f"tx-{plano.id}"
+        corpo["data"]["customer"]["email"] = f"{plano.id}@example.com"
+        corpo["data"]["checkoutUrl"] = plano.checkout_url
+        corpo["data"]["product"]["name"] = "Nome trocado pelo vendedor"
+        corpo["data"]["offer"]["name"] = "Oferta renomeada"
+        corpo["data"]["amount"] = plano.valor
+        assert enviar_bruto(cliente, corpo).status_code == 200
+
+        with sessao() as con:
+            aluno = servico_alunos.por_email(con, f"{plano.id}@example.com")
+            assert aluno["plano"] == plano.id, f"{plano.id} identificado como {aluno['plano']}"
+
+
+def test_segredo_nao_fica_guardado_no_historico(cliente):
+    """O histórico do admin é visível; o segredo não pode viver lá em texto puro."""
+    com_segredo("chave-do-painel-da-cakto")
+    enviar_bruto(cliente, PAYLOAD_CAKTO)
+    with sessao() as con:
+        guardado = buscar_um(con, "SELECT payload FROM webhooks ORDER BY id DESC")["payload"]
+    assert "chave-do-painel-da-cakto" not in guardado
+    assert '"secret": "***"' in guardado

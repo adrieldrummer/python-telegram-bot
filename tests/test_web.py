@@ -285,3 +285,48 @@ def test_instante_da_prova_bate_com_a_data_do_edital():
     assert edital.segundos_para_prova() // 86400 in (
         edital.dias_para_prova(), edital.dias_para_prova() - 1
     )
+
+
+def test_relogio_funciona_mesmo_sem_javascript(cliente):
+    """O HTML já nasce com a contagem certa.
+
+    Se o JS falhar, demorar ou vier de um cache antigo, o aluno precisa ver
+    números — e não quatro traços, que foi o que apareceu em produção quando o
+    navegador serviu o app.js da semana anterior.
+    """
+    import re
+
+    from conteudo import edital
+
+    html = cliente.get("/").text
+    bloco = re.search(r'<div class="relogio.*?</div>\s*</div>', html, re.S).group(0)
+    dias = re.search(r"<strong data-dias>(\d+)</strong>", bloco)
+    assert dias, "os dias precisam vir renderizados do servidor"
+    assert int(dias.group(1)) == edital.segundos_para_prova() // 86400
+    for campo in ("data-horas", "data-minutos", "data-segundos"):
+        valor = re.search(rf"<strong {campo}>(\d{{2}})</strong>", bloco)
+        assert valor, f"{campo} precisa vir preenchido, com dois dígitos"
+    assert "--" not in bloco
+
+
+def test_estaticos_carregam_com_a_versao_do_deploy(cliente):
+    """URL versionada é o que impede o visitante de ficar preso no CSS antigo.
+
+    Os estáticos são servidos com uma semana de cache. Sem a versão na URL, um
+    deploy novo não chega a quem já visitou — foi assim que o relógio entrou no
+    ar e ninguém viu.
+    """
+    from app.config import config
+
+    versao = config.versao_estaticos
+    assert versao and versao != "dev"
+
+    html = cliente.get("/").text
+    assert f"/static/css/app.css?v={versao}" in html
+    assert f"/static/js/app.js?v={versao}" in html
+
+    # e o service worker precisa nomear os caches pela mesma versão,
+    # senão ele continua servindo o que guardou antes
+    sw = cliente.get("/sw.js").text
+    assert "__VERSAO__" not in sw, "o marcador de versão não foi substituído"
+    assert versao in sw

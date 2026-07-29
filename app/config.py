@@ -120,6 +120,32 @@ class Config:
     meta_acerto_missao: int = _int("META_ACERTO_MISSAO", 60)
 
     @property
+    def versao_estaticos(self) -> str:
+        """Identificador que muda a cada publicação.
+
+        CSS e JS são servidos com uma semana de cache — sem isso cada visitante
+        rebaixa as capas e acorda a função. Mas cache longo em URL fixa prende o
+        visitante na versão antiga por uma semana inteira: foi o que aconteceu
+        quando o relógio regressivo entrou e ninguém viu.
+
+        A solução é a URL carregar a versão (`app.css?v=abc123`). Na Vercel, o
+        SHA do commit já serve; fora dela, a data de modificação dos arquivos.
+        """
+        sha = os.getenv("VERCEL_GIT_COMMIT_SHA", "").strip()
+        if sha:
+            return sha[:10]
+        try:
+            estaticos = RAIZ / "app" / "static"
+            recente = max(
+                arquivo.stat().st_mtime
+                for arquivo in estaticos.rglob("*")
+                if arquivo.is_file() and arquivo.suffix in {".css", ".js"}
+            )
+            return str(int(recente))
+        except (ValueError, OSError):
+            return "dev"
+
+    @property
     def serverless(self) -> bool:
         """True quando roda em plataforma sem disco persistente (Vercel/Lambda)."""
         return bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"))

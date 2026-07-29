@@ -32,7 +32,7 @@
   <meta property="og:image" content="{{ config.app_url }}/static/img/hero.webp">
   <meta name="twitter:card" content="summary_large_image">
 
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="stylesheet" href="/static/css/app.css?v={{ config.versao_estaticos }}">
   {% if config.meta_verificacao_dominio %}
   <meta name="facebook-domain-verification" content="{{ config.meta_verificacao_dominio }}">
   {% endif %}
@@ -235,7 +235,7 @@
 </footer>
 {% endblock %}
 
-<script src="/static/js/app.js"></script>
+<script src="/static/js/app.js?v={{ config.versao_estaticos }}"></script>
 {% if config.pixel_ativo %}
 <script>
   // Todo botão de compra avisa o Meta que a pessoa foi para o checkout.
