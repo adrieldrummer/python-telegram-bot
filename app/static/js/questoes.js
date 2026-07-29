@@ -193,6 +193,14 @@
         window.MAPA.aviso(`🔥 +${retorno.bonus_streak} pontos de constância`, 'ok');
       }
       window.MAPA.medalhas(retorno.medalhas);
+      // aviso antecipado: descobrir o teto do plano na última questão frustra
+      if (typeof retorno.restantes_hoje === 'number' && retorno.restantes_hoje <= 5) {
+        window.MAPA.aviso(
+          retorno.restantes_hoje > 0
+            ? `Restam ${retorno.restantes_hoje} questões hoje no seu plano.`
+            : 'Você fechou o limite de questões de hoje. Faça upgrade para treinar sem teto.'
+        );
+      }
       desenhar();
       if (simulado) {
         setTimeout(() => {
@@ -204,6 +212,8 @@
       }
     } catch (erro) {
       window.MAPA.aviso(erro.message);
+      // 402 é sempre limite de plano: leva o aluno para onde ele resolve isso
+      if (erro.status === 402) setTimeout(() => { window.location.href = '/planos'; }, 2200);
     }
   }
 

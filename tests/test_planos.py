@@ -125,9 +125,14 @@ def test_gate_bloqueia_simulado_no_plano_recruta(cliente):
         servico.aplicar(con, int(alvo["id"]), "recruta")
 
     entrar(cliente, "aluna@teste.com", "blindagem30")
-    bloqueado = cliente.get("/simulados")
+    # a vitrine de simulados abre — o bloqueio é por simulado, pelo recurso dele
+    vitrine = cliente.get("/simulados")
+    assert vitrine.status_code == 200
+    bloqueado = cliente.get("/simulado/sim-1")
     assert bloqueado.status_code == 402
     assert "não está no seu plano" in bloqueado.text
+    # o diagnóstico é prometido no plano de entrada e precisa abrir
+    assert cliente.get("/simulado/sim-diagnostico").status_code == 200
     assert cliente.get("/questoes").status_code == 200   # esse continua liberado
     assert cliente.get("/planos").status_code == 200
 
@@ -140,9 +145,110 @@ def test_upgrade_libera_o_recurso(cliente):
         alvo = servico_alunos.por_email(con, "aluna@teste.com")
         servico.aplicar(con, int(alvo["id"]), "recruta")
     entrar(cliente, "aluna@teste.com", "blindagem30")
-    assert cliente.get("/simulados").status_code == 402
+    assert cliente.get("/simulado/sim-1").status_code == 402
 
     with sessao() as con:
         alvo = servico_alunos.por_email(con, "aluna@teste.com")
         servico.aplicar(con, int(alvo["id"]), "operacao")
-    assert cliente.get("/simulados").status_code == 200
+    # o gate de plano saiu; sobra só o da trilha (o Dia 4 ainda não foi liberado)
+    assert cliente.get("/simulado/sim-1").status_code == 403
+
+
+# --- limite diário do plano de entrada -------------------------------------
+
+
+def test_saldo_diario_conta_apenas_as_questoes_de_hoje(con, aluno):
+    from conteudo.questoes import QUESTOES
+
+    from app import estudo
+
+    aluno_id = int(aluno["id"])
+    servico.aplicar(con, aluno_id, "recruta")
+    atualizado = buscar_um(con, "SELECT * FROM alunos WHERE id=?", (aluno_id,))
+    limite = servico.limite_do_dia(atualizado)
+    assert limite > 0
+
+    for q in QUESTOES[:3]:
+        estudo.responder(con, aluno_id, q, q.correta, origem="treino")
+
+    saldo = servico.saldo_de_questoes(con, atualizado)
+    assert saldo["limitado"] and saldo["feitas"] == 3
+    assert saldo["restantes"] == limite - 3
+    assert not saldo["esgotado"]
+
+
+def test_plano_superior_nao_tem_teto_diario(con, aluno):
+    aluno_id = int(aluno["id"])
+    servico.aplicar(con, aluno_id, "operacao")
+    atualizado = buscar_um(con, "SELECT * FROM alunos WHERE id=?", (aluno_id,))
+    saldo = servico.saldo_de_questoes(con, atualizado)
+    assert not saldo["limitado"] and saldo["restantes"] is None
+
+
+def test_api_recusa_questao_depois_do_limite_diario(cliente):
+    from conteudo.questoes import QUESTOES
+
+    from app import alunos as servico_alunos, estudo
+
+    with sessao() as con:
+        servico_alunos.criar(con, "Aluna", "aluna@teste.com", senha="blindagem30")
+        alvo = servico_alunos.por_email(con, "aluna@teste.com")
+        aluno_id = int(alvo["id"])
+        servico.aplicar(con, aluno_id, "recruta")
+        alvo = buscar_um(con, "SELECT * FROM alunos WHERE id=?", (aluno_id,))
+        limite = servico.limite_do_dia(alvo)
+        for q in QUESTOES[:limite]:
+            estudo.responder(con, aluno_id, q, q.correta, origem="treino")
+
+    entrar(cliente, "aluna@teste.com", "blindagem30")
+    sobrando = QUESTOES[limite]
+    resposta = cliente.post(
+        "/api/responder",
+        json={"questao_id": sobrando.id, "alternativa": sobrando.correta, "origem": "treino"},
+    )
+    assert resposta.status_code == 402
+    assert "limite" in resposta.json()["erro"].lower()
+
+
+def test_modulo_avancado_exige_upgrade(cliente):
+    from app import alunos as servico_alunos
+
+    with sessao() as con:
+        servico_alunos.criar(con, "Aluna", "aluna@teste.com", senha="blindagem30")
+        alvo = servico_alunos.por_email(con, "aluna@teste.com")
+        servico.aplicar(con, int(alvo["id"]), "recruta")
+
+    entrar(cliente, "aluna@teste.com", "blindagem30")
+    # o download da apostila não pode ser porta dos fundos do gate de leitura
+    assert cliente.get("/manual").status_code == 402
+    assert cliente.get("/manual/download").status_code == 402
+
+    # a vitrine abre para todo mundo — é ela que vende o upgrade
+    vitrine = cliente.get("/modulos")
+    assert vitrine.status_code == 200
+    assert "Redação" in vitrine.text
+    assert cliente.get("/modulos/redacao").status_code == 402
+
+    with sessao() as con:
+        alvo = servico_alunos.por_email(con, "aluna@teste.com")
+        servico.aplicar(con, int(alvo["id"]), "operacao")
+    assert cliente.get("/modulos/redacao").status_code == 200
+
+
+# --- terreno pronto para os links de checkout da Cakto ---------------------
+
+
+def test_cada_plano_tem_seu_link_de_checkout(monkeypatch, cliente):
+    monkeypatch.setenv("CAKTO_CHECKOUT_RECRUTA", "https://pay.cakto.com.br/recruta")
+    monkeypatch.setenv("CAKTO_CHECKOUT_ELITE", "https://pay.cakto.com.br/elite")
+    links = servico.checkouts()
+    assert links["recruta"] == "https://pay.cakto.com.br/recruta"
+    assert links["elite"] == "https://pay.cakto.com.br/elite"
+    # sem link próprio, cai no checkout geral em vez de apontar para lugar nenhum
+    from app.config import config
+
+    assert links["operacao"] == config.cakto_checkout_url
+
+    html = cliente.get("/").text
+    assert "https://pay.cakto.com.br/recruta" in html
+    assert "https://pay.cakto.com.br/elite" in html

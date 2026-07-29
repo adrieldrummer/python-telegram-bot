@@ -1,11 +1,15 @@
 # Operação Aprovação — plataforma de estudo
 
-Curso completo, pronto para vender na **Cakto**, construído a partir do e-book
-*"O Mapa da Aprovação — como fui aprovado Soldado PM 2ª Classe em 60 dias"*.
-O método do e-book foi recomprimido para **30 dias** e transformado em
-plataforma: login por e-mail e senha, liberação diária com desbloqueio,
-pontos de estudo, aprovação de acesso por e-mail e as ferramentas que o autor
-fazia à mão (diagnóstico, caderno de erros e revisão espaçada).
+Curso completo, pronto para vender na **Cakto**, construído a partir da
+*Apostila Explicativa — Edital PM-SP 2026 em 7 Dias*: o edital do concurso de
+Soldado PM 2ª Classe (2000 vagas, banca VUNESP, prova em 20/09/2026) explicado
+tópico a tópico, para o aluno **entender** em vez de decorar.
+
+A apostila virou plataforma: login por e-mail e senha, trilha de 7 dias com
+desbloqueio, banco de questões comentadas, caderno de erros com revisão
+espaçada, simulados no formato oficial e módulos avançados atrás de cadeado —
+entrada por **R$ 47/mês** com limite diário, upgrade quando o aluno precisa de
+mais.
 
 ![Operação Aprovação](app/static/img/emblema.png)
 
@@ -15,17 +19,18 @@ fazia à mão (diagnóstico, caderno de erros e revisão espaçada).
 
 | Área | O que faz |
 |------|-----------|
-| **Página de vendas** | Landing com hero cinematográfico, as 4 fases, diferenciais, FAQ e botão para o checkout da Cakto |
+| **Página de vendas** | Landing com os números reais do edital, contagem regressiva, distribuição da prova, os 7 dias, planos e FAQ |
 | **Acesso** | Login e-mail/senha (PBKDF2), sessões assinadas e revogáveis, CSRF, bloqueio por força bruta, recuperação de senha |
 | **Aprovação por e-mail** | Compra aprovada na Cakto → aluno criado → e-mail de aprovação com link único → aluno define a senha → Dia 1 liberado |
-| **Jornada 30 dias** | 4 fases, 30 aulas escritas, missão diária, desbloqueio sequencial + drip, Chave de Antecipação por pontos |
-| **Banco de questões** | 97 questões autorais comentadas, com "armadilha da banca" explicada, filtráveis por matéria e nível |
+| **Trilha de 7 dias** | 4 fases, uma grande área do edital por dia, missão de questões, desbloqueio sequencial + drip, Chave de Antecipação por pontos |
+| **Banco de questões** | 94 questões autorais comentadas nas 6 matérias do edital, com a "armadilha da banca" explicada |
 | **Caderno de Erros** | Classificação do erro (conteúdo / pegadinha / desatenção) e revisão espaçada 1‑3‑7‑15 dias até dominar |
-| **Simulados** | 3 provas cronometradas com relatório de tempo e acerto por matéria e curva de evolução |
+| **Simulados** | Diagnóstico de 20 questões + 2 provas de 60 na distribuição exata da VUNESP, com relatório por matéria |
 | **Pontos e patentes** | XP por ação, streak, 20 medalhas, 9 patentes (Recruta → Subtenente), ranking da turma |
-| **Manual do Mapa** | O e-book revisado e ampliado: 16 capítulos, 6 deles novos, com download em Markdown |
-| **Certificado** | Liberado ao concluir os 30 dias, com as estatísticas reais do aluno |
-| **Planos e assinaturas** | 3 planos com recursos próprios, mapeamento automático produto Cakto → plano, renovação, cancelamento e expiração, tela de upgrade |
+| **Apostila completa** | O edital inteiro explicado em 9 capítulos, gerados da própria trilha, com download em Markdown |
+| **Módulos avançados** | Redação, TAF, etapas eliminatórias e aprofundamento de Português e Matemática — 6 módulos, 14 aulas, atrás de cadeado |
+| **Certificado** | Liberado ao concluir a trilha, com as estatísticas reais do aluno |
+| **Planos e assinaturas** | 3 planos mensais (R$ 47 / R$ 97 / R$ 197), teto diário no plano de entrada, mapeamento automático produto Cakto → plano, renovação, cancelamento e expiração |
 | **Meta Ads** | Pixel na página de vendas + API de Conversões server-side (Purchase, CompleteRegistration e Refund saindo do webhook) |
 | **Painel do admin** | Métricas, funil da jornada, alunos por plano, vencimentos, liberação manual de acesso, compras, webhooks, caixa de e-mails, conteúdo e diagnóstico de configuração |
 
@@ -43,14 +48,18 @@ python run.py                 # http://localhost:8000
 | Papel | E-mail | Senha |
 |-------|--------|-------|
 | Administrador | `admin@teste.com` | `admin1234` |
-| Aluno | `aluno@teste.com` | `aluno1234` |
+| Aluno (Operação Completa) | `aluno@teste.com` | `aluno1234` |
+| Aluno (Recruta, R$ 47) | `recruta@teste.com` | `recruta1234` |
+
+A conta `recruta@teste.com` existe para ver a plataforma como quem paga o plano
+de entrada: teto diário de questões e módulos avançados no cadeado.
 
 > Antes de vender, troque essas senhas (ou apague as contas em `/admin/alunos`).
 
 ### Testes
 
 ```bash
-python -m pytest tests/ -q                      # 89 testes, SQLite
+python -m pytest tests/ -q                      # 100 testes, SQLite
 DATABASE_URL="postgres://..." python -m pytest  # mesma suíte, Postgres
 ```
 
@@ -100,16 +109,18 @@ app/            aplicação FastAPI
   templates/    Jinja2 (interface + e-mails)
   static/       CSS, JS e as artes geradas
 conteudo/       o curso e a oferta, versionados em git (sem banco):
-  planos.py     planos, preços e recursos de cada um
-  trilha/       30 dias em 4 fases
+  edital.py     os fatos do concurso (vagas, banca, datas, distribuição da prova)
+  planos.py     planos, preços, recursos e limites de cada um
+  trilha/       os 7 dias em 4 fases
   questoes/     banco por matéria
   simulados.py  montagem determinística das provas
-  manual.py     e-book 2ª edição
+  modulos.py    módulos avançados (redação, TAF, etapas, aprofundamentos)
+  manual.py     apostila gerada a partir da trilha
   materias.py   matérias, pesos e categorias de erro
   patentes.py   patentes e medalhas
 deploy/         Dockerfile, docker-compose, Caddy (HTTPS automático)
 docs/           deploy, Cakto, domínio e operação
-tests/          89 testes automatizados
+tests/          100 testes automatizados
 ```
 
 Duas decisões que valem explicação:

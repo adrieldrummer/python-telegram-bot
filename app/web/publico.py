@@ -5,10 +5,10 @@ from __future__ import annotations
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import RedirectResponse
 
-from conteudo import TOTAL_QUESTOES, trilha
+from conteudo import TOTAL_QUESTOES, edital, modulos as catalogo_modulos, trilha
 from conteudo import planos as catalogo_planos
 
-from .. import alunos, mailer, marketing
+from .. import alunos, mailer, marketing, planos as servico_planos
 from ..config import config
 from ..db import buscar_um, sessao
 from ..deps import (
@@ -45,9 +45,13 @@ async def vendas(request: Request):
         request,
         "vendas.html",
         {
+            "ed": edital.resumo(),
+            "dias": trilha.DIAS,
             "fases": trilha.FASES,
+            "modulos": catalogo_modulos.ordenados(),
             "total_questoes": TOTAL_QUESTOES,
             "checkout": config.cakto_checkout_url,
+            "checkouts": servico_planos.checkouts(),
             "planos": catalogo_planos.PLANOS,
         },
     )

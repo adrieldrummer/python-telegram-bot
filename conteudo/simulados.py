@@ -1,11 +1,22 @@
-"""Simulados cronometrados — montagem determinística a partir do banco de questões."""
+"""Simulados no formato real da prova — montagem determinística.
+
+A prova objetiva da VUNESP tem 60 questões distribuídas assim: Língua
+Portuguesa 20, Matemática 15, Conhecimentos Gerais 15 (História e Geografia/
+Atualidades), Informática 5 e Administração Pública 5. Os simulados completos
+reproduzem exatamente essa distribuição — treinar em outro formato é treinar
+outra prova.
+"""
 
 from __future__ import annotations
 
 import random
 from dataclasses import dataclass
 
+from .edital import NOTA_MINIMA, PROVA_OBJETIVA
 from .questoes import POR_MATERIA, Questao
+
+# a composição oficial, direto do edital
+COMPOSICAO_OFICIAL = tuple((materia, quantidade) for materia, _, quantidade in PROVA_OBJETIVA)
 
 
 @dataclass(frozen=True)
@@ -20,84 +31,70 @@ class Simulado:
     semente: int
     dia_liberacao: int
     capa: str
+    recurso: str = "simulados"   # recurso de plano exigido
+    oficial: bool = False        # segue a distribuição da prova real
 
 
 SIMULADOS: tuple[Simulado, ...] = (
     Simulado(
-        id="sim-1",
-        nome="Simulado 1 — Diagnóstico de execução",
-        subtitulo="30 questões · 60 minutos",
+        id="sim-diagnostico",
+        nome="Simulado Diagnóstico",
+        subtitulo="20 questões · 30 minutos",
         descricao=(
-            "Primeiro contato com prova cronometrada. O objetivo não é a nota: é descobrir como "
-            "você administra o relógio e onde a atenção cai."
+            "Bloco curto para você descobrir, logo no começo, onde estão seus pontos fracos — "
+            "com a mesma proporção de matérias da prova real."
         ),
-        minutos=60,
-        total=30,
+        minutos=30,
+        total=20,
         composicao=(
-            ("portugues", 6),
-            ("constitucional", 5),
-            ("matematica", 4),
-            ("administrativo", 4),
-            ("penal", 4),
-            ("legislacao", 3),
-            ("atualidades", 2),
+            ("portugues", 7),
+            ("matematica", 5),
+            ("historia", 3),
+            ("geografia", 2),
             ("informatica", 2),
+            ("administracao", 1),
         ),
-        semente=1901,
-        dia_liberacao=19,
-        capa="simulado-1",
+        semente=101,
+        dia_liberacao=1,
+        capa="simulados",
+        recurso="questoes",   # incluído no plano de entrada
+    ),
+    Simulado(
+        id="sim-1",
+        nome="Simulado Oficial 1",
+        subtitulo="60 questões · 3 horas",
+        descricao=(
+            "Prova completa no formato VUNESP: 20 de Português, 15 de Matemática, 15 de "
+            "Conhecimentos Gerais, 5 de Informática e 5 de Administração Pública."
+        ),
+        minutos=180,
+        total=60,
+        composicao=COMPOSICAO_OFICIAL,
+        semente=2026,
+        dia_liberacao=4,
+        capa="simulados",
+        oficial=True,
     ),
     Simulado(
         id="sim-2",
-        nome="Simulado 2 — Ritmo de prova",
-        subtitulo="40 questões · 80 minutos",
+        nome="Simulado Oficial 2",
+        subtitulo="60 questões · 3 horas",
         descricao=(
-            "Mais longo e mais próximo da prova real. Agora com estratégia definida: três "
-            "passadas, transcrição em blocos e pausa técnica planejada."
+            "Segunda prova completa, com outro sorteio de questões. Use para medir evolução e "
+            "treinar gestão de tempo com a prova inteira."
         ),
-        minutos=80,
-        total=40,
-        composicao=(
-            ("portugues", 8),
-            ("constitucional", 7),
-            ("matematica", 6),
-            ("administrativo", 5),
-            ("penal", 5),
-            ("legislacao", 4),
-            ("atualidades", 3),
-            ("informatica", 2),
-        ),
-        semente=2302,
-        dia_liberacao=23,
-        capa="simulado-2",
-    ),
-    Simulado(
-        id="sim-3",
-        nome="Simulado 3 — Ensaio geral",
-        subtitulo="50 questões · 100 minutos",
-        descricao=(
-            "O ensaio geral. Reproduza as condições reais da prova: mesmo horário, mesa limpa, "
-            "celular longe. É este número que você leva como referência."
-        ),
-        minutos=100,
-        total=50,
-        composicao=(
-            ("portugues", 9),
-            ("constitucional", 8),
-            ("matematica", 8),
-            ("administrativo", 6),
-            ("penal", 6),
-            ("legislacao", 5),
-            ("atualidades", 4),
-            ("informatica", 4),
-        ),
-        semente=2603,
-        dia_liberacao=26,
-        capa="simulado-3",
+        minutos=180,
+        total=60,
+        composicao=COMPOSICAO_OFICIAL,
+        semente=920,
+        dia_liberacao=7,
+        capa="simulados",
+        oficial=True,
     ),
 )
 
 POR_ID = {s.id: s for s in SIMULADOS}
+NOTA_DE_CORTE = NOTA_MINIMA
 
 
 def simulado(sid: str) -> Simulado | None:
@@ -122,3 +119,10 @@ def montar(sid: str) -> list[Questao]:
 
 def simulados_ate(dia: int) -> list[Simulado]:
     return [s for s in SIMULADOS if s.dia_liberacao <= dia]
+
+
+def aprovado(acertos: int, total: int) -> bool:
+    """Na prova real, a nota de corte é 30 pontos em 60. Aqui, a proporção equivalente."""
+    if total <= 0:
+        return False
+    return (acertos / total) >= (NOTA_DE_CORTE / 60)

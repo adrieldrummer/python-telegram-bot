@@ -178,7 +178,7 @@ def verificar_medalhas(con: sqlite3.Connection, aluno_id: int) -> list[dict]:
             )
         )
         >= (fim - ini + 1)
-        for n, (ini, fim) in enumerate(((1, 6), (7, 18), (19, 26), (27, 30)), start=1)
+        for n, (ini, fim) in enumerate(((1, 2), (3, 4), (5, 6), (7, 7)), start=1)
     }
 
     condicoes = {

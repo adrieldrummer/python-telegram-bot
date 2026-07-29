@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS alunos (
     inicio_jornada    TEXT,
     concluido_em      TEXT,
     lembretes_email   INTEGER NOT NULL DEFAULT 1,
-    plano             TEXT    NOT NULL DEFAULT 'operacao',
+    plano             TEXT    NOT NULL DEFAULT 'recruta',
     plano_ate         TEXT,
     criado_em         TEXT    NOT NULL DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
     ativado_em        TEXT,

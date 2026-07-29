@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block titulo %}Módulos avançados — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <h1 class="mb-1">Módulos avançados</h1>
+  <p class="suave mb-3">
+    A trilha de 7 dias explica o edital. Estes módulos cobrem o que decide a vaga
+    <strong>depois</strong> da objetiva — e o aprofundamento das duas matérias que somam
+    35 das 60 questões.
+  </p>
+
+  {% if not liberado %}
+  <div class="cartao mb-3" style="border-color:rgba(10,92,255,.45);background:rgba(10,92,255,.07)">
+    <div class="flex-entre" style="gap:1rem;flex-wrap:wrap">
+      <div>
+        <strong>🔒 Você está no plano {{ plano.plano.nome }}.</strong>
+        <p class="suave mb-0" style="font-size:.9rem">
+          Os módulos avançados entram a partir da Operação Completa. Você continua com a
+          trilha, as questões e o caderno de erros normalmente.
+        </p>
+      </div>
+      <a class="btn btn-principal btn-pequeno" href="/planos">Liberar módulos</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="trilho mb-3">
+    {% for m in modulos %}
+    <a class="capa {{ '' if liberado else 'capa-bloqueada' }}"
+       href="{{ '/modulos/' ~ m.id if liberado else '/planos' }}">
+      <img src="{{ CAPAS[m.capa] }}" alt="{{ m.titulo }}">
+      <div class="capa-topo">
+        <span class="etiqueta {{ 'etiqueta-azul' if liberado }}">{{ m.etiqueta }}</span>
+        <span class="etiqueta">{{ m.aulas|length }} aula{{ 's' if m.aulas|length > 1 }}</span>
+      </div>
+      {% if not liberado %}<div class="cadeado">🔒</div>{% endif %}
+      <div class="capa-sobreposicao">
+        <h3>{{ m.titulo }}</h3>
+        <p>{{ m.chamada }}</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div class="grade grade-2">
+    {% for m in modulos %}
+    <article class="cartao">
+      <div class="flex-entre mb-1">
+        <h3 class="mb-0">{{ m.titulo }}</h3>
+        <span class="etiqueta">{{ m.etiqueta }}</span>
+      </div>
+      <p class="suave" style="font-size:.9rem">{{ m.descricao }}</p>
+      <ul class="checklist mb-2">
+        {% for a in m.aulas %}<li>{{ a.titulo }}</li>{% endfor %}
+      </ul>
+      {% if liberado %}
+        <a class="btn btn-principal btn-pequeno" href="/modulos/{{ m.id }}">Abrir módulo</a>
+      {% else %}
+        <a class="btn btn-fantasma btn-pequeno" href="/planos">🔒 Liberar com upgrade</a>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

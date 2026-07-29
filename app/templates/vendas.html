@@ -1,104 +1,169 @@
 {% extends "base.html" %}
-{% block titulo %}{{ config.app_nome }} — {{ config.app_subtitulo }}{% endblock %}
+{% block titulo %}{{ config.app_nome }} — Edital PM-SP 2026 explicado em 7 dias{% endblock %}
+{% block descricao %}Entenda o edital inteiro do concurso de Soldado PM-SP 2026 em 7 dias, treine com questões comentadas e chegue pronto para a prova de 20 de setembro.{% endblock %}
 
 {% block corpo %}
 <section class="hero">
   <div class="hero-fundo" style="background-image:url('{{ CAPAS.hero }}')"></div>
   <div class="container hero-conteudo">
     <div class="hero-linha"></div>
-    <span class="etiqueta etiqueta-azul mb-2">Operação de 30 dias · Soldado PM 2ª Classe</span>
-    <h1>Você não precisa estudar mais.<br>Precisa estudar <span class="destaque-azul">certo</span>.</h1>
-    <p style="font-size:1.1rem;max-width:560px;color:var(--claro)">
-      O método que aprovou Rafael Andrade depois de três reprovações — agora dentro de uma
-      plataforma que faz por você o trabalho braçal: diagnóstico, prioridades, caderno de erros
-      e revisão espaçada.
+    <span class="etiqueta etiqueta-azul mb-2">
+      {{ ed.vagas }} vagas · {{ ed.banca }} · prova em {{ ed.data_prova.strftime('%d/%m/%Y') }}
+    </span>
+    <h1>O edital inteiro explicado em <span class="destaque-azul">7 dias</span>.</h1>
+    <p style="font-size:1.1rem;max-width:580px;color:var(--claro)">
+      Não é mais uma apostila de 400 páginas. É cada tópico do edital do concurso de Soldado
+      PM-SP 2026 explicado de forma clara — para você <strong>entender</strong>, e não decorar
+      conteúdo que esquece antes da prova.
     </p>
+
+    {% if ed.dias_prova > 0 %}
+    <div class="flex-centro mt-2" style="gap:1.6rem;flex-wrap:wrap">
+      <div>
+        <div style="font-size:2rem;font-weight:800;line-height:1" class="destaque-azul">{{ ed.dias_prova }}</div>
+        <div class="apagado" style="font-size:.76rem;text-transform:uppercase;letter-spacing:.1em">dias para a prova</div>
+      </div>
+      {% if ed.dias_inscricao > 0 %}
+      <div>
+        <div style="font-size:2rem;font-weight:800;line-height:1">{{ ed.dias_inscricao }}</div>
+        <div class="apagado" style="font-size:.76rem;text-transform:uppercase;letter-spacing:.1em">dias para se inscrever</div>
+      </div>
+      {% endif %}
+      <div>
+        <div style="font-size:2rem;font-weight:800;line-height:1">R$ {{ '%.2f'|format(ed.salario)|replace('.', ',') }}</div>
+        <div class="apagado" style="font-size:.76rem;text-transform:uppercase;letter-spacing:.1em">salário inicial</div>
+      </div>
+    </div>
+    {% endif %}
+
     <div class="hero-acoes">
-      <a class="btn btn-principal" href="#planos" data-checkout data-plano="hero">Garantir meu acesso</a>
-      <a class="btn btn-fantasma" href="#metodo">Ver como funciona</a>
+      <a class="btn btn-principal" href="#planos" data-checkout data-plano="hero">Começar por R$ 47</a>
+      <a class="btn btn-fantasma" href="#trilha">Ver os 7 dias</a>
     </div>
     <p class="apagado mt-2" style="font-size:.84rem">
-      Acesso liberado por e-mail logo após a aprovação do pagamento.
+      Acesso liberado por e-mail assim que o pagamento é aprovado. Cancele quando quiser.
     </p>
   </div>
 </section>
 
 <div class="container">
 
-  <section class="secao" id="metodo">
-    <div class="fileira-cabecalho"><h2>Os 30 dias, divididos em 4 fases</h2></div>
-    <div class="trilho">
-      {% for fase in fases %}
-      <div class="capa">
-        <img src="{{ CAPAS[fase.id] }}" alt="{{ fase.nome }}">
-        <div class="capa-sobreposicao">
-          <span class="etiqueta etiqueta-azul" style="align-self:flex-start;margin-bottom:.5rem">Fase {{ fase.numero }}</span>
-          <h3>{{ fase.nome }}</h3>
-          <p>{{ fase.subtitulo }} — {{ fase.objetivo }}</p>
+  <!-- a prova de verdade -->
+  <section class="secao" id="prova">
+    <div class="fileira-cabecalho">
+      <div>
+        <h2 class="mb-1">A prova que você vai fazer</h2>
+        <p class="apagado mb-0" style="font-size:.9rem">
+          {{ ed.total_questoes }} questões objetivas · mínimo de {{ ed.nota_minima }} pontos para seguir no concurso
+        </p>
+      </div>
+    </div>
+    <div class="cartao">
+      <div class="grade grade-3">
+        {% for chave, nome, quantidade in ed.prova %}
+        <div>
+          <div class="flex-entre" style="font-size:.92rem">
+            <span>{{ nome }}</span>
+            <strong class="mono">{{ quantidade }}</strong>
+          </div>
+          <div class="barra barra-fina mt-1">
+            <span style="width:{{ (quantidade / ed.total_questoes * 100)|round }}%"></span>
+          </div>
         </div>
+        {% endfor %}
+      </div>
+      <p class="apagado mt-3 mb-0" style="font-size:.84rem">
+        Português sozinho vale 20 questões — um terço da prova. A trilha começa por ele porque é
+        onde está o maior retorno por hora estudada.
+      </p>
+    </div>
+  </section>
+
+  <!-- os 7 dias -->
+  <section class="secao" id="trilha">
+    <div class="fileira-cabecalho">
+      <div>
+        <h2 class="mb-1">Os 7 dias</h2>
+        <p class="apagado mb-0" style="font-size:.9rem">Uma grande área do edital por dia, com explicação e questões.</p>
+      </div>
+    </div>
+    <div class="grade grade-3">
+      {% for d in dias %}
+      <div class="cartao">
+        <span class="etiqueta">Dia {{ d.numero }}</span>
+        <h3 class="mt-1" style="font-size:1.05rem">{{ d.titulo }}</h3>
+        <p class="suave mb-0" style="font-size:.88rem">{{ d.promessa }}</p>
       </div>
       {% endfor %}
     </div>
   </section>
 
+  <!-- plataforma -->
   <section class="secao" id="plataforma">
-    <div class="fileira-cabecalho"><h2>O que você recebe</h2></div>
+    <div class="fileira-cabecalho"><h2>Não é PDF. É treino.</h2></div>
     <div class="grade grade-3">
       <div class="cartao">
-        <h3>🧭 Diagnóstico real</h3>
-        <p class="suave">24 questões no primeiro dia geram o seu Mapa de Prioridades: quais matérias
-          merecem o seu tempo, com base em dado — não em achismo.</p>
+        <h3>📖 Explicação, não decoreba</h3>
+        <p class="suave">Cada tópico do edital explicado em linguagem clara. Você entende o
+          assunto e só depois parte para a questão.</p>
       </div>
       <div class="cartao">
-        <h3>📓 Caderno de Erros com revisão espaçada</h3>
-        <p class="suave">Cada erro é classificado (falta de conteúdo, pegadinha ou desatenção) e volta
-          para você em 1, 3, 7 e 15 dias — até virar acerto.</p>
+        <h3>🎯 {{ total_questoes }} questões comentadas</h3>
+        <p class="suave">Com o gabarito explicado e a armadilha da banca revelada — porque errar
+          sem saber por quê não ensina nada.</p>
       </div>
       <div class="cartao">
-        <h3>⏱ Simulados cronometrados</h3>
-        <p class="suave">Três provas completas com relatório de tempo por questão, acerto por matéria
-          e comparação da sua curva de evolução.</p>
+        <h3>📓 Caderno de Erros automático</h3>
+        <p class="suave">Todo erro é classificado (falta de conteúdo, pegadinha ou desatenção) e
+          volta para você em 1, 3, 7 e 15 dias, até virar acerto.</p>
       </div>
       <div class="cartao">
-        <h3>🔓 Jornada com desbloqueio</h3>
-        <p class="suave">Um dia por vez, com missão diária. Nada de plataforma cheia de vídeo onde
-          você se perde no segundo dia.</p>
+        <h3>⏱ Simulados no formato oficial</h3>
+        <p class="suave">60 questões com a distribuição exata da VUNESP, cronômetro e relatório
+          de tempo e acerto por matéria.</p>
       </div>
       <div class="cartao">
-        <h3>★ Pontos de estudo e patentes</h3>
-        <p class="suave">Você sobe de Recruta a Subtenente conforme estuda. Constância vira número —
-          e número vira hábito.</p>
+        <h3>🎖 Progresso que puxa você</h3>
+        <p class="suave">Pontos de estudo, medalhas e patentes — de Recruta a Subtenente.
+          Constância vira número e número vira hábito.</p>
       </div>
       <div class="cartao">
-        <h3>📖 {{ total_questoes }} questões comentadas</h3>
-        <p class="suave">Todas com comentário de correção e a armadilha da banca explicada.
-          Mais o e-book completo revisado e ampliado.</p>
+        <h3>🛡 Além da objetiva</h3>
+        <p class="suave">Redação, TAF, exames de saúde, avaliação psicológica e investigação
+          social: as etapas que eliminam quem passou na prova escrita.</p>
       </div>
     </div>
   </section>
 
+  <!-- etapas do concurso -->
   <section class="secao">
-    <div class="cartao" style="background:linear-gradient(135deg,var(--preto-700),var(--preto-850))">
-      <div class="flex-entre">
-        <div style="max-width:620px">
-          <h2 class="mb-1">"Não faltou esforço nas três primeiras tentativas. Faltou direção."</h2>
-          <p class="suave mb-0">
-            Rafael reprovou três vezes estudando muito e errado. Na quarta tentativa, com 60 dias,
-            trocou teoria por questões, passou a categorizar cada erro e foi aprovado. Este curso é
-            esse método — em 30 dias, com a plataforma fazendo a parte chata.
-          </p>
-        </div>
-        <a class="btn btn-principal" href="#planos" data-checkout data-plano="prova-social">Começar agora</a>
+    <div class="fileira-cabecalho">
+      <div>
+        <h2 class="mb-1">O concurso não acaba na prova</h2>
+        <p class="apagado mb-0" style="font-size:.9rem">Todas as etapas são eliminatórias.</p>
       </div>
+    </div>
+    <div class="grade grade-3">
+      {% for e in ed.etapas %}
+      <div class="cartao">
+        <div class="flex-centro mb-1">
+          <span class="etiqueta {{ 'etiqueta-azul' if e.id == 'objetiva' }}">{{ loop.index }}</span>
+          <strong>{{ e.nome }}</strong>
+        </div>
+        <p class="suave" style="font-size:.86rem">{{ e.descricao }}</p>
+        <p class="apagado mb-0" style="font-size:.8rem">{{ e.dica }}</p>
+      </div>
+      {% endfor %}
     </div>
   </section>
 
+  <!-- planos -->
   <section class="secao" id="planos">
     <div class="fileira-cabecalho">
       <div>
-        <h2 class="mb-1">Escolha a sua operação</h2>
+        <h2 class="mb-1">Comece por R$ 47</h2>
         <p class="apagado mb-0" style="font-size:.9rem">
-          Acesso liberado por e-mail assim que o pagamento é aprovado.
+          Mensal, sem fidelidade. Suba de plano quando precisar de mais — não antes.
         </p>
       </div>
     </div>
@@ -112,52 +177,48 @@
           {% if p.preco_de %}<span class="apagado" style="text-decoration:line-through;font-size:.9rem">{{ p.preco_de }}</span>{% endif %}
           <span style="font-size:1.9rem;font-weight:800">{{ p.preco }}</span>
         </div>
-        {% set meses = (p.duracao_dias / 30)|round|int %}
-        <p class="apagado" style="font-size:.78rem">
-          {%- if p.ciclo == 'único' -%}
-            pagamento único{% if meses %} · acesso por {{ meses }} {{ 'mês' if meses == 1 else 'meses' }}{% endif %}
-          {%- else -%}
-            cobrança {{ p.ciclo }} · acesso enquanto a assinatura estiver ativa
-          {%- endif -%}
-        </p>
+        <p class="apagado" style="font-size:.78rem">cobrança {{ p.ciclo }} · cancele quando quiser</p>
         <ul class="checklist mb-2">
           {% for b in p.beneficios %}<li>{{ b }}</li>{% endfor %}
         </ul>
         <a class="btn {{ 'btn-principal' if p.destaque else 'btn-fantasma' }} btn-largo"
-           href="{{ p.checkout_url or checkout }}"
-           data-checkout data-plano="{{ p.id }}" data-valor="{{ p.preco|replace('R$','')|replace('/mês','')|replace(',','.')|trim }}">
+           href="{{ checkouts.get(p.id) or checkout }}"
+           data-checkout data-plano="{{ p.id }}" data-valor="{{ p.valor }}">
           Quero o plano {{ p.nome }}
         </a>
+        {% if p.para_quem %}<p class="apagado centro mt-1 mb-0" style="font-size:.76rem">{{ p.para_quem }}</p>{% endif %}
       </div>
       {% endfor %}
     </div>
     <p class="apagado centro mt-2" style="font-size:.8rem">
-      Compra com garantia legal de 7 dias. Pagamento processado pela Cakto.
+      Garantia legal de 7 dias. Pagamento processado pela Cakto.
     </p>
   </section>
 
+  <!-- faq -->
   <section class="secao" id="faq">
     <div class="fileira-cabecalho"><h2>Perguntas frequentes</h2></div>
     <div class="grade grade-2">
       <div class="cartao">
+        <h3>Dá tempo de estudar até 20 de setembro?</h3>
+        <p class="suave mb-0">São {{ ed.dias_prova }} dias. A trilha cobre o edital inteiro em 7 —
+          o resto do tempo é o que decide: questão, erro e revisão.</p>
+      </div>
+      <div class="cartao">
         <h3>Como recebo meu acesso?</h3>
-        <p class="suave mb-0">Assim que o pagamento é aprovado na Cakto, você recebe um e-mail de
-          aprovação com um link para criar sua senha. O login é seu e-mail.</p>
+        <p class="suave mb-0">Assim que o pagamento é aprovado na Cakto, chega um e-mail com um
+          link para você criar sua senha. O login é o seu e-mail.</p>
       </div>
       <div class="cartao">
-        <h3>Preciso estudar quantas horas por dia?</h3>
-        <p class="suave mb-0">A trilha é desenhada para 40 a 60 minutos por dia, divididos em blocos —
-          feita para quem trabalha e tem família.</p>
-      </div>
-      <div class="cartao">
-        <h3>O conteúdo serve para outros concursos?</h3>
-        <p class="suave mb-0">O método serve para qualquer prova objetiva. As questões e os pesos são
-          calibrados para o concurso de Soldado PM 2ª Classe de São Paulo.</p>
+        <h3>O que muda do plano de R$ 47 para os outros?</h3>
+        <p class="suave mb-0">No Recruta você tem a trilha, o banco de questões e o caderno de
+          erros, com até 30 questões por dia. Simulados oficiais, módulos avançados e
+          aprofundamentos entram nos planos superiores.</p>
       </div>
       <div class="cartao">
         <h3>Isso substitui o edital?</h3>
-        <p class="suave mb-0">Não. Os pesos por matéria são leitura estatística de provas anteriores e
-          servem para priorizar. Confira sempre o edital vigente do seu certame.</p>
+        <p class="suave mb-0">Não. Este material explica o edital em linguagem clara, mas o
+          documento oficial é sempre a referência — confira datas e regras no site da banca.</p>
       </div>
     </div>
   </section>

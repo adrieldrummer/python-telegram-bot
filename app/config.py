@@ -62,7 +62,7 @@ class Config:
     app_nome: str = os.getenv("APP_NOME", "Operação Aprovação")
     app_assinatura: str = os.getenv("APP_ASSINATURA", "Sua missão começa agora.")
     app_subtitulo: str = os.getenv(
-        "APP_SUBTITULO", "Operação de 30 dias para Soldado PM 2ª Classe — SP"
+        "APP_SUBTITULO", "O edital do Soldado PM-SP 2026 explicado em 7 dias"
     )
     app_url: str = os.getenv("APP_URL", "http://localhost:8000").rstrip("/")
     suporte_email: str = os.getenv("SUPORTE_EMAIL", "suporte@opaprova.com")
@@ -95,6 +95,17 @@ class Config:
     cakto_webhook_segredo: str = os.getenv("CAKTO_WEBHOOK_SEGREDO", "")
     cakto_header_assinatura: str = os.getenv("CAKTO_HEADER_ASSINATURA", "x-cakto-signature")
     cakto_permitir_sem_assinatura: bool = _bool("CAKTO_PERMITIR_SEM_ASSINATURA", False)
+
+    def checkout_do_plano(self, plano_id: str) -> str:
+        """Link de checkout de um plano.
+
+        Cada plano tem seu próprio produto na Cakto, então cada um tem seu link:
+        `CAKTO_CHECKOUT_RECRUTA`, `CAKTO_CHECKOUT_OPERACAO`, `CAKTO_CHECKOUT_ELITE`.
+        Enquanto o link do plano não existir, cai no checkout geral — assim a
+        página de vendas nunca aponta para lugar nenhum.
+        """
+        chave = f"CAKTO_CHECKOUT_{(plano_id or '').upper().replace('-', '_')}"
+        return (os.getenv(chave, "") or "").strip() or self.cakto_checkout_url
 
     # Meta (Facebook/Instagram) — pixel do navegador + API de Conversões
     meta_pixel_id: str = os.getenv("META_PIXEL_ID", "").strip()

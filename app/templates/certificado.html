@@ -8,7 +8,7 @@
       <img src="{{ CAPAS.certificado }}" alt="" style="width:190px;margin:0 auto 1.5rem;border-radius:var(--raio)">
       <h1>Seu certificado está a {{ resumo.total - resumo.concluidos }} dia(s) daqui</h1>
       <p class="suave" style="max-width:520px;margin-inline:auto">
-        Ele é liberado quando você conclui os 30 dias da jornada. Faltam
+        Ele é liberado quando você conclui os {{ resumo.total }} dias da trilha. Faltam
         <strong>{{ resumo.total - resumo.concluidos }}</strong> dias — você já fez {{ resumo.concluidos }}.
       </p>
       <div class="barra mt-2" style="max-width:420px;margin-inline:auto"><span style="width:{{ resumo.pct }}%"></span></div>
@@ -21,9 +21,9 @@
         <p class="apagado" style="letter-spacing:.25em;text-transform:uppercase;font-size:.78rem">Certificado de conclusão</p>
         <h1 style="font-size:2rem;margin:.6rem 0">{{ aluno['nome'] }}</h1>
         <p class="suave" style="max-width:560px;margin-inline:auto">
-          concluiu integralmente a jornada de <strong>30 dias</strong> do método
-          <strong>Operação Aprovação</strong>, cumprindo as quatro fases — diagnóstico, imersão em
-          questões, simulados cronometrados e blindagem final.
+          concluiu integralmente a trilha de <strong>{{ resumo.total }} dias</strong> sobre o edital do concurso de Soldado PM-SP 2026, na plataforma
+          <strong>Operação Aprovação</strong>, cumprindo as quatro fases — a base da prova, cálculo e
+          memória, mundo e ferramentas, instituição e fechamento.
         </p>
         <div class="grade grade-4 mt-3" style="max-width:640px;margin-inline:auto">
           <div class="metrica"><div class="valor">{{ stats.respondidas }}</div><div class="rotulo">questões</div></div>

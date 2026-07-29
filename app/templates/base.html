@@ -47,7 +47,7 @@
     {% if aluno %}
     <nav class="menu">
       <a href="/painel" class="{{ 'ativo' if caminho == '/painel' }}">Início</a>
-      <a href="/jornada" class="{{ 'ativo' if caminho.startswith('/jornada') or caminho.startswith('/dia') }}">Jornada 30 dias</a>
+      <a href="/jornada" class="{{ 'ativo' if caminho.startswith('/jornada') or caminho.startswith('/dia') }}">Trilha de {{ TOTAL_DIAS }} dias</a>
       <a href="/questoes" class="{{ 'ativo' if caminho.startswith('/questoes') }}">Questões</a>
       <a href="/erros" class="{{ 'ativo' if caminho.startswith('/erros') }}">Caderno de Erros</a>
       <a href="/simulados" class="{{ 'ativo' if caminho.startswith('/simulado') }}">Simulados</a>
@@ -95,7 +95,7 @@
       <div class="marca mb-1"><img src="/static/img/emblema.png" alt=""><span>OPERAÇÃO <b>APROVAÇÃO</b></span></div>
       <p class="destaque-azul" style="font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin:.2rem 0 .6rem">{{ config.app_assinatura }}</p>
       <p class="apagado" style="font-size:.82rem">
-        Plataforma de estudo do método de 30 dias. Conteúdo educacional independente,
+        Plataforma de estudo do edital do Soldado PM-SP 2026. Conteúdo educacional independente,
         sem vínculo com qualquer instituição pública ou banca examinadora.
       </p>
     </div>

@@ -8,7 +8,8 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel
 
-from conteudo import TREINOS, manual, planos as catalogo_planos, simulados as conteudo_simulados, trilha
+from conteudo import TREINOS, edital, manual, modulos as catalogo_modulos
+from conteudo import planos as catalogo_planos, simulados as conteudo_simulados, trilha
 from conteudo.materias import IDS as MATERIAS_IDS
 from conteudo.materias import POR_ID as MATERIAS_POR_ID
 from conteudo.questoes import POR_MATERIA, questao as buscar_questao, selecionar
@@ -57,24 +58,28 @@ async def painel(request: Request, aluno=Depends(exigir_aluno), boasvindas: int 
         historico = estudo.historico_simulados(con, aluno_id)
         medalhas = [m for m in medalhas_do_aluno(con, aluno_id) if m["conquistada"]][-6:]
 
-    recurso_do_treino = {
-        "questoes": "questoes",
-        "erros": "erros",
-        "simulados": "simulados",
-        "manual": "manual",
-        "certificado": "certificado",
-    }
+    # cada treino declara o recurso que exige; sem recurso, é livre para todos
     treinos = [
-        {**t, "bloqueado": not servico_planos.tem_recurso(aluno, recurso_do_treino.get(t["id"], ""))
-         if t["id"] in recurso_do_treino else False}
+        {
+            **t,
+            "bloqueado": bool(t["recurso"])
+            and not servico_planos.tem_recurso(aluno, t["recurso"]),
+        }
         for t in TREINOS
     ]
+
+    with sessao() as con:
+        saldo = servico_planos.saldo_de_questoes(con, aluno)
 
     return responder_template(
         request,
         "painel.html",
         {
             "aluno": aluno,
+            "edital": edital.resumo(),
+            "saldo": saldo,
+            "modulos": catalogo_modulos.ordenados(),
+            "modulos_liberados": servico_planos.tem_recurso(aluno, "avancado"),
             "resumo": resumo,
             "stats": stats,
             "caderno": caderno,
@@ -193,6 +198,15 @@ async def api_responder(dados: RespostaEntrada, aluno=Depends(exigir_aluno)):
     if dados.alternativa not in {letra for letra, _ in q.alternativas}:
         raise HTTPException(status_code=400, detail="Alternativa inválida")
     with sessao() as con:
+        saldo = servico_planos.saldo_de_questoes(con, aluno)
+        if saldo["esgotado"]:
+            raise HTTPException(
+                status_code=402,
+                detail=(
+                    f"Você chegou ao limite de {saldo['limite']} questões por dia do seu plano. "
+                    "Faça upgrade para treinar sem limite."
+                ),
+            )
         resultado = estudo.responder(
             con,
             int(aluno["id"]),
@@ -206,6 +220,8 @@ async def api_responder(dados: RespostaEntrada, aluno=Depends(exigir_aluno)):
         resultado["pontos_totais"] = int(
             buscar_um(con, "SELECT pontos FROM alunos WHERE id=?", (aluno["id"],))["pontos"]
         )
+        atualizado = servico_planos.saldo_de_questoes(con, aluno)
+        resultado["restantes_hoje"] = atualizado["restantes"]
     return JSONResponse(resultado)
 
 
@@ -359,9 +375,8 @@ async def revisar(request: Request, aluno=Depends(exigir_aluno)):
 
 @router.get("/simulados")
 async def lista_simulados(request: Request, aluno=Depends(exigir_aluno)):
-    bloqueio = bloqueio_por_plano(request, aluno, "simulados")
-    if bloqueio is not None:
-        return bloqueio
+    # a lista abre para todos: é ela que mostra o que o upgrade libera.
+    # o bloqueio real acontece ao abrir cada simulado, pelo recurso dele.
     aluno_id = int(aluno["id"])
     with sessao() as con:
         resumo = jornada.resumo_jornada(con, aluno_id)
@@ -371,10 +386,13 @@ async def lista_simulados(request: Request, aluno=Depends(exigir_aluno)):
     itens = []
     for s in conteudo_simulados.SIMULADOS:
         feitos = [h for h in historico if h["simulado_id"] == s.id]
+        no_plano = servico_planos.tem_recurso(aluno, s.recurso)
         itens.append(
             {
                 "simulado": s,
-                "liberado": s.dia_liberacao in liberados or s.dia_liberacao in concluidos,
+                "no_plano": no_plano,
+                "liberado": no_plano
+                and (s.dia_liberacao in liberados or s.dia_liberacao in concluidos),
                 "tentativas": feitos,
                 "melhor": max((f["pct"] for f in feitos), default=None),
             }
@@ -388,12 +406,13 @@ async def lista_simulados(request: Request, aluno=Depends(exigir_aluno)):
 
 @router.get("/simulado/{simulado_id}")
 async def abrir_simulado(request: Request, simulado_id: str, aluno=Depends(exigir_aluno)):
-    bloqueio = bloqueio_por_plano(request, aluno, "simulados")
-    if bloqueio is not None:
-        return bloqueio
     s = conteudo_simulados.simulado(simulado_id)
     if s is None:
         raise HTTPException(status_code=404, detail="Simulado não encontrado")
+    # cada simulado diz o recurso que exige — o diagnóstico entra no plano de entrada
+    bloqueio = bloqueio_por_plano(request, aluno, s.recurso)
+    if bloqueio is not None:
+        return bloqueio
     aluno_id = int(aluno["id"])
     with sessao() as con:
         item = jornada.acesso_ao_dia(con, aluno_id, s.dia_liberacao)
@@ -495,10 +514,17 @@ async def ver_manual(request: Request, aluno=Depends(exigir_aluno)):
 
 
 @router.get("/manual/download")
-async def baixar_manual(aluno=Depends(exigir_aluno)):
+async def baixar_manual(request: Request, aluno=Depends(exigir_aluno)):
+    # o download é a apostila inteira: gatear só a tela de leitura deixaria a
+    # porta dos fundos aberta para quem não tem o recurso
+    bloqueio = bloqueio_por_plano(request, aluno, "manual")
+    if bloqueio is not None:
+        return bloqueio
     return PlainTextResponse(
         manual.markdown(),
-        headers={"Content-Disposition": 'attachment; filename="mapa-da-aprovacao-2a-edicao.md"'},
+        headers={
+            "Content-Disposition": 'attachment; filename="apostila-edital-pmsp-2026.md"'
+        },
     )
 
 
@@ -523,6 +549,32 @@ async def certificado(request: Request, aluno=Depends(exigir_aluno)):
     )
 
 
+@router.get("/modulos")
+async def lista_modulos(request: Request, aluno=Depends(exigir_aluno)):
+    liberado = servico_planos.tem_recurso(aluno, "avancado")
+    return responder_template(
+        request,
+        "modulos.html",
+        {
+            "aluno": aluno,
+            "modulos": catalogo_modulos.ordenados(),
+            "liberado": liberado,
+            "plano": servico_planos.resumo(aluno),
+        },
+    )
+
+
+@router.get("/modulos/{modulo_id}")
+async def ver_modulo(request: Request, modulo_id: str, aluno=Depends(exigir_aluno)):
+    m = catalogo_modulos.modulo(modulo_id)
+    if m is None:
+        raise HTTPException(status_code=404, detail="Módulo não encontrado")
+    bloqueio = bloqueio_por_plano(request, aluno, m.recurso)
+    if bloqueio is not None:
+        return bloqueio
+    return responder_template(request, "modulo.html", {"aluno": aluno, "m": m})
+
+
 @router.get("/planos")
 async def meus_planos(request: Request, aluno=Depends(exigir_aluno)):
     resumo = servico_planos.resumo(aluno)
@@ -537,6 +589,7 @@ async def meus_planos(request: Request, aluno=Depends(exigir_aluno)):
             "vencido": resumo["vencido"],
             "expira_em": resumo["expira_em"],
             "planos": catalogo_planos.PLANOS,
+            "checkouts": servico_planos.checkouts(),
         },
     )
 

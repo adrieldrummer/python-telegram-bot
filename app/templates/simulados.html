@@ -4,7 +4,11 @@
 {% block conteudo %}
 <section class="secao">
   <h1 class="mb-1">Simulados cronometrados</h1>
-  <p class="suave mb-3">Prova é execução sob relógio — e isso se treina. Cada simulado gera um relatório com tempo e acerto por matéria.</p>
+  <p class="suave mb-3">
+    Prova é execução sob relógio — e isso se treina. Os simulados oficiais reproduzem a
+    distribuição exata da VUNESP:
+    {% for m in MATERIAS %}{{ m.peso }} de {{ m.curta }}{{ ', ' if not loop.last }}{% endfor %}.
+  </p>
 
   <div class="trilho mb-3">
     {% for i in itens %}
@@ -22,6 +26,8 @@
         <a class="btn btn-principal btn-pequeno mt-1" href="/simulado/{{ i.simulado.id }}">
           {{ 'Refazer' if i.tentativas else 'Iniciar' }}
         </a>
+        {% elif not i.no_plano %}
+        <a class="btn btn-claro btn-pequeno mt-1" href="/planos">Liberar com upgrade</a>
         {% endif %}
       </div>
     </div>
@@ -54,8 +60,13 @@
         </div>
       {% elif i.liberado %}
         <a class="btn btn-principal btn-pequeno" href="/simulado/{{ i.simulado.id }}">Fazer agora</a>
+      {% elif not i.no_plano %}
+        <div class="aviso">
+          🔒 Este simulado entra a partir do plano Operação Completa.
+          <a href="/planos">Ver planos</a>
+        </div>
       {% else %}
-        <div class="aviso">🔒 Libera no Dia {{ i.simulado.dia_liberacao }} da jornada.</div>
+        <div class="aviso">🔒 Libera no Dia {{ i.simulado.dia_liberacao }} da trilha.</div>
       {% endif %}
     </article>
     {% endfor %}

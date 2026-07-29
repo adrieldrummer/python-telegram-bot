@@ -18,6 +18,7 @@ sys.path.insert(0, str(RAIZ))
 
 from app import alunos as servico_alunos  # noqa: E402
 from app import estudo, jornada  # noqa: E402
+from app import planos as servico_planos  # noqa: E402
 from app.db import buscar_um, caminho_banco, criar_esquema, executar, sessao  # noqa: E402
 from app.security import agora_txt  # noqa: E402
 from conteudo.questoes import questao as buscar_questao  # noqa: E402
@@ -28,12 +29,23 @@ CONTAS_TESTE = [
         "email": os.getenv("ADMIN_EMAIL", "admin@teste.com"),
         "senha": os.getenv("ADMIN_SENHA", "admin1234"),
         "admin": True,
+        "plano": "elite",
     },
     {
         "nome": "Aluno de Teste",
         "email": "aluno@teste.com",
         "senha": "aluno1234",
         "admin": False,
+        "plano": "operacao",
+    },
+    # a segunda conta mostra a plataforma como quem paga o plano de entrada:
+    # teto diário de questões e módulos avançados no cadeado
+    {
+        "nome": "Aluno Recruta",
+        "email": "recruta@teste.com",
+        "senha": "recruta1234",
+        "admin": False,
+        "plano": "recruta",
     },
 ]
 
@@ -67,6 +79,9 @@ def criar_contas() -> list[dict]:
                 )
                 aluno = servico_alunos.por_email(con, conta["email"])
                 estado = "atualizada"
+            servico_planos.aplicar(
+                con, int(aluno["id"]), conta["plano"], referencia="seed", provedor="seed"
+            )
             jornada.iniciar_jornada(con, int(aluno["id"]))
             criadas.append({**conta, "id": int(aluno["id"]), "estado": estado})
     return criadas
@@ -128,10 +143,10 @@ def main() -> int:
     print("Contas de acesso:")
     for c in contas:
         papel = "ADMIN" if c["admin"] else "ALUNO"
-        print(f"  [{papel}] {c['email']}  senha: {c['senha']}  ({c['estado']})")
+        print(f"  [{papel}] {c['email']}  senha: {c['senha']}  plano: {c['plano']}  ({c['estado']})")
 
     if "--demo" in sys.argv:
-        aluno = next(c for c in contas if not c["admin"])
+        aluno = next(c for c in contas if c["email"] == "aluno@teste.com")
         print("\nSimulando progresso do aluno de teste:")
         simular_progresso(aluno["id"])
 

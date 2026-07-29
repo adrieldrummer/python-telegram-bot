@@ -61,7 +61,7 @@ de concurso, e que a plataforma já suporta rastrear:
 
 * **Campanha 1 — Vendas (aquisição fria)**: otimização para `Purchase`, público
   amplo com interesses de concurso público/PM, criativos de dor ("estudou muito
-  e reprovou") e de método ("30 dias, um dia por vez").
+  e reprovou") e de método ("o edital inteiro em 7 dias").
 * **Campanha 2 — Remarketing**: público de quem disparou `InitiateCheckout` e
   não comprou em 7 dias. Criativo de objeção (garantia, tempo de estudo diário).
 * **Campanha 3 — Retenção/upgrade**: lista de e-mails de alunos no plano

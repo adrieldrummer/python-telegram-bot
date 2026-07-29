@@ -13,7 +13,7 @@ from typing import Optional
 
 from conteudo import planos as catalogo
 
-from .db import buscar_todos, buscar_um, executar
+from .db import buscar_todos, buscar_um, executar, valor as _valor_sql
 from .security import agora, agora_txt, hoje_txt, ler_data
 
 
@@ -139,6 +139,39 @@ def encerrar_agora(con: sqlite3.Connection, aluno_id: int) -> None:
     )
 
 
+def questoes_hoje(con: sqlite3.Connection, aluno_id: int) -> int:
+    return int(
+        _valor_sql(
+            con,
+            "SELECT COUNT(*) FROM respostas WHERE aluno_id=? AND substr(criado_em,1,10)=?",
+            (aluno_id, hoje_txt()),
+        )
+    )
+
+
+def limite_do_dia(aluno) -> int:
+    """Teto diário de questões do plano. 0 = sem limite."""
+    if _valor(aluno, "admin"):
+        return 0
+    return catalogo.limite_diario(_valor(aluno, "plano") or "")
+
+
+def saldo_de_questoes(con: sqlite3.Connection, aluno) -> dict:
+    """Quantas questões o aluno ainda pode responder hoje."""
+    limite = limite_do_dia(aluno)
+    feitas = questoes_hoje(con, int(_valor(aluno, "id", 0)))
+    if limite <= 0:
+        return {"limitado": False, "limite": 0, "feitas": feitas, "restantes": None, "esgotado": False}
+    restantes = max(0, limite - feitas)
+    return {
+        "limitado": True,
+        "limite": limite,
+        "feitas": feitas,
+        "restantes": restantes,
+        "esgotado": restantes <= 0,
+    }
+
+
 def assinaturas_do_aluno(con: sqlite3.Connection, aluno_id: int) -> list:
     return buscar_todos(
         con, "SELECT * FROM assinaturas WHERE aluno_id=? ORDER BY id DESC", (aluno_id,)
@@ -174,9 +207,20 @@ def distribuicao(con: sqlite3.Connection) -> list[dict]:
     ]
 
 
-def checkout_do_plano(plano_id: str, padrao: str) -> str:
+def checkout_do_plano(plano_id: str, padrao: str = "") -> str:
+    """Onde o botão de compra desse plano leva.
+
+    Ordem: link fixo no catálogo → variável de ambiente do plano → checkout geral.
+    """
+    from .config import config
+
     p = catalogo.plano(plano_id)
-    return p.checkout_url or padrao
+    return p.checkout_url or config.checkout_do_plano(p.id) or padrao
+
+
+def checkouts() -> dict[str, str]:
+    """Mapa {plano_id: link} para as telas montarem os botões."""
+    return {p.id: checkout_do_plano(p.id) for p in catalogo.PLANOS}
 
 
 __all__ = [
@@ -184,7 +228,11 @@ __all__ = [
     "assinaturas_do_aluno",
     "cancelar",
     "checkout_do_plano",
+    "checkouts",
     "distribuicao",
+    "limite_do_dia",
+    "questoes_hoje",
+    "saldo_de_questoes",
     "encerrar_agora",
     "plano_do_aluno",
     "resumo",

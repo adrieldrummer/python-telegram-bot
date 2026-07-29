@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block titulo %}Manual do Mapa — {{ config.app_nome }}{% endblock %}
+{% block titulo %}Apostila do edital — {{ config.app_nome }}{% endblock %}
 
 {% block conteudo %}
 <section class="secao">
   <div class="grade" style="grid-template-columns:minmax(240px,300px) minmax(0,1fr);align-items:start;gap:2rem">
     <aside class="cartao" style="position:sticky;top:88px">
       <img src="{{ CAPAS.manual }}" alt="" style="border-radius:var(--raio-p);margin-bottom:1rem">
-      <h3 style="font-size:1rem">O Mapa da Aprovação</h3>
-      <p class="apagado" style="font-size:.82rem">2ª edição — revisada e ampliada com {{ novos }} capítulos novos.</p>
+      <h3 style="font-size:1rem">Apostila Explicativa</h3>
+      <p class="apagado" style="font-size:.82rem">Edital PM-SP 2026 em {{ TOTAL_DIAS }} dias · {{ capitulos|length }} capítulos.</p>
       <a class="btn btn-fantasma btn-pequeno btn-largo mb-2" href="/manual/download">⬇ Baixar em Markdown</a>
       <nav style="display:grid;gap:.35rem;font-size:.85rem;max-height:46vh;overflow-y:auto">
         {% for c in capitulos %}
@@ -17,8 +17,8 @@
     </aside>
 
     <div>
-      <h1 class="mb-1">Manual do Mapa</h1>
-      <p class="suave mb-3">O e-book completo, com os capítulos que faltavam na primeira edição.</p>
+      <h1 class="mb-1">Apostila Explicativa</h1>
+      <p class="suave mb-3">O edital inteiro explicado, capítulo por capítulo — para consulta a qualquer momento.</p>
 
       {% for c in capitulos %}
       <article class="cartao mb-3" id="{{ c.id }}">

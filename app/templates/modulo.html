@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block titulo %}{{ m.titulo }} — {{ config.app_nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <p class="apagado mb-1" style="font-size:.85rem"><a class="suave" href="/modulos">← Módulos avançados</a></p>
+
+  <div class="grade" style="grid-template-columns:minmax(240px,300px) minmax(0,1fr);align-items:start;gap:2rem">
+    <aside class="cartao" style="position:sticky;top:88px">
+      <img src="{{ CAPAS[m.capa] }}" alt="" style="border-radius:var(--raio-p);margin-bottom:1rem">
+      <span class="etiqueta etiqueta-azul">{{ m.etiqueta }}</span>
+      <h3 class="mt-1" style="font-size:1rem">{{ m.titulo }}</h3>
+      <p class="apagado" style="font-size:.82rem">{{ m.descricao }}</p>
+      <nav style="display:grid;gap:.35rem;font-size:.85rem">
+        {% for a in m.aulas %}
+        <a href="#{{ a.id }}" class="suave">{{ loop.index }}. {{ a.titulo }}</a>
+        {% endfor %}
+      </nav>
+    </aside>
+
+    <div>
+      <h1 class="mb-1">{{ m.titulo }}</h1>
+      <p class="suave mb-3">{{ m.chamada }}</p>
+
+      {% for a in m.aulas %}
+      <article class="cartao mb-3" id="{{ a.id }}">
+        <span class="etiqueta">Aula {{ loop.index }} de {{ m.aulas|length }}</span>
+        <h2 class="mt-1" style="font-size:1.3rem">{{ a.titulo }}</h2>
+        <p class="apagado" style="font-size:.88rem;font-style:italic">{{ a.resumo }}</p>
+        <div class="aula-texto">
+          {% for p in a.paragrafos %}<p>{{ p|safe }}</p>{% endfor %}
+        </div>
+        {% if a.lista %}
+        <ul class="checklist mb-2">
+          {% for item in a.lista %}<li>{{ item }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+        {% if a.chave %}<div class="chave">{{ a.chave }}</div>{% endif %}
+      </article>
+      {% endfor %}
+
+      {% if m.materias %}
+      <div class="cartao">
+        <h3>Treine agora o que você acabou de ler</h3>
+        <p class="suave" style="font-size:.9rem">Leitura sem questão não fixa. Vá direto ao banco.</p>
+        {% for mid in m.materias %}
+        <a class="btn btn-fantasma btn-pequeno" href="/questoes?materia={{ mid }}&quantidade=15">
+          Questões de {{ MATERIAS|selectattr('id', 'equalto', mid)|map(attribute='nome')|first }}
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,10 +1,10 @@
 {% import "emails/base_email.html" as e with context %}
 {% set corpo %}
-<p>{{ nome }}, você concluiu os 30 dias.</p>
-<p>Trinta dias atrás você não tinha mapa — tinha vontade. Agora você tem os dois: método aplicado,
-   erros catalogados, simulados feitos e um número real de onde você está.</p>
-<p>Seu certificado de conclusão está liberado. E se ainda houver tempo até a prova, repita as
-   Fases 2 e 3: imersão em questões e simulados são as que mais devolvem ponto por hora estudada.</p>
+<p>{{ nome }}, você percorreu o edital inteiro.</p>
+<p>Uma semana atrás o edital era uma lista de tópicos soltos. Agora você sabe o que cada um cobra,
+   tem os erros catalogados e um número real de onde você está.</p>
+<p>Seu certificado de conclusão está liberado. Daqui até a prova, o que mais devolve ponto por hora
+   estudada é resolver questões e revisar o Caderno de Erros — não reler a apostila.</p>
 <p>Boa prova. Vá buscar a farda.</p>
 {% endset %}
-{{ e.layout('Mapa concluído 🏁', corpo, 'Ver meu certificado', link) }}
+{{ e.layout('Trilha concluída 🏁', corpo, 'Ver meu certificado', link) }}

@@ -189,7 +189,9 @@ def criar_esquema() -> None:
 
 # colunas acrescentadas depois da primeira versão do esquema
 COLUNAS_NOVAS: tuple[tuple[str, str, str], ...] = (
-    ("alunos", "plano", "TEXT NOT NULL DEFAULT 'operacao'"),
+    # sem compra registrada, o aluno nasce no plano de entrada — dar o plano
+    # completo por omissão entregaria de graça o que é vendido no upgrade
+    ("alunos", "plano", "TEXT NOT NULL DEFAULT 'recruta'"),
     ("alunos", "plano_ate", "TEXT"),
 )
 

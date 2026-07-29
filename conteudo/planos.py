@@ -1,12 +1,13 @@
-"""Planos comercializados e o que cada um libera dentro da plataforma.
+"""Planos e o que cada um libera.
 
-Um plano é um conjunto de **recursos**. As telas perguntam "esse aluno tem o
-recurso X?" — nunca "esse aluno é do plano Y". Assim dá para criar oferta nova,
-promoção ou combo sem mexer em nenhuma tela.
+Modelo de entrada baixa: R$ 47/mês dá acesso à trilha de 7 dias, ao banco de
+questões e ao caderno de erros — o suficiente para o aluno entender o edital e
+começar a treinar. O que decide aprovação depois disso (redação, TAF, etapas
+eliminatórias, simulados completos e aprofundamentos) fica nos planos
+superiores.
 
-O casamento com a Cakto é feito por `codigos_cakto`: coloque ali o id (ou um
-pedaço do nome) do produto/oferta como ele chega no webhook. Se nada casar, o
-aluno entra no `PLANO_PADRAO`.
+Um plano é um conjunto de **recursos**. As telas perguntam "tem o recurso X?" —
+nunca "é do plano Y". Assim, criar oferta ou promoção não mexe em nenhuma tela.
 """
 
 from __future__ import annotations
@@ -16,15 +17,20 @@ from dataclasses import dataclass, field
 # --- recursos disponíveis --------------------------------------------------
 
 RECURSOS = {
-    "trilha": "Jornada de 30 dias com desbloqueio diário",
+    "trilha": "Trilha de 7 dias explicando o edital inteiro",
     "questoes": "Banco de questões comentadas",
     "erros": "Caderno de Erros com revisão espaçada",
-    "simulados": "Simulados cronometrados com relatório",
-    "manual": "Manual do Mapa (e-book completo)",
+    "simulados": "Simulados oficiais de 60 questões",
+    "avancado": "Módulos avançados (redação, TAF, etapas e aprofundamentos)",
+    "manual": "Apostila completa em formato de leitura e download",
     "certificado": "Certificado de conclusão",
     "ranking": "Ranking da turma",
+    "atualidades": "Boletim de atualidades até o dia da prova",
     "suporte": "Suporte prioritário por e-mail",
 }
+
+# limites do plano de entrada — o aluno usa a plataforma inteira, com teto diário
+LIMITE_QUESTOES_DIA_PADRAO = 30
 
 
 @dataclass(frozen=True)
@@ -33,72 +39,94 @@ class Plano:
     nome: str
     chamada: str
     preco: str
+    valor: float
     preco_de: str = ""
-    ciclo: str = "único"  # único | mensal | anual
-    duracao_dias: int = 0  # 0 = sem expiração (vitalício / enquanto durar o acesso)
+    ciclo: str = "mensal"
+    duracao_dias: int = 31
     recursos: tuple[str, ...] = ()
+    limite_questoes_dia: int = 0  # 0 = sem limite
     destaque: bool = False
     checkout_url: str = ""
     codigos_cakto: tuple[str, ...] = ()
     beneficios: tuple[str, ...] = field(default_factory=tuple)
+    para_quem: str = ""
 
 
 PLANOS: tuple[Plano, ...] = (
     Plano(
         id="recruta",
         nome="Recruta",
-        chamada="O método completo, no seu ritmo.",
-        preco="R$ 97",
-        ciclo="único",
-        duracao_dias=180,
+        chamada="Entenda o edital inteiro em 7 dias e comece a treinar hoje.",
+        preco="R$ 47/mês",
+        valor=47.0,
+        ciclo="mensal",
+        duracao_dias=31,
         recursos=("trilha", "questoes", "erros"),
-        codigos_cakto=("recruta", "essencial", "basico"),
+        limite_questoes_dia=LIMITE_QUESTOES_DIA_PADRAO,
+        codigos_cakto=("recruta", "mensal", "47"),
+        para_quem="Para quem está começando e precisa entender o que estudar.",
         beneficios=(
-            "Jornada de 30 dias com missão diária",
-            "Banco completo de questões comentadas",
-            "Caderno de Erros com revisão espaçada",
-            "6 meses de acesso",
+            "Trilha de 7 dias explicando cada tópico do edital",
+            "Banco de questões comentadas, com correção ativa",
+            "Caderno de Erros com revisão espaçada automática",
+            "Simulado diagnóstico de 20 questões",
+            f"Até {LIMITE_QUESTOES_DIA_PADRAO} questões por dia",
         ),
     ),
     Plano(
         id="operacao",
         nome="Operação Completa",
-        chamada="Tudo o que aprova: método, simulados e manual.",
-        preco="R$ 197",
-        preco_de="R$ 297",
-        ciclo="único",
-        duracao_dias=365,
-        recursos=("trilha", "questoes", "erros", "simulados", "manual", "certificado", "ranking"),
+        chamada="Tudo o que decide a vaga: simulados oficiais e módulos avançados.",
+        preco="R$ 97/mês",
+        valor=97.0,
+        preco_de="R$ 147/mês",
+        ciclo="mensal",
+        duracao_dias=31,
+        recursos=(
+            "trilha",
+            "questoes",
+            "erros",
+            "simulados",
+            "avancado",
+            "manual",
+            "certificado",
+            "ranking",
+        ),
         destaque=True,
-        codigos_cakto=("operacao", "completo", "completa"),
+        codigos_cakto=("operacao", "completa", "completo", "97"),
+        para_quem="Para quem vai fazer a prova de 20 de setembro e quer chegar pronto.",
         beneficios=(
-            "Tudo do plano Recruta",
-            "3 simulados cronometrados com relatório por matéria",
-            "Manual do Mapa — e-book revisado e ampliado",
-            "Certificado de conclusão",
-            "1 ano de acesso",
+            "Tudo do plano Recruta, sem limite diário de questões",
+            "Simulados oficiais de 60 questões, no formato da VUNESP",
+            "Módulos avançados: redação, TAF e etapas eliminatórias",
+            "Aprofundamento de Português e Matemática",
+            "Apostila completa para download e certificado de conclusão",
         ),
     ),
     Plano(
         id="elite",
         nome="Elite",
-        chamada="Para quem vai prestar mais de um concurso.",
-        preco="R$ 29,90/mês",
+        chamada="Acompanhamento até o dia da prova — e depois dela.",
+        preco="R$ 197/mês",
+        valor=197.0,
         ciclo="mensal",
         duracao_dias=31,
         recursos=tuple(RECURSOS),
-        codigos_cakto=("elite", "assinatura", "mensal"),
+        codigos_cakto=("elite", "197", "vip"),
+        para_quem="Para quem quer preparação completa, incluindo as etapas pós-objetiva.",
         beneficios=(
             "Tudo da Operação Completa",
-            "Acesso enquanto a assinatura estiver ativa",
-            "Novas questões e simulados a cada atualização",
+            "Boletim de atualidades toda semana até a prova",
+            "Novos simulados e questões a cada atualização",
             "Suporte prioritário por e-mail",
+            "Acesso mantido durante todas as etapas do concurso",
         ),
     ),
 )
 
 POR_ID = {p.id: p for p in PLANOS}
-PLANO_PADRAO = "operacao"
+PLANO_PADRAO = "recruta"
+PLANO_ENTRADA = "recruta"
 
 
 def plano(plano_id: str) -> Plano:
@@ -109,8 +137,12 @@ def tem_recurso(plano_id: str, recurso: str) -> bool:
     return recurso in plano(plano_id).recursos
 
 
+def limite_diario(plano_id: str) -> int:
+    return plano(plano_id).limite_questoes_dia
+
+
 def identificar(*textos: str) -> str:
-    """Descobre o plano a partir do que a Cakto mandou (produto, oferta, etc.)."""
+    """Descobre o plano a partir do que a Cakto mandou (produto, oferta, valor)."""
     alvo = " ".join(t.lower() for t in textos if t)
     if not alvo.strip():
         return PLANO_PADRAO
@@ -121,5 +153,17 @@ def identificar(*textos: str) -> str:
     return PLANO_PADRAO
 
 
+def identificar_por_valor(valor: float) -> str:
+    """Fallback quando o nome do produto não diz nada: casa pelo valor pago."""
+    if valor <= 0:
+        return PLANO_PADRAO
+    mais_proximo = min(PLANOS, key=lambda p: abs(p.valor - valor))
+    return mais_proximo.id if abs(mais_proximo.valor - valor) <= 20 else PLANO_PADRAO
+
+
 def nome_do_recurso(recurso: str) -> str:
     return RECURSOS.get(recurso, recurso)
+
+
+def planos_com(recurso: str) -> list[Plano]:
+    return [p for p in PLANOS if recurso in p.recursos]

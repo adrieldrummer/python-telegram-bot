@@ -25,6 +25,19 @@ def test_paginas_publicas_abrem(cliente):
         assert cliente.get(caminho).status_code == 200
 
 
+def test_pagina_de_vendas_mostra_os_numeros_do_edital(cliente):
+    from conteudo import edital, planos as catalogo
+
+    html = cliente.get("/").text
+    assert str(edital.VAGAS) in html
+    assert edital.BANCA in html
+    assert str(edital.TOTAL_QUESTOES_PROVA) in html
+    for p in catalogo.PLANOS:
+        assert p.nome in html and p.preco in html
+    # a oferta de entrada precisa aparecer com o preço prometido
+    assert "R$ 47" in html
+
+
 def test_area_do_aluno_exige_login(cliente):
     resposta = cliente.get("/painel", follow_redirects=False)
     assert resposta.status_code == 303
@@ -64,17 +77,23 @@ def test_fluxo_completo_do_aluno(cliente):
     assert resposta.status_code == 200
     assert "Dia 1" in resposta.text
 
-    for caminho in ("/painel", "/jornada", "/dia/1", "/questoes", "/erros", "/simulados", "/pontos", "/manual", "/conta", "/certificado"):
+    # conta nasce no plano de entrada: essas telas estão liberadas para ela
+    for caminho in ("/painel", "/jornada", "/dia/1", "/questoes", "/erros", "/simulados",
+                    "/pontos", "/conta", "/modulos", "/planos"):
         assert cliente.get(caminho).status_code == 200, caminho
 
-    assert cliente.get("/dia/12").status_code == 403      # dia bloqueado
-    assert cliente.get("/simulado/sim-1").status_code == 403
+    # e essas dependem de upgrade
+    for caminho in ("/manual", "/certificado", "/modulos/redacao"):
+        assert cliente.get(caminho).status_code == 402, caminho
+
+    assert cliente.get("/dia/5").status_code == 403       # dia bloqueado
+    assert cliente.get("/simulado/sim-1").status_code == 402
     assert cliente.get("/admin").status_code == 403       # área do admin
 
     # responde a missão inteira do dia 1 e conclui
     pagina = cliente.get("/dia/1")
     questoes = questoes_da_pagina(pagina.text)
-    assert len(questoes) == 24
+    assert len(questoes) == 20   # diagnóstico do Dia 1
     for q in questoes:
         resposta = cliente.post(
             "/api/responder",

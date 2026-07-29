@@ -1,38 +1,31 @@
 """Conteúdo do curso — versionado em git, fora do banco de dados.
 
-Reúne: matérias e pesos, trilha de 30 dias, banco de questões, simulados,
+Reúne: os fatos do edital, matérias e pesos, a trilha de 7 dias, o banco de
+questões, os simulados no formato oficial, os módulos avançados, planos,
 patentes/medalhas e o catálogo visual (as "capas" da área do aluno).
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
-from . import materias, patentes, questoes, simulados, trilha
+from . import edital, materias, modulos, patentes, planos, questoes, simulados, trilha
 
 TOTAL_DIAS = trilha.TOTAL_DIAS
 TOTAL_QUESTOES = len(questoes.QUESTOES)
-
-
-@dataclass(frozen=True)
-class Coleção:
-    """Uma 'fileira' da área do aluno, no estilo de uma vitrine de streaming."""
-
-    id: str
-    titulo: str
-    subtitulo: str
-    itens: tuple[dict, ...]
-
-
-def capa_fase(fase_id: str) -> str:
-    return f"/static/img/capa-{fase_id}.webp"
-
+TOTAL_MODULOS = len(modulos.MODULOS)
+TOTAL_AULAS_AVANCADAS = modulos.TOTAL_AULAS
 
 CAPAS = {
-    "fase1": "/static/img/capa-fase1.webp",
-    "fase2": "/static/img/capa-fase2.webp",
-    "fase3": "/static/img/capa-fase3.webp",
-    "fase4": "/static/img/capa-fase4.webp",
+    "base": "/static/img/capa-fase1.webp",
+    "calculo": "/static/img/capa-fase2.webp",
+    "mundo": "/static/img/capa-fase3.webp",
+    "fechamento": "/static/img/capa-fase4.webp",
+    "capa-fase1": "/static/img/capa-fase1.webp",
+    "capa-fase2": "/static/img/capa-fase2.webp",
+    "capa-fase3": "/static/img/capa-fase3.webp",
+    "capa-fase4": "/static/img/capa-fase4.webp",
+    "capa-redacao": "/static/img/capa-manual.webp",
+    "capa-taf": "/static/img/capa-pontos.webp",
+    "capa-etapas": "/static/img/capa-certificado.webp",
     "questoes": "/static/img/capa-questoes.webp",
     "erros": "/static/img/capa-erros.webp",
     "simulados": "/static/img/capa-simulados.webp",
@@ -45,14 +38,20 @@ CAPAS = {
     "textura": "/static/img/textura.webp",
 }
 
+
+def capa(chave: str) -> str:
+    return CAPAS.get(chave, CAPAS["questoes"])
+
+
 TREINOS = (
     {
         "id": "questoes",
         "titulo": "Banco de Questões",
-        "descricao": f"{TOTAL_QUESTOES} questões comentadas, filtráveis por matéria e nível.",
+        "descricao": f"{TOTAL_QUESTOES} questões comentadas, por matéria e por nível.",
         "capa": CAPAS["questoes"],
         "url": "/questoes",
         "etiqueta": "Treino livre",
+        "recurso": "questoes",
     },
     {
         "id": "erros",
@@ -61,14 +60,34 @@ TREINOS = (
         "capa": CAPAS["erros"],
         "url": "/erros",
         "etiqueta": "Diferencial",
+        "recurso": "erros",
     },
     {
         "id": "simulados",
-        "titulo": "Simulados Cronometrados",
-        "descricao": "Três provas completas com relatório de tempo e desempenho por matéria.",
+        "titulo": "Simulados Oficiais",
+        "descricao": "Provas de 60 questões no formato exato da VUNESP, com relatório.",
         "capa": CAPAS["simulados"],
         "url": "/simulados",
-        "etiqueta": "Prova real",
+        "etiqueta": "Formato da prova",
+        "recurso": "simulados",
+    },
+    {
+        "id": "modulos",
+        "titulo": "Módulos Avançados",
+        "descricao": "Redação, TAF, etapas eliminatórias e aprofundamento por matéria.",
+        "capa": CAPAS["capa-redacao"],
+        "url": "/modulos",
+        "etiqueta": "Além da objetiva",
+        "recurso": "avancado",
+    },
+    {
+        "id": "manual",
+        "titulo": "Apostila Completa",
+        "descricao": "O edital inteiro explicado, para consulta e download.",
+        "capa": CAPAS["manual"],
+        "url": "/manual",
+        "etiqueta": "Leitura",
+        "recurso": "manual",
     },
     {
         "id": "pontos",
@@ -77,32 +96,23 @@ TREINOS = (
         "capa": CAPAS["pontos"],
         "url": "/pontos",
         "etiqueta": "Progresso",
-    },
-    {
-        "id": "manual",
-        "titulo": "Manual do Mapa (e-book)",
-        "descricao": "O e-book original revisado e ampliado, em formato de leitura.",
-        "capa": CAPAS["manual"],
-        "url": "/manual",
-        "etiqueta": "Leitura",
-    },
-    {
-        "id": "certificado",
-        "titulo": "Certificado de Conclusão",
-        "descricao": "Liberado ao concluir os 30 dias da jornada.",
-        "capa": CAPAS["certificado"],
-        "url": "/certificado",
-        "etiqueta": "Meta final",
+        "recurso": "",
     },
 )
 
 __all__ = [
     "CAPAS",
+    "TOTAL_AULAS_AVANCADAS",
     "TOTAL_DIAS",
+    "TOTAL_MODULOS",
     "TOTAL_QUESTOES",
     "TREINOS",
+    "capa",
+    "edital",
     "materias",
+    "modulos",
     "patentes",
+    "planos",
     "questoes",
     "simulados",
     "trilha",

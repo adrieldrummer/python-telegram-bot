@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block titulo %}Jornada de 30 dias — {{ config.app_nome }}{% endblock %}
+{% block titulo %}Trilha de {{ TOTAL_DIAS }} dias — {{ config.app_nome }}{% endblock %}
 
 {% block conteudo %}
 <section class="secao">
   <div class="flex-entre mb-2">
     <div>
-      <h1 class="mb-1">Jornada de 30 dias</h1>
+      <h1 class="mb-1">A trilha de {{ resumo.total }} dias</h1>
       <p class="suave mb-0">
         {{ resumo.concluidos }} de {{ resumo.total }} dias concluídos
         {% if resumo.previsao %} · conclusão prevista para {{ resumo.previsao }}{% endif %}
@@ -13,7 +13,7 @@
     </div>
     <div style="min-width:220px">
       <div class="barra"><span style="width:{{ resumo.pct }}%"></span></div>
-      <div class="apagado mt-1 centro" style="font-size:.8rem">{{ resumo.pct }}% do mapa</div>
+      <div class="apagado mt-1 centro" style="font-size:.8rem">{{ resumo.pct }}% da trilha</div>
     </div>
   </div>
 

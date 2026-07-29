@@ -36,25 +36,21 @@ class Questao:
 
 
 from . import (  # noqa: E402  (import após a definição de Questao, de propósito)
-    administrativo,
-    atualidades,
-    constitucional,
+    administracao,
+    geografia,
+    historia,
     informatica,
-    legislacao,
     matematica,
-    penal,
     portugues,
 )
 
 QUESTOES: tuple[Questao, ...] = tuple(
     portugues.QUESTOES
     + matematica.QUESTOES
-    + constitucional.QUESTOES
-    + administrativo.QUESTOES
-    + penal.QUESTOES
-    + legislacao.QUESTOES
-    + atualidades.QUESTOES
+    + historia.QUESTOES
+    + geografia.QUESTOES
     + informatica.QUESTOES
+    + administracao.QUESTOES
 )
 
 POR_ID: dict[str, Questao] = {q.id: q for q in QUESTOES}

@@ -10,7 +10,7 @@ from fastapi import HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from conteudo import CAPAS, TOTAL_DIAS, TOTAL_QUESTOES
+from conteudo import CAPAS, TOTAL_DIAS, TOTAL_QUESTOES, edital
 from conteudo.materias import CATEGORIAS_ERRO, MATERIAS
 
 from .config import config
@@ -35,6 +35,10 @@ templates.env.globals.update(
         "CATEGORIAS_ERRO": CATEGORIAS_ERRO,
         "TOTAL_DIAS": TOTAL_DIAS,
         "TOTAL_QUESTOES": TOTAL_QUESTOES,
+        # a contagem regressiva aparece em várias telas; calcular na hora evita
+        # cache de data errado em processo que fica dias no ar
+        "dias_para_prova": edital.dias_para_prova,
+        "DATA_PROVA": edital.DATA_PROVA,
     }
 )
 
@@ -122,6 +126,7 @@ def bloqueio_por_plano(request: Request, aluno, recurso: str):
             "vencido": resumo["vencido"],
             "expira_em": resumo["expira_em"],
             "planos": catalogo.PLANOS,
+            "checkouts": servico_planos.checkouts(),
         },
         status_code=402,
     )

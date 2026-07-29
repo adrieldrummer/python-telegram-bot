@@ -1,4 +1,4 @@
-"""Jornada de 30 dias: prioridades, desbloqueio, missões e conclusão de dia."""
+"""Trilha do aluno: prioridades, desbloqueio, missões e conclusão de dia."""
 
 from __future__ import annotations
 
@@ -114,7 +114,7 @@ def liberar_proximo(con: sqlite3.Connection, aluno_id: int, dia_concluido: int, 
 
 
 def estado(con: sqlite3.Connection, aluno_id: int) -> list[dict]:
-    """Estado de todos os 30 dias, já com a regra de desbloqueio aplicada."""
+    """Estado de todos os dias da trilha, já com a regra de desbloqueio aplicada."""
     aluno = buscar_um(con, "SELECT * FROM alunos WHERE id=?", (aluno_id,))
     registros = {
         linha["dia"]: linha
@@ -210,6 +210,10 @@ def questoes_da_missao(con: sqlite3.Connection, aluno_id: int, numero: int) -> l
     semente = aluno_id * 1000 + numero
 
     if missao.tipo == "diagnostico":
+        # com simulado associado, o diagnóstico segue a proporção real da prova —
+        # medir com peso errado gera prioridade errada para os 6 dias seguintes
+        if missao.simulado_id:
+            return conteudo_simulados.montar(missao.simulado_id)
         return selecionar(list(MATERIAS_IDS), quantidade=missao.quantidade, semente=semente)
 
     if missao.tipo == "simulado":

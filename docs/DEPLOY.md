@@ -61,7 +61,7 @@ de todos os alunos — o conteúdo do curso está no git e se recupera sozinho.
 
 ## Escala
 
-Ordem de grandeza: cada aluno gera ~600 respostas ao longo dos 30 dias. Mil
+Ordem de grandeza: cada aluno gera algumas centenas de respostas por mês. Mil
 alunos são ~600 mil linhas — nada para o SQLite. Se você passar disso ou
 precisar de mais de uma máquina, defina `DATABASE_URL` apontando para um
 Postgres: o mesmo código migra sem alteração (veja `app/db.py`).

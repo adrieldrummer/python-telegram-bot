@@ -22,7 +22,7 @@
       <a class="btn btn-principal" href="/dia/{{ atual.numero }}">
         {{ 'Continuar Dia ' ~ atual.numero if atual.aula_lida else 'Abrir Dia ' ~ atual.numero }}
       </a>
-      <a class="btn btn-fantasma" href="/jornada">Ver os 30 dias</a>
+      <a class="btn btn-fantasma" href="/jornada">Ver os {{ resumo.total }} dias</a>
     </div>
   </div>
 </section>
@@ -32,6 +32,63 @@
   {% if boasvindas %}
   <div class="aviso aviso-ok mt-3">
     <strong>Conta ativada.</strong> Comece pelo Dia 1 — o diagnóstico define sua trilha inteira.
+  </div>
+  {% endif %}
+
+  <!-- contagem regressiva do concurso -->
+  <div class="cartao mt-3" style="border-color:rgba(10,92,255,.4)">
+    <div class="flex-entre" style="gap:1.4rem;flex-wrap:wrap">
+      <div class="flex-centro" style="gap:1.6rem;flex-wrap:wrap">
+        <div>
+          <div class="valor destaque-azul" style="font-size:1.9rem;font-weight:800;line-height:1">
+            {{ edital.dias_prova if edital.dias_prova > 0 else 0 }}
+          </div>
+          <div class="rotulo apagado" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em">
+            {{ 'dias para a prova' if edital.dias_prova > 0 else 'a prova já foi' }}
+          </div>
+        </div>
+        {% if edital.dias_inscricao > 0 %}
+        <div>
+          <div style="font-size:1.9rem;font-weight:800;line-height:1">{{ edital.dias_inscricao }}</div>
+          <div class="apagado" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em">dias p/ se inscrever</div>
+        </div>
+        {% endif %}
+        <div>
+          <div style="font-size:1.9rem;font-weight:800;line-height:1">{{ edital.total_questoes }}</div>
+          <div class="apagado" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em">questões na prova</div>
+        </div>
+      </div>
+      <p class="apagado mb-0" style="font-size:.82rem;max-width:340px">
+        {{ edital.concurso }} · {{ edital.banca }} · prova em
+        {{ edital.data_prova.strftime('%d/%m/%Y') }}. Mínimo de {{ edital.nota_minima }} pontos
+        para seguir no concurso.
+      </p>
+    </div>
+  </div>
+
+  {% if saldo.limitado %}
+  <div class="cartao mt-2" style="{{ 'border-color:rgba(240,169,43,.45);background:rgba(240,169,43,.08)' if saldo.esgotado }}">
+    <div class="flex-entre" style="gap:1rem;flex-wrap:wrap">
+      <div style="flex:1;min-width:220px">
+        <div class="flex-entre" style="font-size:.9rem">
+          <strong>Questões de hoje</strong>
+          <span class="mono suave">{{ saldo.feitas }}/{{ saldo.limite }}</span>
+        </div>
+        <div class="barra barra-fina mt-1">
+          <span style="width:{{ (saldo.feitas / saldo.limite * 100)|round|int if saldo.limite else 0 }}%"></span>
+        </div>
+        <p class="apagado mb-0 mt-1" style="font-size:.82rem">
+          {% if saldo.esgotado %}
+            Você usou o limite diário do seu plano. Ele reabre amanhã — ou some de uma vez com o upgrade.
+          {% else %}
+            Restam {{ saldo.restantes }} questões no seu plano hoje.
+          {% endif %}
+        </p>
+      </div>
+      <a class="btn {{ 'btn-principal' if saldo.esgotado else 'btn-fantasma' }} btn-pequeno" href="/planos">
+        Treinar sem limite
+      </a>
+    </div>
   </div>
   {% endif %}
 
@@ -118,6 +175,37 @@
         <div class="capa-sobreposicao">
           <h3>{{ t.titulo }}</h3>
           <p>{{ 'Disponível nos planos superiores' if t.bloqueado else t.descricao }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- módulos avançados -->
+  <section class="fileira">
+    <div class="fileira-cabecalho">
+      <h2>Módulos avançados</h2>
+      <a href="/modulos">{{ 'ver todos →' if modulos_liberados else 'como liberar →' }}</a>
+    </div>
+    {% if not modulos_liberados %}
+    <p class="apagado" style="font-size:.84rem;margin-top:-.6rem">
+      O que decide a vaga depois da objetiva. Liberado a partir da Operação Completa.
+    </p>
+    {% endif %}
+    <div class="trilho">
+      {% for m in modulos %}
+      <a class="capa {{ '' if modulos_liberados else 'capa-bloqueada' }}"
+         href="{{ '/modulos/' ~ m.id if modulos_liberados else '/planos' }}">
+        <img src="{{ CAPAS[m.capa] }}" alt="{{ m.titulo }}">
+        <div class="capa-topo">
+          <span class="etiqueta {{ 'etiqueta-azul' if modulos_liberados }}">
+            {{ m.etiqueta if modulos_liberados else 'Upgrade' }}
+          </span>
+        </div>
+        {% if not modulos_liberados %}<div class="cadeado">🔒</div>{% endif %}
+        <div class="capa-sobreposicao">
+          <h3>{{ m.titulo }}</h3>
+          <p>{{ m.chamada }}</p>
         </div>
       </a>
       {% endfor %}

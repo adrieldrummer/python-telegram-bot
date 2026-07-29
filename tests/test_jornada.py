@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from conteudo.materias import IDS as MATERIAS_IDS
+
 from app import estudo, jornada
 from app.config import config
 from app.db import buscar_um
@@ -57,7 +59,7 @@ def test_diagnostico_conclui_por_participacao(con, aluno):
 
 
 def test_dia_bloqueado_nao_da_acesso(con, aluno):
-    assert jornada.acesso_ao_dia(con, int(aluno["id"]), 10) is None
+    assert jornada.acesso_ao_dia(con, int(aluno["id"]), 5) is None
 
 
 def test_antecipacao_exige_pontos(con, aluno):
@@ -74,7 +76,7 @@ def test_prioridades_seguem_peso_e_erro(con, aluno):
     aluno_id = int(aluno["id"])
     responder_missao(con, aluno_id, 1, acerto=False)
     lista = jornada.mapa_prioridades(con, aluno_id)
-    assert len(lista) == 8
+    assert len(lista) == len(MATERIAS_IDS)
     assert lista[0]["urgencia"] >= lista[-1]["urgencia"]
     assert lista[0]["prioritaria"]
 
@@ -107,7 +109,8 @@ def test_diario_credita_uma_vez(con, aluno):
 
 def test_estatisticas_acompanham_as_respostas(con, aluno):
     aluno_id = int(aluno["id"])
-    responder_missao(con, aluno_id, 1)
+    _, total = responder_missao(con, aluno_id, 1)
     st = estatisticas(con, aluno_id)
-    assert st["respondidas"] == 24
+    assert total == 20  # o diagnóstico do Dia 1 tem o tamanho anunciado na venda
+    assert st["respondidas"] == total
     assert st["acerto_pct"] == 100

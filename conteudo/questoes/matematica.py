@@ -76,8 +76,8 @@ QUESTOES: list[Questao] = [
         tema="Razão e proporção",
         nivel="facil",
         enunciado=(
-            "Um candidato dividirá 120 questões entre Português e Direito, na razão de 3 para 5, "
-            "respectivamente. O número de questões de Direito será:"
+            "Um candidato dividirá 120 questões entre Português e Matemática, na razão de 3 para 5, "
+            "respectivamente. O número de questões de Matemática será:"
         ),
         alternativas=(
             ("A", "45"),
@@ -87,7 +87,7 @@ QUESTOES: list[Questao] = [
             ("E", "80"),
         ),
         correta="D",
-        comentario="3 + 5 = 8 partes; 120 ÷ 8 = 15 por parte. Direito fica com 5 × 15 = 75 questões.",
+        comentario="3 + 5 = 8 partes; 120 ÷ 8 = 15 por parte. Matemática fica com 5 × 15 = 75 questões.",
         armadilha="Responder 45 (a parte de Português) por não conferir a qual matéria a razão se refere.",
     ),
     Questao(
@@ -119,7 +119,7 @@ QUESTOES: list[Questao] = [
         tema="MMC",
         nivel="facil",
         enunciado=(
-            "Um candidato revisa Português a cada 4 dias e Direito a cada 6 dias. Se hoje revisou "
+            "Um candidato revisa Português a cada 4 dias e Informática a cada 6 dias. Se hoje revisou "
             "as duas matérias, voltará a revisá-las no mesmo dia daqui a:"
         ),
         alternativas=(
@@ -268,5 +268,84 @@ QUESTOES: list[Questao] = [
         correta="A",
         comentario="Área = 25 × 12 = 300 m². Perímetro = 2 × (25 + 12) = 74 m.",
         armadilha="Esquecer de dobrar a soma dos lados e marcar 37 m de perímetro.",
+    ),
+
+    Questao(
+        id="mat-014",
+        materia="matematica",
+        tema="Sistema métrico",
+        nivel="facil",
+        enunciado="Um trajeto de 2,5 km percorrido por uma viatura corresponde, em metros, a:",
+        alternativas=(
+            ("A", "25 m"),
+            ("B", "250 m"),
+            ("C", "2.500 m"),
+            ("D", "25.000 m"),
+            ("E", "250.000 m"),
+        ),
+        correta="C",
+        comentario="1 km = 1.000 m, logo 2,5 × 1.000 = 2.500 m.",
+        armadilha="Errar a casa decimal na conversão — fonte clássica de ponto perdido por desatenção.",
+    ),
+    Questao(
+        id="mat-015",
+        materia="matematica",
+        tema="Teorema de Pitágoras",
+        nivel="medio",
+        enunciado=(
+            "Em um triângulo retângulo, os catetos medem 6 cm e 8 cm. A hipotenusa mede:"
+        ),
+        alternativas=(
+            ("A", "10 cm"),
+            ("B", "12 cm"),
+            ("C", "14 cm"),
+            ("D", "48 cm"),
+            ("E", "100 cm"),
+        ),
+        correta="A",
+        comentario="a² = b² + c² = 6² + 8² = 36 + 64 = 100 → a = 10 cm.",
+        armadilha="Parar em 100 e marcar sem extrair a raiz quadrada.",
+    ),
+    Questao(
+        id="mat-016",
+        materia="matematica",
+        tema="Sistema de equações do 1º grau",
+        nivel="medio",
+        enunciado=(
+            "A soma de dois números é 30 e a diferença entre eles é 8. Esses números são:"
+        ),
+        alternativas=(
+            ("A", "11 e 19"),
+            ("B", "12 e 18"),
+            ("C", "13 e 17"),
+            ("D", "14 e 16"),
+            ("E", "10 e 20"),
+        ),
+        correta="A",
+        comentario=(
+            "x + y = 30 e x − y = 8. Somando as equações: 2x = 38 → x = 19; logo y = 11. O método "
+            "da adição elimina uma variável de imediato."
+        ),
+        armadilha="Conferir sempre as duas condições: várias alternativas somam 30, mas só uma tem diferença 8.",
+    ),
+    Questao(
+        id="mat-017",
+        materia="matematica",
+        tema="Tabelas e gráficos",
+        nivel="facil",
+        enunciado=(
+            "Um gráfico de barras mostra as ocorrências registradas em quatro meses: janeiro 40, "
+            "fevereiro 55, março 35 e abril 50. A média mensal de ocorrências no período é:"
+        ),
+        alternativas=(
+            ("A", "40"),
+            ("B", "45"),
+            ("C", "46"),
+            ("D", "50"),
+            ("E", "55"),
+        ),
+        correta="B",
+        comentario="(40 + 55 + 35 + 50) ÷ 4 = 180 ÷ 4 = 45 ocorrências por mês.",
+        armadilha="Somar e esquecer de dividir pelo número de meses.",
     ),
 ]

@@ -253,4 +253,95 @@ QUESTOES: list[Questao] = [
         ),
         armadilha="Reutilizar senha faz um único vazamento comprometer todas as suas contas.",
     ),
+
+    Questao(
+        id="inf-013",
+        materia="informatica",
+        tema="MS-Windows 10",
+        nivel="facil",
+        enunciado=(
+            "No MS-Windows 10, a área de transferência é utilizada para:"
+        ),
+        alternativas=(
+            ("A", "armazenar temporariamente o conteúdo copiado ou recortado, para posterior colagem."),
+            ("B", "exibir os programas instalados no computador."),
+            ("C", "aumentar a memória RAM do equipamento."),
+            ("D", "organizar automaticamente os arquivos por data."),
+            ("E", "proteger o computador contra vírus."),
+        ),
+        correta="A",
+        comentario=(
+            "A área de transferência guarda temporariamente o que foi copiado (Ctrl+C) ou "
+            "recortado (Ctrl+X) até ser colado (Ctrl+V). Não se confunde com a área de trabalho, "
+            "que é a tela inicial com ícones e atalhos."
+        ),
+        armadilha="Área de transferência x área de trabalho: nomes parecidos, funções diferentes.",
+    ),
+    Questao(
+        id="inf-014",
+        materia="informatica",
+        tema="MS-Word 2016",
+        nivel="medio",
+        enunciado=(
+            "No MS-Word 2016, o recurso que permite repetir automaticamente um texto no topo de "
+            "todas as páginas do documento é:"
+        ),
+        alternativas=(
+            ("A", "o cabeçalho."),
+            ("B", "a nota de rodapé."),
+            ("C", "a quebra de seção."),
+            ("D", "o sumário automático."),
+            ("E", "a caixa de texto."),
+        ),
+        correta="A",
+        comentario=(
+            "Cabeçalho é a área superior repetida em todas as páginas; rodapé é a inferior. "
+            "Quebra de seção divide o documento em partes com formatações diferentes."
+        ),
+        armadilha="Confundir cabeçalho (topo) com rodapé (base) na hora da pressa.",
+    ),
+    Questao(
+        id="inf-015",
+        materia="informatica",
+        tema="MS-PowerPoint 2016",
+        nivel="medio",
+        enunciado="No MS-PowerPoint 2016, a diferença entre animação e transição é que:",
+        alternativas=(
+            ("A", "animação é o efeito aplicado a um objeto dentro do slide; transição é o efeito "
+                  "de passagem de um slide para outro."),
+            ("B", "animação só funciona em vídeos e transição só em imagens."),
+            ("C", "transição é aplicada a textos e animação, a planilhas."),
+            ("D", "as duas são a mesma coisa, com nomes diferentes."),
+            ("E", "animação altera o tema do slide e transição altera a fonte."),
+        ),
+        correta="A",
+        comentario=(
+            "Animação atua em elementos do slide (texto, imagem, gráfico). Transição atua na "
+            "mudança entre slides. É uma das distinções mais cobradas do programa."
+        ),
+        armadilha="A banca troca os dois conceitos e conta com a leitura apressada.",
+    ),
+    Questao(
+        id="inf-016",
+        materia="informatica",
+        tema="Google Workspace e Teams",
+        nivel="facil",
+        enunciado=(
+            "No Google Workspace, o aplicativo destinado ao armazenamento de arquivos na nuvem é o:"
+        ),
+        alternativas=(
+            ("A", "Gmail"),
+            ("B", "Meet"),
+            ("C", "Drive"),
+            ("D", "Agenda"),
+            ("E", "Formulários"),
+        ),
+        correta="C",
+        comentario=(
+            "Drive armazena arquivos; Gmail é e-mail; Meet é videochamada; Agenda é calendário; "
+            "Formulários cria questionários. No Microsoft Teams, o equivalente de colaboração "
+            "reúne chat, chamadas e edição compartilhada de arquivos do Office."
+        ),
+        armadilha="Saber o nome de cada aplicativo é meio ponto garantido — é decoreba barata.",
+    ),
 ]

@@ -29,8 +29,8 @@
       </ul>
       {% if p.id != meu_plano.id or vencido %}
       <a class="btn {{ 'btn-principal' if p.destaque else 'btn-fantasma' }} btn-largo"
-         href="{{ p.checkout_url or config.cakto_checkout_url }}"
-         data-checkout data-plano="{{ p.id }}">
+         href="{{ checkouts.get(p.id) or config.cakto_checkout_url }}"
+         data-checkout data-plano="{{ p.id }}" data-valor="{{ p.valor }}">
         {{ 'Renovar' if p.id == meu_plano.id else 'Fazer upgrade' }}
       </a>
       {% endif %}
