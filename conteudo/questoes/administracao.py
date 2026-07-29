@@ -37,7 +37,7 @@ QUESTOES: list[Questao] = [
         enunciado="Segundo a Constituição Federal, cabe às polícias militares:",
         alternativas=(
             ("A", "a apuração de infrações penais contra a ordem política e social."),
-            ("B", "o policiamento ostensivo e a preservação da ordem pública."),
+            ("B", "a polícia ostensiva e a preservação da ordem pública."),
             ("C", "as funções de polícia judiciária da União."),
             ("D", "o patrulhamento ostensivo das rodovias federais."),
             ("E", "a execução, com exclusividade, das atividades de defesa civil."),
@@ -58,13 +58,13 @@ QUESTOES: list[Questao] = [
         enunciado="De acordo com o caput do art. 144 da Constituição Federal, a segurança pública é:",
         alternativas=(
             ("A", "dever exclusivo das forças policiais, sem participação da sociedade."),
-            ("B", "dever do Estado, direito e responsabilidade de todos, exercida para a "
+            ("B", "atribuição privativa da União."),
+            ("C", "dever do Estado, direito e responsabilidade de todos, exercida para a "
                   "preservação da ordem pública e da incolumidade das pessoas e do patrimônio."),
-            ("C", "atribuição privativa da União."),
             ("D", "serviço público delegável à iniciativa privada."),
             ("E", "competência exclusiva dos municípios."),
         ),
-        correta="B",
+        correta="C",
         comentario=(
             "A redação constitucional é literal: 'dever do Estado, direito e responsabilidade de "
             "todos'. A parte final — responsabilidade de todos — é justamente a que costuma ser "
@@ -84,11 +84,11 @@ QUESTOES: list[Questao] = [
         alternativas=(
             ("A", "ao Ministro da Defesa."),
             ("B", "ao Comandante do Exército da respectiva região militar."),
-            ("C", "aos Governadores dos Estados, do Distrito Federal e dos Territórios."),
-            ("D", "ao Presidente da República, em qualquer hipótese."),
+            ("C", "ao Presidente da República, em qualquer hipótese."),
+            ("D", "aos Governadores dos Estados, do Distrito Federal e dos Territórios."),
             ("E", "aos Prefeitos dos municípios onde estão sediadas."),
         ),
-        correta="C",
+        correta="D",
         comentario=(
             "Art. 144, § 6º. Ser 'força auxiliar e reserva do Exército' não significa subordinação "
             "cotidiana ao Exército: o comando é do Governador do Estado."
@@ -107,13 +107,13 @@ QUESTOES: list[Questao] = [
         alternativas=(
             ("A", "A casa é asilo inviolável, não se admitindo ingresso em nenhuma hipótese sem "
                   "consentimento do morador."),
-            ("B", "É permitido o ingresso sem consentimento em caso de flagrante delito, desastre "
-                  "ou para prestar socorro, a qualquer hora do dia ou da noite."),
+            ("B", "A garantia não se aplica a imóveis alugados."),
             ("C", "O ingresso por determinação judicial pode ocorrer a qualquer hora."),
             ("D", "Somente durante o dia é possível ingressar em caso de flagrante delito."),
-            ("E", "A garantia não se aplica a imóveis alugados."),
+            ("E", "É permitido o ingresso sem consentimento em caso de flagrante delito, desastre "
+                  "ou para prestar socorro, a qualquer hora do dia ou da noite."),
         ),
-        correta="B",
+        correta="E",
         comentario=(
             "Art. 5º, XI: flagrante delito, desastre e prestação de socorro autorizam o ingresso a "
             "qualquer hora; a determinação judicial, apenas durante o dia."
@@ -171,13 +171,13 @@ QUESTOES: list[Questao] = [
         enunciado="Sobre a investidura em cargo ou emprego público, a Constituição Federal determina que:",
         alternativas=(
             ("A", "depende sempre de aprovação prévia em concurso público, sem qualquer exceção."),
-            ("B", "depende de aprovação prévia em concurso público, ressalvadas as nomeações para "
+            ("B", "pode ocorrer por indicação, desde que haja publicidade do ato."),
+            ("C", "depende de aprovação prévia em concurso público, ressalvadas as nomeações para "
                   "cargo em comissão declarado em lei de livre nomeação e exoneração."),
-            ("C", "pode ocorrer por indicação, desde que haja publicidade do ato."),
             ("D", "independe de concurso quando se tratar de emprego em empresa pública."),
             ("E", "exige concurso apenas para cargos de nível superior."),
         ),
-        correta="B",
+        correta="C",
         comentario=(
             "Art. 37, II: a regra é o concurso público; a exceção expressa é o cargo em comissão de "
             "livre nomeação e exoneração, além da contratação temporária do inciso IX."
@@ -193,11 +193,11 @@ QUESTOES: list[Questao] = [
         alternativas=(
             ("A", "o ato for considerado inconveniente pelo administrador."),
             ("B", "houver risco à imagem pessoal da autoridade."),
-            ("C", "o sigilo for imprescindível à segurança da sociedade e do Estado."),
-            ("D", "o custo de divulgação for elevado."),
+            ("C", "o custo de divulgação for elevado."),
+            ("D", "o sigilo for imprescindível à segurança da sociedade e do Estado."),
             ("E", "a informação for antiga."),
         ),
-        correta="C",
+        correta="D",
         comentario=(
             "Art. 5º, XXXIII: todos têm direito a receber informações de interesse coletivo ou "
             "geral, ressalvadas aquelas cujo sigilo seja imprescindível à segurança da sociedade e "
@@ -213,13 +213,13 @@ QUESTOES: list[Questao] = [
         enunciado="Sobre a Lei de Acesso à Informação, é correto afirmar:",
         alternativas=(
             ("A", "Só advogados e jornalistas podem solicitar informações a órgãos públicos."),
-            ("B", "Qualquer pessoa pode solicitar informações a órgãos públicos, com prazos "
-                  "definidos para resposta, sendo o sigilo exceção prevista em lei."),
+            ("B", "A lei se aplica apenas aos órgãos federais."),
             ("C", "O pedido de informação exige a apresentação de motivo determinado."),
             ("D", "Os órgãos públicos podem simplesmente ignorar pedidos considerados inoportunos."),
-            ("E", "A lei se aplica apenas aos órgãos federais."),
+            ("E", "Qualquer pessoa pode solicitar informações a órgãos públicos, com prazos "
+                  "definidos para resposta, sendo o sigilo exceção prevista em lei."),
         ),
-        correta="B",
+        correta="E",
         comentario=(
             "A Lei 12.527/2011 assegura o acesso como regra, a qualquer interessado, sem exigir "
             "motivação do pedido, com prazos de resposta e possibilidade de recurso. Aplica-se à "
@@ -236,14 +236,14 @@ QUESTOES: list[Questao] = [
             "No Estado de São Paulo, o Decreto estadual nº 68.155/2023 tem por objeto:"
         ),
         alternativas=(
-            ("A", "criar novo imposto estadual sobre serviços."),
-            ("B", "regulamentar, no âmbito estadual, a aplicação da Lei de Acesso à Informação, "
+            ("A", "regulamentar, no âmbito estadual, a aplicação da Lei de Acesso à Informação, "
                   "definindo procedimentos e responsabilidades no atendimento aos pedidos."),
+            ("B", "criar novo imposto estadual sobre serviços."),
             ("C", "reorganizar a carreira dos servidores civis federais."),
             ("D", "instituir o Código de Trânsito do Estado de São Paulo."),
             ("E", "revogar a Lei de Acesso à Informação no território paulista."),
         ),
-        correta="B",
+        correta="A",
         comentario=(
             "O decreto estadual regulamenta como os órgãos e entidades paulistas cumprem a Lei "
             "12.527/2011 — prazos, fluxos e responsáveis. Decreto regulamenta lei; não a revoga."
@@ -285,13 +285,13 @@ QUESTOES: list[Questao] = [
         ),
         alternativas=(
             ("A", "Servidores civis e militares submetem-se exatamente ao mesmo regime jurídico."),
-            ("B", "A Constituição estadual diferencia servidores públicos civis de servidores "
+            ("B", "Não há previsão de servidores militares na Constituição estadual."),
+            ("C", "A Constituição estadual diferencia servidores públicos civis de servidores "
                   "públicos militares, com regras próprias de ingresso, direitos e deveres."),
-            ("C", "Não há previsão de servidores militares na Constituição estadual."),
             ("D", "Os militares estaduais são regidos pela Consolidação das Leis do Trabalho."),
             ("E", "O ingresso na carreira militar independe de concurso público."),
         ),
-        correta="B",
+        correta="C",
         comentario=(
             "A Constituição paulista trata separadamente as duas categorias. Os militares estaduais "
             "têm regime próprio — inclusive quanto a hierarquia, disciplina e vedações, como a "
@@ -310,13 +310,13 @@ QUESTOES: list[Questao] = [
         ),
         alternativas=(
             ("A", "subjetiva, exigindo que a vítima prove dolo ou culpa do agente."),
-            ("B", "objetiva, assegurado o direito de regresso contra o agente responsável nos casos "
-                  "de dolo ou culpa."),
+            ("B", "inexistente quando o dano decorre de ato omissivo."),
             ("C", "objetiva, vedado o direito de regresso."),
-            ("D", "inexistente quando o dano decorre de ato omissivo."),
+            ("D", "objetiva, assegurado o direito de regresso contra o agente responsável nos casos "
+                  "de dolo ou culpa."),
             ("E", "solidária com o agente em qualquer hipótese."),
         ),
-        correta="B",
+        correta="D",
         comentario=(
             "Para a vítima, basta demonstrar conduta, dano e nexo causal — responsabilidade "
             "objetiva. Já a ação de regresso do Estado contra o agente depende de comprovar dolo ou "
@@ -331,18 +331,173 @@ QUESTOES: list[Questao] = [
         nivel="facil",
         enunciado="São direitos sociais expressamente previstos no art. 6º da Constituição Federal:",
         alternativas=(
-            ("A", "educação, saúde, alimentação, trabalho, moradia, transporte, lazer e segurança."),
+            ("A", "liberdade de expressão, reunião e associação."),
             ("B", "propriedade, herança, livre iniciativa e sigilo bancário."),
             ("C", "voto, elegibilidade, iniciativa popular e plebiscito."),
             ("D", "nacionalidade, cidadania e dignidade da pessoa humana."),
-            ("E", "liberdade de expressão, reunião e associação."),
+            ("E", "educação, saúde, alimentação, trabalho, moradia, transporte, lazer e segurança."),
         ),
-        correta="A",
+        correta="E",
         comentario=(
             "O art. 6º lista os direitos sociais, incluindo ainda previdência social, proteção à "
             "maternidade e à infância e assistência aos desamparados. A alternativa (D) traz "
             "fundamentos da República (art. 1º)."
         ),
         armadilha="Direitos sociais (art. 6º) x fundamentos da República (art. 1º).",
+    ),
+    Questao(
+        id="adm-016",
+        materia="administracao",
+        tema="Direitos e garantias fundamentais",
+        nivel="medio",
+        enunciado=(
+            "Sobre os direitos e garantias fundamentais do art. 5º da Constituição Federal, é "
+            "correto afirmar que:"
+        ),
+        alternativas=(
+            ("A", "a liberdade de associação é plena, inclusive para associações de caráter "
+                  "paramilitar."),
+            ("B", "é assegurada, nos termos da lei, a prestação de assistência religiosa nas "
+                  "entidades civis e militares de internação coletiva."),
+            ("C", "ninguém pode ser compelido a associar-se, mas a saída da associação depende de "
+                  "autorização judicial."),
+            ("D", "a criação de associações depende de autorização prévia do poder público."),
+            ("E", "as associações só podem ser dissolvidas por ato do Poder Executivo."),
+        ),
+        correta="B",
+        comentario=(
+            "Art. 5º, VII: a assistência religiosa é assegurada em entidades de internação coletiva "
+            "— presídios, hospitais e quartéis, entre outras. Sobre associações: é plena a liberdade "
+            "<strong>para fins lícitos, vedada a de caráter paramilitar</strong> (XVII); a criação "
+            "independe de autorização (XVIII); ninguém é obrigado a associar-se nem a permanecer "
+            "associado (XX); e a dissolução compulsória exige decisão judicial transitada em julgado "
+            "(XIX)."
+        ),
+        armadilha=(
+            "A palavra 'plena' aparece no texto constitucional, mas vem sempre acompanhada de "
+            "'para fins lícitos' e da vedação ao caráter paramilitar. Alternativa que só diz 'plena' "
+            "está incompleta de propósito."
+        ),
+    ),
+    Questao(
+        id="adm-017",
+        materia="administracao",
+        tema="Militares: perda de posto e patente",
+        nivel="dificil",
+        enunciado=(
+            "Um oficial da Polícia Militar foi condenado pela Justiça comum, por sentença transitada "
+            "em julgado, a pena privativa de liberdade superior a dois anos. Conforme a Constituição "
+            "Federal, esse oficial:"
+        ),
+        alternativas=(
+            ("A", "perde automaticamente o posto e a patente com o trânsito em julgado da sentença."),
+            ("B", "não pode sofrer qualquer consequência na esfera militar, por se tratar de "
+                  "condenação na Justiça comum."),
+            ("C", "será submetido a julgamento por tribunal militar de caráter permanente, que "
+                  "decidirá sobre a perda do posto e da patente."),
+            ("D", "é exonerado por ato do Governador, sem necessidade de julgamento."),
+            ("E", "perde apenas a remuneração, mantendo posto e patente."),
+        ),
+        correta="C",
+        comentario=(
+            "Art. 142, § 3º, VI e VII (aplicável aos militares estaduais por força do art. 42): o "
+            "oficial só perde o posto e a patente se for <strong>julgado indigno do oficialato ou "
+            "com ele incompatível</strong>, por decisão de tribunal militar de caráter permanente. "
+            "A condenação superior a dois anos na Justiça comum ou militar é o que "
+            "<em>desencadeia</em> esse julgamento — ela não produz a perda sozinha."
+        ),
+        armadilha=(
+            "Repare no 'superior a dois anos'. Condenação de exatamente dois anos não aciona o "
+            "dispositivo — é o tipo de detalhe numérico que a banca usa para separar quem leu o "
+            "texto de quem leu o resumo."
+        ),
+    ),
+    Questao(
+        id="adm-018",
+        materia="administracao",
+        tema="Organização da PM-SP",
+        nivel="medio",
+        enunciado=(
+            "Sobre o Comandante Geral da Polícia Militar do Estado de São Paulo, é correto afirmar "
+            "que o cargo é:"
+        ),
+        alternativas=(
+            ("A", "ocupado por eleição direta entre os integrantes da corporação."),
+            ("B", "privativo de oficial da reserva remunerada."),
+            ("C", "provido por concurso público específico."),
+            ("D", "ocupado por oficial do Exército designado pelo Ministério da Defesa."),
+            ("E", "de livre nomeação do Governador do Estado, escolhido entre os coronéis da ativa "
+                  "do Quadro de Oficiais Policiais Militares."),
+        ),
+        correta="E",
+        comentario=(
+            "A Polícia Militar subordina-se ao Governador (CF, art. 144, § 6º), e é ele quem nomeia "
+            "o Comandante Geral entre os coronéis da ativa do QOPM. Não há eleição, concurso "
+            "específico para o posto nem indicação federal — este último ponto é justamente o que "
+            "distingue força auxiliar de força federal."
+        ),
+        armadilha=(
+            "'Reserva e força auxiliar do Exército' induz à ideia de nomeação militar federal. O "
+            "comando é estadual, e civil: quem nomeia é o Governador."
+        ),
+    ),
+    Questao(
+        id="adm-019",
+        materia="administracao",
+        tema="Atendimento ao cidadão",
+        nivel="facil",
+        enunciado=(
+            "Canais oficiais de ouvidoria e atendimento ao cidadão, como os mantidos pelo Governo do "
+            "Estado de São Paulo, têm por finalidade principal:"
+        ),
+        alternativas=(
+            ("A", "substituir o registro de boletim de ocorrência policial."),
+            ("B", "receber e encaminhar solicitações, reclamações, denúncias e pedidos de "
+                  "informação, com acompanhamento do protocolo pelo cidadão."),
+            ("C", "julgar administrativamente os servidores denunciados."),
+            ("D", "divulgar campanhas publicitárias do governo."),
+            ("E", "arrecadar taxas e tributos estaduais."),
+        ),
+        correta="B",
+        comentario=(
+            "A ouvidoria é porta de entrada e encaminhamento: registra a manifestação, gera "
+            "protocolo e cobra resposta do órgão competente, em prazo. Ela não julga servidor — isso "
+            "é da corregedoria e do processo administrativo disciplinar — nem substitui o boletim de "
+            "ocorrência, que é ato de polícia judiciária."
+        ),
+        armadilha=(
+            "Ouvidoria encaminha e acompanha; corregedoria apura e pune. Trocar as duas é o erro "
+            "clássico do tema."
+        ),
+    ),
+    Questao(
+        id="adm-020",
+        materia="administracao",
+        tema="Segurança pública: atuação federal",
+        nivel="dificil",
+        enunciado=(
+            "Diante de grave comprometimento da ordem pública em um Estado, a Constituição Federal "
+            "admite a atuação das Forças Armadas na garantia da lei e da ordem. Essa atuação:"
+        ),
+        alternativas=(
+            ("A", "dispensa qualquer provocação, podendo ser iniciada pelo comando militar local."),
+            ("B", "transfere em definitivo o comando da polícia militar para o Exército."),
+            ("C", "ocorre por iniciativa do Presidente da República, após iniciativa de qualquer dos "
+                  "poderes constitucionais, e tem caráter episódico e temporário."),
+            ("D", "substitui a competência estadual em matéria de segurança pública."),
+            ("E", "só é possível mediante decretação de estado de sítio."),
+        ),
+        correta="C",
+        comentario=(
+            "Art. 142: as Forças Armadas destinam-se à defesa da Pátria, à garantia dos poderes "
+            "constitucionais e, <strong>por iniciativa de qualquer destes</strong>, à garantia da lei "
+            "e da ordem. Quem determina o emprego é o Presidente da República, e a operação é "
+            "episódica e por tempo determinado — não anula a competência estadual nem exige, "
+            "necessariamente, estado de sítio ou intervenção federal."
+        ),
+        armadilha=(
+            "GLO, intervenção federal, estado de defesa e estado de sítio são institutos diferentes, "
+            "com requisitos próprios. A banca mistura os quatro na mesma questão."
+        ),
     ),
 ]

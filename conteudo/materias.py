@@ -81,7 +81,7 @@ MATERIAS: tuple[Materia, ...] = (
         nome="História Geral e do Brasil",
         curta="História",
         bloco="gerais",
-        peso=8,
+        peso=6,
         cor="#8a6d1f",
         resumo=(
             "Recorte fechado: guerras mundiais, Guerra Fria, Era Vargas, regime militar e "
@@ -104,7 +104,7 @@ MATERIAS: tuple[Materia, ...] = (
         nome="Geografia e Atualidades",
         curta="Geografia",
         bloco="gerais",
-        peso=7,
+        peso=9,
         cor="#1f9d76",
         resumo=(
             "Natureza brasileira, população, economia e meio ambiente — mais atualidades dos "

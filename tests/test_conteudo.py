@@ -144,3 +144,43 @@ def test_toda_capa_do_catalogo_aponta_para_arquivo_existente():
     for chave, url in CAPAS.items():
         arquivo = estaticos / url.removeprefix("/static/")
         assert arquivo.exists(), f"{chave} aponta para {url}, que não existe"
+
+
+def test_gabarito_e_equilibrado_entre_as_cinco_letras():
+    """Banco viciado em uma letra ensina o aluno a chutar errado.
+
+    Em 30/11/2025 a VUNESP distribuiu as respostas de forma quase uniforme
+    (A 18%, B 23%, C 18%, D 18%, E 22%). Um banco com metade dos gabaritos em
+    B treina o reflexo de "na dúvida, marque B" — que é exatamente o hábito que
+    derruba o candidato na prova de verdade.
+    """
+    from collections import Counter
+
+    from conteudo.questoes import POR_MATERIA, QUESTOES
+
+    total = len(QUESTOES)
+    contagem = Counter(q.correta for q in QUESTOES)
+    assert set(contagem) == set("ABCDE"), "alguma letra não aparece como gabarito"
+    for letra in "ABCDE":
+        fatia = contagem[letra] / total
+        assert 0.12 <= fatia <= 0.28, (
+            f"letra {letra} responde por {fatia:.0%} dos gabaritos — o banco está viciado"
+        )
+
+    # e nenhuma matéria pode concentrar mais da metade numa letra só
+    for materia, lista in POR_MATERIA.items():
+        c = Counter(q.correta for q in lista)
+        letra, quantas = c.most_common(1)[0]
+        assert quantas <= len(lista) * 0.45, (
+            f"{materia}: {quantas} de {len(lista)} gabaritos em {letra}"
+        )
+
+
+def test_toda_questao_tem_cinco_alternativas_como_a_prova_real():
+    from conteudo.edital import ALTERNATIVAS_POR_QUESTAO
+    from conteudo.questoes import QUESTOES
+
+    assert ALTERNATIVAS_POR_QUESTAO == 5
+    for q in QUESTOES:
+        assert len(q.alternativas) == 5, q.id
+        assert [l for l, _ in q.alternativas] == list("ABCDE"), q.id

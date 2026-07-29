@@ -39,14 +39,14 @@ QUESTOES: list[Questao] = [
         alternativas=(
             ("A", "O suspeito agiu de mau modo e respondeu mal ao questionamento."),
             ("B", "Ele é um mal exemplo para a turma."),
-            ("C", "O relatório foi mau redigido."),
+            ("C", "Foi um mau começo, mas o dia terminou mal."),
             ("D", "Mau chegou à unidade, iniciou o serviço."),
-            ("E", "Foi um mau começo, mas o dia terminou mal."),
+            ("E", "O relatório foi mau redigido."),
         ),
-        correta="E",
+        correta="C",
         comentario=(
             "'Mau' é adjetivo e se opõe a 'bom' ('mau começo' / 'bom começo'). 'Mal' é advérbio "
-            "(ou substantivo) e se opõe a 'bem' ('terminou mal' / 'terminou bem'). Em (E) as duas "
+            "(ou substantivo) e se opõe a 'bem' ('terminou mal' / 'terminou bem'). Em (C) as duas "
             "formas estão nas funções certas."
         ),
         armadilha="Troca de classe gramatical: se dá para trocar por 'bom', é 'mau'; por 'bem', é 'mal'.",
@@ -60,11 +60,11 @@ QUESTOES: list[Questao] = [
         alternativas=(
             ("A", "Houveram muitas ocorrências no fim de semana."),
             ("B", "Haviam três viaturas no pátio."),
-            ("C", "Houve muitas ocorrências no fim de semana."),
-            ("D", "Existiu, no bairro, diversos casos semelhantes."),
+            ("C", "Existiu, no bairro, diversos casos semelhantes."),
+            ("D", "Houve muitas ocorrências no fim de semana."),
             ("E", "Devem haver soluções melhores para o problema."),
         ),
-        correta="C",
+        correta="D",
         comentario=(
             "O verbo 'haver' no sentido de 'existir' é impessoal: fica sempre na 3ª pessoa do "
             "singular ('Houve muitas ocorrências'). Já 'existir' é pessoal e concorda com o sujeito "
@@ -81,13 +81,13 @@ QUESTOES: list[Questao] = [
         enunciado="Assinale a alternativa que completa corretamente as lacunas:\n"
         "«___ você desistiu do concurso? Desisti ___ perdi a confiança, e ninguém entendeu o ___.»",
         alternativas=(
-            ("A", "Por que — porque — porquê"),
+            ("A", "Porquê — porque — por que"),
             ("B", "Porque — por que — por quê"),
             ("C", "Por quê — porque — por que"),
             ("D", "Por que — por quê — porquê"),
-            ("E", "Porquê — porque — por que"),
+            ("E", "Por que — porque — porquê"),
         ),
-        correta="A",
+        correta="E",
         comentario=(
             "Pergunta direta no início: 'Por que' (separado, sem acento). Resposta/causa: 'porque' "
             "(junto). Precedido de artigo, vira substantivo: 'o porquê' (junto e acentuado). "
@@ -102,19 +102,19 @@ QUESTOES: list[Questao] = [
         nivel="medio",
         enunciado="Assinale a alternativa correta quanto à concordância nominal.",
         alternativas=(
-            ("A", "É proibido a entrada de pessoas não autorizadas."),
-            ("B", "É proibida a entrada de pessoas não autorizadas."),
+            ("A", "É proibida a entrada de pessoas não autorizadas."),
+            ("B", "É proibido a entrada de pessoas não autorizadas."),
             ("C", "É proibidas a entrada de pessoas não autorizadas."),
             ("D", "São proibido a entrada de pessoas não autorizadas."),
             ("E", "É proibido as entradas de pessoas não autorizadas."),
         ),
-        correta="B",
+        correta="A",
         comentario=(
             "Nas expressões 'é proibido', 'é necessário', 'é bom', a concordância varia: sem "
             "determinante, o adjetivo fica no masculino singular ('É proibido entrada'); com "
             "determinante ('a' entrada), há concordância plena: 'É proibida a entrada'."
         ),
-        armadilha="A alternativa (A) só estaria certa se o artigo 'a' fosse retirado.",
+        armadilha="A alternativa (B) só estaria certa se o artigo 'a' fosse retirado.",
     ),
     Questao(
         id="port-006",
@@ -150,18 +150,18 @@ QUESTOES: list[Questao] = [
         ),
         alternativas=(
             ("A", "a falta de dedicação ao estudo diário."),
-            ("B", "a escolha inadequada do conteúdo estudado."),
-            ("C", "a impossibilidade de estudar por muitas horas."),
+            ("B", "a impossibilidade de estudar por muitas horas."),
+            ("C", "a escolha inadequada do conteúdo estudado."),
             ("D", "a ausência de material didático de qualidade."),
             ("E", "o excesso de questões resolvidas sem teoria."),
         ),
-        correta="B",
+        correta="C",
         comentario=(
             "O texto afirma explicitamente que esforço havia ('não faltou esforço') e localiza a "
             "falha na direção — isto é, no que era estudado. Interpretação cobra o que está "
             "escrito, não o que é plausível."
         ),
-        armadilha="(A) e (C) contradizem o texto; (D) e (E) trazem informação que o texto não dá.",
+        armadilha="(A) e (B) contradizem o texto; (D) e (E) trazem informação que o texto não dá.",
     ),
     Questao(
         id="port-008",
@@ -172,13 +172,13 @@ QUESTOES: list[Questao] = [
         alternativas=(
             ("A", "O sargento responsável pelo setor, comunicou a decisão à equipe."),
             ("B", "O sargento, responsável pelo setor comunicou a decisão à equipe."),
-            ("C", "O sargento, responsável pelo setor, comunicou a decisão à equipe."),
-            ("D", "O sargento responsável, pelo setor comunicou a decisão, à equipe."),
+            ("C", "O sargento responsável, pelo setor comunicou a decisão, à equipe."),
+            ("D", "O sargento, responsável pelo setor, comunicou a decisão à equipe."),
             ("E", "O sargento responsável pelo setor comunicou, a decisão à equipe."),
         ),
-        correta="C",
+        correta="D",
         comentario=(
-            "Em (C) 'responsável pelo setor' está entre vírgulas como explicação intercalada, uso "
+            "Em (D) 'responsável pelo setor' está entre vírgulas como explicação intercalada, uso "
             "correto. As demais separam sujeito do verbo (A), abrem sem fechar a intercalação (B) "
             "ou isolam o objeto direto do verbo (D e E) — proibido pela norma-padrão."
         ),
@@ -193,11 +193,11 @@ QUESTOES: list[Questao] = [
         alternativas=(
             ("A", "Chegaram os reforços."),
             ("B", "Precisa-se de voluntários."),
-            ("C", "Choveu forte durante a madrugada."),
+            ("C", "Alguém deixou o portão aberto."),
             ("D", "Alugam-se salas comerciais."),
-            ("E", "Alguém deixou o portão aberto."),
+            ("E", "Choveu forte durante a madrugada."),
         ),
-        correta="C",
+        correta="E",
         comentario=(
             "Verbos que indicam fenômeno da natureza são impessoais: a oração não tem sujeito. Em "
             "(B) o sujeito é indeterminado (partícula 'se' com verbo transitivo indireto) e em (D) "
@@ -212,17 +212,17 @@ QUESTOES: list[Questao] = [
         nivel="facil",
         enunciado="Assinale a alternativa correta.",
         alternativas=(
-            ("A", "Aonde você mora atualmente?"),
+            ("A", "Aonde você pretende chegar com esse ritmo de estudo?"),
             ("B", "Onde você vai depois do expediente?"),
             ("C", "Aonde ele trabalha, todos cumprem o horário."),
-            ("D", "Aonde você pretende chegar com esse ritmo de estudo?"),
+            ("D", "Aonde você mora atualmente?"),
             ("E", "Onde iremos amanhã?"),
         ),
-        correta="D",
+        correta="A",
         comentario=(
             "'Aonde' é usado com verbos de movimento que pedem a preposição 'a' (chegar a, ir a): "
             "'aonde pretende chegar'. 'Onde' indica lugar fixo, sem movimento: 'onde você mora', "
-            "'onde ele trabalha'. Por isso (A), (C), (B) e (E) invertem os dois usos."
+            "'onde ele trabalha'. Por isso (D), (C), (B) e (E) invertem os dois usos."
         ),
         armadilha="Movimento pede 'aonde'; permanência pede 'onde'.",
     ),
@@ -233,13 +233,13 @@ QUESTOES: list[Questao] = [
         nivel="facil",
         enunciado="Assinale a alternativa correta quanto ao emprego de 'há' e 'a'.",
         alternativas=(
-            ("A", "Trabalho nesta função há dois anos."),
-            ("B", "Daqui há dois meses farei a prova."),
+            ("A", "Daqui há dois meses farei a prova."),
+            ("B", "Trabalho nesta função há dois anos."),
             ("C", "Há dois meses farei a prova."),
             ("D", "Estudo a três semanas sem parar."),
             ("E", "Ele saiu a pouco da unidade."),
         ),
-        correta="A",
+        correta="B",
         comentario=(
             "'Há' indica tempo decorrido (passado): 'há dois anos'. 'A' indica tempo futuro ou "
             "distância: 'daqui a dois meses', 'a três quilômetros'. Em (E) o certo é 'há pouco', "
@@ -258,12 +258,12 @@ QUESTOES: list[Questao] = [
         ),
         alternativas=(
             ("A", "portanto"),
-            ("B", "contudo"),
-            ("C", "porquanto"),
+            ("B", "porquanto"),
+            ("C", "contudo"),
             ("D", "por conseguinte"),
             ("E", "assim"),
         ),
-        correta="B",
+        correta="C",
         comentario=(
             "'Contudo' é conjunção adversativa (oposição), assim como 'mas', 'porém', 'todavia' e "
             "'entretanto'. 'Portanto', 'por conseguinte' e 'assim' são conclusivos; 'porquanto' é "
@@ -283,12 +283,12 @@ QUESTOES: list[Questao] = [
         ),
         alternativas=(
             ("A", "lento"),
-            ("B", "veloz"),
+            ("B", "rígido"),
             ("C", "distraído"),
-            ("D", "rígido"),
+            ("D", "veloz"),
             ("E", "hesitante"),
         ),
-        correta="B",
+        correta="D",
         comentario=(
             "Sinônimo é a palavra de sentido igual ou muito próximo: ágil e veloz. As demais são "
             "antônimas ou de campo semântico diferente."
@@ -303,12 +303,12 @@ QUESTOES: list[Questao] = [
         enunciado="Assinale a alternativa em que a expressão está empregada em sentido figurado.",
         alternativas=(
             ("A", "O muro da delegacia é de pedra."),
-            ("B", "Ele tem um coração de pedra."),
+            ("B", "A estrada é de pedra britada."),
             ("C", "A pedra rolou pela ladeira."),
             ("D", "Comprou uma pedra de gelo."),
-            ("E", "A estrada é de pedra britada."),
+            ("E", "Ele tem um coração de pedra."),
         ),
-        correta="B",
+        correta="E",
         comentario=(
             "Sentido figurado (conotativo) é o uso simbólico: 'coração de pedra' significa "
             "insensibilidade, não o material. Nas demais, 'pedra' está no sentido próprio "
@@ -326,13 +326,13 @@ QUESTOES: list[Questao] = [
             "«atento» e «rapidamente» são, respectivamente:"
         ),
         alternativas=(
-            ("A", "advérbio e adjetivo."),
-            ("B", "adjetivo e advérbio."),
+            ("A", "adjetivo e advérbio."),
+            ("B", "advérbio e adjetivo."),
             ("C", "substantivo e adjetivo."),
             ("D", "adjetivo e preposição."),
             ("E", "pronome e conjunção."),
         ),
-        correta="B",
+        correta="A",
         comentario=(
             "'Atento' qualifica o substantivo 'soldado' — adjetivo. 'Rapidamente' modifica o verbo "
             "'respondeu' — advérbio de modo. Quem qualifica nome é adjetivo; quem modifica verbo é "
@@ -374,12 +374,12 @@ QUESTOES: list[Questao] = [
         ),
         alternativas=(
             ("A", "que decorar conteúdo é a melhor forma de estudar."),
-            ("B", "que conhecer o edital evita estudo desperdiçado."),
-            ("C", "que o edital é um documento difícil de compreender."),
+            ("B", "que o edital é um documento difícil de compreender."),
+            ("C", "que conhecer o edital evita estudo desperdiçado."),
             ("D", "que estudar por meses é sempre necessário."),
             ("E", "que a prova cobra todo o conteúdo existente."),
         ),
-        correta="B",
+        correta="C",
         comentario=(
             "A ideia central é o que sustenta o texto inteiro: ler o edital evita estudar o que "
             "não cai. As demais alternativas contrariam o texto ou trazem detalhe que ele não "
@@ -395,14 +395,14 @@ QUESTOES: list[Questao] = [
         enunciado="Assinale a alternativa em que a vírgula isola corretamente um aposto explicativo.",
         alternativas=(
             ("A", "O comandante convocou, a tropa para a formatura."),
-            ("B", "São Paulo, capital do estado, concentra o maior efetivo."),
+            ("B", "A prova será, aplicada em setembro."),
             ("C", "Os candidatos aprovados, receberão a convocação."),
-            ("D", "A prova será, aplicada em setembro."),
+            ("D", "São Paulo, capital do estado, concentra o maior efetivo."),
             ("E", "O edital, foi publicado no Diário Oficial."),
         ),
-        correta="B",
+        correta="D",
         comentario=(
-            "Em (B), 'capital do estado' explica 'São Paulo' e vem entre vírgulas — aposto "
+            "Em (D), 'capital do estado' explica 'São Paulo' e vem entre vírgulas — aposto "
             "explicativo. As demais separam indevidamente sujeito e verbo ou verbo e complemento."
         ),
         armadilha="Vírgula entre sujeito e verbo é erro, por mais natural que pareça na fala.",
@@ -415,15 +415,15 @@ QUESTOES: list[Questao] = [
         enunciado="Assinale a alternativa em que a concordância verbal está correta.",
         alternativas=(
             ("A", "Fazem dois anos que ele presta concurso."),
-            ("B", "Faz dois anos que ele presta concurso."),
+            ("B", "Tratam-se de questões difíceis."),
             ("C", "Fizeram muito calor durante a prova."),
             ("D", "Havemos de ter muitas vagas neste ano."),
-            ("E", "Tratam-se de questões difíceis."),
+            ("E", "Faz dois anos que ele presta concurso."),
         ),
-        correta="B",
+        correta="E",
         comentario=(
             "O verbo 'fazer' indicando tempo decorrido é impessoal e fica no singular: 'faz dois "
-            "anos'. O mesmo vale para fenômenos ('fez calor'). Em (E), o correto é 'trata-se de', "
+            "anos'. O mesmo vale para fenômenos ('fez calor'). Em (B), o correto é 'trata-se de', "
             "também impessoal."
         ),
         armadilha="'Fazem dois anos' é erro comuníssimo na fala — e cobrança certa na prova.",
@@ -435,13 +435,13 @@ QUESTOES: list[Questao] = [
         nivel="medio",
         enunciado="Assinale a alternativa em que o uso da crase está correto.",
         alternativas=(
-            ("A", "A prova terá início as 8 horas."),
-            ("B", "A prova terá início às 8 horas."),
+            ("A", "A prova terá início às 8 horas."),
+            ("B", "A prova terá início as 8 horas."),
             ("C", "Compareceu à local indicado."),
             ("D", "Voltou à sair depois do intervalo."),
             ("E", "Entregou o material à todos os candidatos."),
         ),
-        correta="B",
+        correta="A",
         comentario=(
             "Antes de horas determinadas há crase: 'às 8 horas'. Não há crase antes de palavra "
             "masculina ('local'), de verbo ('sair') nem de pronome indefinido masculino ('todos')."
@@ -455,13 +455,13 @@ QUESTOES: list[Questao] = [
         nivel="facil",
         enunciado="Na frase «este documento é meu, aquele é seu», as palavras «meu» e «seu» são:",
         alternativas=(
-            ("A", "pronomes possessivos."),
-            ("B", "pronomes demonstrativos."),
+            ("A", "pronomes demonstrativos."),
+            ("B", "pronomes possessivos."),
             ("C", "artigos definidos."),
             ("D", "advérbios de lugar."),
             ("E", "conjunções coordenativas."),
         ),
-        correta="A",
+        correta="B",
         comentario=(
             "'Meu' e 'seu' indicam posse — pronomes possessivos. 'Este' e 'aquele', na mesma "
             "frase, são demonstrativos, porque situam os elementos no espaço ou no discurso."
@@ -475,13 +475,13 @@ QUESTOES: list[Questao] = [
         nivel="dificil",
         enunciado="Assinale a alternativa em que a regência nominal está correta.",
         alternativas=(
-            ("A", "O candidato está apto para o serviço militar."),
+            ("A", "Ele tem preferência por concursos do que por empregos privados."),
             ("B", "O candidato está apto no serviço militar."),
-            ("C", "Ele tem preferência por concursos do que por empregos privados."),
+            ("C", "O candidato está apto para o serviço militar."),
             ("D", "Estamos ansiosos de saber o resultado."),
             ("E", "É necessário de muita disciplina."),
         ),
-        correta="A",
+        correta="C",
         comentario=(
             "'Apto' pede a preposição 'a' ou 'para': apto para o serviço. 'Preferência' pede 'por' "
             "seguido de 'a' na comparação; 'ansioso' pede 'por'; e 'é necessário' não pede "

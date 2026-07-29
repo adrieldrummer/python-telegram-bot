@@ -13,12 +13,12 @@ QUESTOES: list[Questao] = [
         enunciado="O estopim da Primeira Guerra Mundial (1914-1918) foi:",
         alternativas=(
             ("A", "a invasão da Polônia pela Alemanha."),
-            ("B", "o assassinato do arquiduque austríaco Francisco Ferdinando."),
-            ("C", "o ataque japonês a Pearl Harbor."),
+            ("B", "o ataque japonês a Pearl Harbor."),
+            ("C", "o assassinato do arquiduque austríaco Francisco Ferdinando."),
             ("D", "a construção do Muro de Berlim."),
             ("E", "a queda da Bastilha."),
         ),
-        correta="B",
+        correta="C",
         comentario=(
             "O assassinato do arquiduque Francisco Ferdinando, herdeiro do trono austro-húngaro, "
             "acionou o sistema de alianças (Tríplice Aliança × Tríplice Entente) e iniciou o "
@@ -37,12 +37,12 @@ QUESTOES: list[Questao] = [
         ),
         alternativas=(
             ("A", "dividiu a Alemanha em Oriental e Ocidental."),
-            ("B", "impôs punições severas à Alemanha, gerando crise e ressentimento."),
+            ("B", "estabeleceu a aliança entre Alemanha, Itália e Japão."),
             ("C", "criou a Organização das Nações Unidas."),
-            ("D", "estabeleceu a aliança entre Alemanha, Itália e Japão."),
+            ("D", "impôs punições severas à Alemanha, gerando crise e ressentimento."),
             ("E", "garantiu reparações à Alemanha pelas perdas sofridas."),
         ),
-        correta="B",
+        correta="D",
         comentario=(
             "As reparações e as perdas territoriais impostas à Alemanha aprofundaram a crise "
             "econômica e o ressentimento nacional, terreno em que o nazismo cresceu. A divisão da "
@@ -58,12 +58,12 @@ QUESTOES: list[Questao] = [
         enunciado="São características comuns ao nazismo alemão e ao fascismo italiano:",
         alternativas=(
             ("A", "pluripartidarismo, liberdade de imprensa e economia planificada."),
-            ("B", "nacionalismo extremo, culto ao líder e perseguição a minorias."),
+            ("B", "neutralidade nas relações internacionais e desarmamento."),
             ("C", "defesa do internacionalismo proletário e fim da propriedade privada."),
             ("D", "descentralização do poder e ampliação dos direitos civis."),
-            ("E", "neutralidade nas relações internacionais e desarmamento."),
+            ("E", "nacionalismo extremo, culto ao líder e perseguição a minorias."),
         ),
-        correta="B",
+        correta="E",
         comentario=(
             "Nazismo (Hitler) e fascismo (Mussolini) são regimes autoritários marcados por "
             "nacionalismo extremo, culto ao líder, partido único e perseguição a minorias — no caso "
@@ -78,13 +78,13 @@ QUESTOES: list[Questao] = [
         nivel="facil",
         enunciado="A Segunda Guerra Mundial (1939-1945) terminou com:",
         alternativas=(
-            ("A", "a vitória do Eixo sobre os Aliados."),
-            ("B", "a derrota do Eixo — Alemanha, Itália e Japão — pelos Aliados."),
+            ("A", "a derrota do Eixo — Alemanha, Itália e Japão — pelos Aliados."),
+            ("B", "a vitória do Eixo sobre os Aliados."),
             ("C", "um acordo de paz sem vencedores, assinado em Versalhes."),
             ("D", "a anexação da França pela União Soviética."),
             ("E", "a independência das colônias africanas."),
         ),
-        correta="B",
+        correta="A",
         comentario=(
             "O Eixo (Alemanha, Itália e Japão) foi derrotado pelos Aliados. A rendição alemã "
             "ocorreu em maio de 1945 e a japonesa em setembro, após as bombas atômicas."
@@ -121,12 +121,12 @@ QUESTOES: list[Questao] = [
         enunciado="A divisão da Alemanha em Oriental e Ocidental, no pós-guerra, resultou:",
         alternativas=(
             ("A", "do Tratado de Versalhes, em 1919."),
-            ("B", "da disputa entre os blocos capitalista e socialista após a Segunda Guerra."),
-            ("C", "de um plebiscito realizado entre os alemães em 1961."),
+            ("B", "de um plebiscito realizado entre os alemães em 1961."),
+            ("C", "da disputa entre os blocos capitalista e socialista após a Segunda Guerra."),
             ("D", "da unificação alemã promovida por Bismarck."),
             ("E", "da adesão da Alemanha à União Europeia."),
         ),
-        correta="B",
+        correta="C",
         comentario=(
             "Derrotada, a Alemanha foi ocupada pelos vencedores e acabou dividida entre a República "
             "Federal (ocidental, capitalista) e a República Democrática (oriental, socialista). O "
@@ -142,12 +142,12 @@ QUESTOES: list[Questao] = [
         enunciado="A Revolução de 1930, que levou Getúlio Vargas ao poder, encerrou:",
         alternativas=(
             ("A", "o Império e a monarquia no Brasil."),
-            ("B", "a República Velha, dominada pelas oligarquias agrárias."),
+            ("B", "o regime militar iniciado em 1964."),
             ("C", "o Estado Novo e a ditadura varguista."),
-            ("D", "o regime militar iniciado em 1964."),
+            ("D", "a República Velha, dominada pelas oligarquias agrárias."),
             ("E", "o período colonial português."),
         ),
-        correta="B",
+        correta="D",
         comentario=(
             "O movimento armado de 1930 encerrou a República Velha, marcada pelo domínio das "
             "oligarquias agrárias de São Paulo e Minas Gerais. O Estado Novo (1937-1945) veio "
@@ -162,13 +162,13 @@ QUESTOES: list[Questao] = [
         nivel="medio",
         enunciado="São marcas da Era Vargas (1930-1945):",
         alternativas=(
-            ("A", "leis trabalhistas, industrialização e o período autoritário do Estado Novo."),
+            ("A", "criação da Constituição de 1988."),
             ("B", "abertura total da economia e privatização das estatais."),
             ("C", "eleições diretas ininterruptas e ampla liberdade de imprensa."),
             ("D", "fim do voto feminino e retorno da monarquia."),
-            ("E", "criação da Constituição de 1988."),
+            ("E", "leis trabalhistas, industrialização e o período autoritário do Estado Novo."),
         ),
-        correta="A",
+        correta="E",
         comentario=(
             "A Era Vargas combinou avanços trabalhistas e industrialização com autoritarismo, "
             "sobretudo no Estado Novo (1937-1945), quando houve censura e fechamento do Congresso. "
@@ -183,13 +183,13 @@ QUESTOES: list[Questao] = [
         nivel="dificil",
         enunciado="A Constituição de 1937, outorgada por Getúlio Vargas, caracterizou-se por:",
         alternativas=(
-            ("A", "ser a primeira constituição republicana do Brasil."),
-            ("B", "instaurar o regime autoritário do Estado Novo, com concentração de poder."),
+            ("A", "instaurar o regime autoritário do Estado Novo, com concentração de poder."),
+            ("B", "ser a primeira constituição republicana do Brasil."),
             ("C", "restabelecer a democracia após o regime militar."),
             ("D", "ser conhecida como 'Constituição Cidadã'."),
             ("E", "criar o parlamentarismo como sistema de governo definitivo."),
         ),
-        correta="B",
+        correta="A",
         comentario=(
             "A Carta de 1937 foi outorgada (imposta, não votada) e sustentou o Estado Novo. A "
             "primeira republicana é a de 1891; a 'Constituição Cidadã' é a de 1988."
@@ -225,12 +225,12 @@ QUESTOES: list[Questao] = [
         enunciado="Assinale a alternativa que apresenta fatos da abertura política brasileira em ordem cronológica:",
         alternativas=(
             ("A", "Diretas Já (1984) → Lei da Anistia (1979) → Constituição de 1988."),
-            ("B", "Lei da Anistia (1979) → Diretas Já (1984) → Constituição de 1988."),
-            ("C", "Constituição de 1988 → Lei da Anistia (1979) → Diretas Já (1984)."),
+            ("B", "Constituição de 1988 → Lei da Anistia (1979) → Diretas Já (1984)."),
+            ("C", "Lei da Anistia (1979) → Diretas Já (1984) → Constituição de 1988."),
             ("D", "Lei da Anistia (1979) → Constituição de 1988 → Diretas Já (1984)."),
             ("E", "Diretas Já (1984) → Constituição de 1988 → Lei da Anistia (1979)."),
         ),
-        correta="B",
+        correta="C",
         comentario=(
             "A sequência é: Lei da Anistia (1979), movimento das Diretas Já (1984), eleição indireta "
             "de Tancredo Neves (1985) e promulgação da Constituição de 1988."
@@ -245,17 +245,76 @@ QUESTOES: list[Questao] = [
         enunciado="As políticas neoliberais, associadas ao avanço da globalização, defendem:",
         alternativas=(
             ("A", "ampliação da intervenção do Estado e estatização de empresas."),
-            ("B", "redução da intervenção estatal na economia, privatizações e abertura de mercados."),
+            ("B", "controle estatal dos preços em todos os setores."),
             ("C", "fechamento das fronteiras ao comércio internacional."),
-            ("D", "controle estatal dos preços em todos os setores."),
+            ("D", "redução da intervenção estatal na economia, privatizações e abertura de mercados."),
             ("E", "coletivização da propriedade rural."),
         ),
-        correta="B",
+        correta="D",
         comentario=(
             "O receituário neoliberal, difundido a partir dos anos 1980-1990, propõe Estado menor "
             "na economia, privatizações, desregulamentação e abertura comercial — movimento que "
             "acompanhou a intensificação da globalização."
         ),
         armadilha="Globalização não é sinônimo de neoliberalismo: uma é processo, o outro é política.",
+    ),
+    Questao(
+        id="hist-013",
+        materia="historia",
+        tema="Nova República",
+        nivel="medio",
+        enunciado=(
+            "Eleito presidente pelo Colégio Eleitoral em 1985, marcando o fim do regime militar, "
+            "adoeceu na véspera da posse e morreu sem assumir o cargo, que foi ocupado por seu vice. "
+            "O texto refere-se a:"
+        ),
+        alternativas=(
+            ("A", "Juscelino Kubitschek."),
+            ("B", "Tancredo Neves."),
+            ("C", "João Goulart."),
+            ("D", "Ulysses Guimarães."),
+            ("E", "Fernando Collor de Mello."),
+        ),
+        correta="B",
+        comentario=(
+            "<strong>Tancredo Neves</strong> foi eleito indiretamente em janeiro de 1985 e morreu em "
+            "21 de abril, sem tomar posse. Assumiu o vice, <strong>José Sarney</strong>, iniciando a "
+            "Nova República. Ulysses Guimarães presidiu a Assembleia Constituinte de 1988; Collor foi "
+            "o primeiro presidente eleito por voto direto depois do regime militar, em 1989."
+        ),
+        armadilha=(
+            "A eleição de Tancredo foi indireta, pelo Colégio Eleitoral — a primeira direta para "
+            "presidente só veio em 1989. Confundir as duas é o erro mais comum do período."
+        ),
+    ),
+    Questao(
+        id="hist-014",
+        materia="historia",
+        tema="Movimentos sociais nos anos 1970",
+        nivel="dificil",
+        enunciado=(
+            "Durante a década de 1970, sob o regime militar, surgiram movimentos populares "
+            "organizados a partir de clubes de mães e de comunidades eclesiais de base, que "
+            "denunciavam a alta dos preços e a perda do poder de compra. Esses movimentos:"
+        ),
+        alternativas=(
+            ("A", "eram promovidos pelo próprio governo, para apoiar o milagre econômico."),
+            ("B", "restringiram-se ao meio rural e não tiveram expressão nas periferias urbanas."),
+            ("C", "defendiam o retorno da monarquia como solução para a crise."),
+            ("D", "expressaram, na periferia urbana, a insatisfação com a carestia e ajudaram a "
+                  "reorganizar a sociedade civil no processo de abertura política."),
+            ("E", "foram criados após a Constituição de 1988, já em plena democracia."),
+        ),
+        correta="D",
+        comentario=(
+            "Com partidos e sindicatos sob forte controle, a mobilização encontrou espaço nas igrejas "
+            "e nas associações de bairro. O <strong>Movimento do Custo de Vida</strong>, nascido na "
+            "periferia de São Paulo, é o exemplo mais conhecido: reuniu assinaturas contra a carestia "
+            "e formou lideranças que depois atuariam em partidos e sindicatos da redemocratização."
+        ),
+        armadilha=(
+            "A data importa: são movimentos <em>anteriores</em> à abertura, e parte da causa dela — "
+            "não uma consequência da Constituição de 1988."
+        ),
     ),
 ]

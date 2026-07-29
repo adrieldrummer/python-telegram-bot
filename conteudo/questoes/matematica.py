@@ -34,10 +34,10 @@ QUESTOES: list[Questao] = [
             "de 10% sobre o novo valor. O preço final é:"
         ),
         alternativas=(
-            ("A", "R$ 200,00"),
+            ("A", "R$ 196,00"),
             ("B", "R$ 198,00"),
-            ("C", "R$ 202,00"),
-            ("D", "R$ 196,00"),
+            ("C", "R$ 200,00"),
+            ("D", "R$ 202,00"),
             ("E", "R$ 220,00"),
         ),
         correta="B",
@@ -196,13 +196,13 @@ QUESTOES: list[Questao] = [
         nivel="medio",
         enunciado="A negação da proposição «Todo policial é pontual» é:",
         alternativas=(
-            ("A", "Nenhum policial é pontual."),
+            ("A", "Existe pelo menos um policial que não é pontual."),
             ("B", "Todo policial é impontual."),
-            ("C", "Existe pelo menos um policial que não é pontual."),
+            ("C", "Nenhum policial é pontual."),
             ("D", "Nem todo policial é impontual."),
             ("E", "Alguns policiais são pontuais."),
         ),
-        correta="C",
+        correta="A",
         comentario=(
             "A negação de 'todo A é B' é 'existe pelo menos um A que não é B'. Negar um universal "
             "afirmativo produz um particular negativo — não o oposto extremo."
@@ -259,13 +259,13 @@ QUESTOES: list[Questao] = [
             "perímetro do pátio são, respectivamente:"
         ),
         alternativas=(
-            ("A", "300 m² e 74 m"),
+            ("A", "37 m² e 300 m"),
             ("B", "300 m² e 37 m"),
             ("C", "150 m² e 74 m"),
-            ("D", "37 m² e 300 m"),
+            ("D", "300 m² e 74 m"),
             ("E", "300 m² e 100 m"),
         ),
-        correta="A",
+        correta="D",
         comentario="Área = 25 × 12 = 300 m². Perímetro = 2 × (25 + 12) = 74 m.",
         armadilha="Esquecer de dobrar a soma dos lados e marcar 37 m de perímetro.",
     ),
@@ -315,13 +315,13 @@ QUESTOES: list[Questao] = [
             "A soma de dois números é 30 e a diferença entre eles é 8. Esses números são:"
         ),
         alternativas=(
-            ("A", "11 e 19"),
-            ("B", "12 e 18"),
-            ("C", "13 e 17"),
-            ("D", "14 e 16"),
-            ("E", "10 e 20"),
+            ("A", "10 e 20"),
+            ("B", "11 e 19"),
+            ("C", "12 e 18"),
+            ("D", "13 e 17"),
+            ("E", "14 e 16"),
         ),
-        correta="A",
+        correta="B",
         comentario=(
             "x + y = 30 e x − y = 8. Somando as equações: 2x = 38 → x = 19; logo y = 11. O método "
             "da adição elimina uma variável de imediato."
@@ -347,5 +347,87 @@ QUESTOES: list[Questao] = [
         correta="B",
         comentario="(40 + 55 + 35 + 50) ÷ 4 = 180 ÷ 4 = 45 ocorrências por mês.",
         armadilha="Somar e esquecer de dividir pelo número de meses.",
+    ),
+    Questao(
+        id="mat-018",
+        materia="matematica",
+        tema="Divisão em partes proporcionais",
+        nivel="medio",
+        enunciado=(
+            "Um chefe de setor distribuiu 378 processos entre três agentes, em partes proporcionais "
+            "a 2, 3 e 4. O agente que recebeu a maior quantidade ficou com:"
+        ),
+        alternativas=(
+            ("A", "84 processos."),
+            ("B", "126 processos."),
+            ("C", "140 processos."),
+            ("D", "168 processos."),
+            ("E", "189 processos."),
+        ),
+        correta="D",
+        comentario=(
+            "Some as partes: 2 + 3 + 4 = 9. Divida o total pelo número de partes: "
+            "378 ÷ 9 = 42 processos por parte. A maior fração é 4 partes: 4 × 42 = "
+            "<strong>168 processos</strong>. Conferindo: 84 + 126 + 168 = 378."
+        ),
+        armadilha=(
+            "O enunciado pede a maior quantidade, não a menor nem o valor de uma parte. Marcar 42 "
+            "(uma parte) ou 84 (a menor) é o deslize mais frequente."
+        ),
+    ),
+    Questao(
+        id="mat-019",
+        materia="matematica",
+        tema="Contagem e senhas",
+        nivel="dificil",
+        enunciado=(
+            "Um cofre abre com uma senha de 3 dígitos, escolhidos entre os algarismos de 0 a 9, "
+            "permitida a repetição. Quantas senhas diferentes são possíveis?"
+        ),
+        alternativas=(
+            ("A", "30"),
+            ("B", "270"),
+            ("C", "720"),
+            ("D", "900"),
+            ("E", "1.000"),
+        ),
+        correta="E",
+        comentario=(
+            "São 10 opções para cada uma das 3 posições, e a repetição é permitida: "
+            "10 × 10 × 10 = <strong>1.000</strong> senhas (de 000 a 999). Se a repetição fosse "
+            "proibida, seriam 10 × 9 × 8 = 720."
+        ),
+        armadilha=(
+            "A frase 'permitida a repetição' decide a conta inteira. Sem ela, a resposta seria 720 — "
+            "que está entre as alternativas justamente para pegar quem leu rápido."
+        ),
+    ),
+    Questao(
+        id="mat-020",
+        materia="matematica",
+        tema="Regra de três: tempo e trabalho",
+        nivel="medio",
+        enunciado=(
+            "Três funcionários levam 3 horas e 20 minutos para organizar um arquivo. Mantido o mesmo "
+            "ritmo de trabalho, quatro funcionários levarão:"
+        ),
+        alternativas=(
+            ("A", "2 horas e 30 minutos."),
+            ("B", "2 horas e 45 minutos."),
+            ("C", "3 horas."),
+            ("D", "4 horas."),
+            ("E", "4 horas e 30 minutos."),
+        ),
+        correta="A",
+        comentario=(
+            "Converta tudo para minutos: 3 h 20 min = 200 minutos. O trabalho total é "
+            "3 × 200 = 600 funcionário-minutos. Com 4 funcionários: 600 ÷ 4 = 150 minutos = "
+            "<strong>2 h 30 min</strong>. Mais gente, menos tempo — grandezas inversamente "
+            "proporcionais."
+        ),
+        armadilha=(
+            "Aqui a proporção é inversa. Montar a regra de três direta dá 4 h 27 min, um valor que "
+            "não aparece nas alternativas justamente porque o erro esperado é outro."
+        ),
     ),
 ]

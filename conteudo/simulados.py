@@ -46,11 +46,12 @@ SIMULADOS: tuple[Simulado, ...] = (
         ),
         minutos=30,
         total=20,
+        # mesma proporção da prova real, reduzida a 20 questões
         composicao=(
             ("portugues", 7),
             ("matematica", 5),
-            ("historia", 3),
-            ("geografia", 2),
+            ("historia", 2),
+            ("geografia", 3),
             ("informatica", 2),
             ("administracao", 1),
         ),
@@ -64,8 +65,9 @@ SIMULADOS: tuple[Simulado, ...] = (
         nome="Simulado Oficial 1",
         subtitulo="60 questões · 3 horas",
         descricao=(
-            "Prova completa no formato VUNESP: 20 de Português, 15 de Matemática, 15 de "
-            "Conhecimentos Gerais, 5 de Informática e 5 de Administração Pública."
+            "Prova completa no formato VUNESP, conferido contra a prova de 30/11/2025: "
+            "20 de Português, 15 de Matemática, 15 de Conhecimentos Gerais (6 de História e "
+            "9 de Geografia e Atualidades), 5 de Informática e 5 de Administração Pública."
         ),
         minutos=180,
         total=60,

@@ -41,16 +41,25 @@ REQUISITOS = (
     "Estar quite com as obrigações militares e eleitorais",
 )
 
-# Distribuição oficial da prova objetiva: 60 questões.
+# Distribuição da prova objetiva: 60 questões.
+# Conferida contra a prova aplicada em 30/11/2025 pela VUNESP (Soldado PM 2ª Classe),
+# que trouxe: Português 1–20, Matemática 21–35, Conhecimentos Gerais 36–50
+# (História 36–41 e Geografia/Atualidades 42–50), Informática 51–55 e
+# Administração Pública 56–60.
 # O peso de cada matéria aqui é literalmente o número de questões que ela vale.
 PROVA_OBJETIVA = (
     ("portugues", "Língua Portuguesa e Interpretação de Texto", 20),
     ("matematica", "Matemática", 15),
-    ("historia", "História (Conhecimentos Gerais)", 8),
-    ("geografia", "Geografia e Atualidades (Conhecimentos Gerais)", 7),
+    ("historia", "História (Conhecimentos Gerais)", 6),
+    ("geografia", "Geografia e Atualidades (Conhecimentos Gerais)", 9),
     ("informatica", "Noções de Informática", 5),
     ("administracao", "Noções de Administração Pública", 5),
 )
+
+# A prova é de múltipla escolha com CINCO alternativas (A a E) — o banco de
+# questões da plataforma segue o mesmo formato.
+ALTERNATIVAS_POR_QUESTAO = 5
+PROVA_REFERENCIA = "Prova objetiva de 30/11/2025 (VUNESP), versão 3"
 TOTAL_QUESTOES_PROVA = sum(q for _, _, q in PROVA_OBJETIVA)
 NOTA_MINIMA = 30  # pontos, de 60
 

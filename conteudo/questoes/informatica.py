@@ -15,13 +15,13 @@ QUESTOES: list[Questao] = [
             "30. A fórmula =SOMA(A1:A3)/3 retorna:"
         ),
         alternativas=(
-            ("A", "10"),
-            ("B", "20"),
+            ("A", "20"),
+            ("B", "10"),
             ("C", "30"),
             ("D", "60"),
             ("E", "180"),
         ),
-        correta="B",
+        correta="A",
         comentario="SOMA(A1:A3) = 60; dividido por 3 resulta em 20 — o mesmo que =MÉDIA(A1:A3).",
         armadilha="Esquecer a divisão e marcar 60, o valor da soma.",
     ),
@@ -55,13 +55,13 @@ QUESTOES: list[Questao] = [
             "para induzir a vítima a fornecer senhas e dados bancários. Trata-se de:"
         ),
         alternativas=(
-            ("A", "phishing."),
+            ("A", "firewall."),
             ("B", "backup incremental."),
-            ("C", "firewall."),
+            ("C", "phishing."),
             ("D", "criptografia simétrica."),
             ("E", "compactação de arquivos."),
         ),
-        correta="A",
+        correta="C",
         comentario=(
             "Phishing é engenharia social: explora a confiança do usuário, não uma falha técnica. "
             "Por isso antivírus sozinho não resolve — a defesa principal é a desconfiança treinada."
@@ -80,11 +80,11 @@ QUESTOES: list[Questao] = [
         alternativas=(
             ("A", "spyware."),
             ("B", "adware."),
-            ("C", "ransomware."),
-            ("D", "worm."),
+            ("C", "worm."),
+            ("D", "ransomware."),
             ("E", "cookie."),
         ),
-        correta="C",
+        correta="D",
         comentario=(
             "Ransomware sequestra dados mediante criptografia. Spyware espiona; adware exibe "
             "anúncios; worm se propaga sozinho pela rede; cookie é apenas um arquivo de preferências "
@@ -100,12 +100,12 @@ QUESTOES: list[Questao] = [
         enunciado="A principal finalidade de uma rotina de backup é:",
         alternativas=(
             ("A", "aumentar a velocidade do processador."),
-            ("B", "permitir a recuperação de dados em caso de falha, perda ou ataque."),
+            ("B", "criptografar a comunicação entre navegadores."),
             ("C", "impedir a entrada de vírus na rede."),
             ("D", "compactar arquivos para liberar memória RAM."),
-            ("E", "criptografar a comunicação entre navegadores."),
+            ("E", "permitir a recuperação de dados em caso de falha, perda ou ataque."),
         ),
-        correta="B",
+        correta="E",
         comentario=(
             "Backup é cópia de segurança para restauração. Boa prática: três cópias, em dois tipos "
             "de mídia, sendo uma fora do local (regra 3-2-1) e com teste periódico de restauração."
@@ -119,13 +119,13 @@ QUESTOES: list[Questao] = [
         nivel="facil",
         enunciado="A presença de 'https://' no endereço de um site indica que:",
         alternativas=(
-            ("A", "o site é oficial do governo."),
-            ("B", "a comunicação entre navegador e servidor é criptografada."),
+            ("A", "a comunicação entre navegador e servidor é criptografada."),
+            ("B", "o site é oficial do governo."),
             ("C", "o conteúdo do site foi verificado como verdadeiro."),
             ("D", "o site está livre de vírus."),
             ("E", "o acesso é gratuito."),
         ),
-        correta="B",
+        correta="A",
         comentario=(
             "HTTPS garante a criptografia do tráfego, protegendo os dados em trânsito. Não atesta "
             "idoneidade: sites fraudulentos também podem usar HTTPS."
@@ -140,14 +140,22 @@ QUESTOES: list[Questao] = [
         enunciado="Em editores de texto no ambiente Windows, o atalho Ctrl + Z corresponde a:",
         alternativas=(
             ("A", "copiar."),
-            ("B", "colar."),
-            ("C", "desfazer a última ação."),
+            ("B", "desfazer a última ação."),
+            ("C", "colar."),
             ("D", "salvar o documento."),
             ("E", "localizar palavra."),
         ),
-        correta="C",
-        comentario="Ctrl+Z desfaz; Ctrl+C copia; Ctrl+V cola; Ctrl+B (ou Ctrl+S) salva; Ctrl+L/Ctrl+F localiza.",
-        armadilha="Ctrl+Y ou Ctrl+R refazem — a banca troca desfazer por refazer.",
+        correta="B",
+        comentario=(
+            "Ctrl+Z desfaz; Ctrl+C copia; Ctrl+V cola; Ctrl+X recorta. Atenção à versão em "
+            "português do Office, que é a cobrada: <strong>Ctrl+B salva</strong> e "
+            "<strong>Ctrl+S sublinha</strong> — o inverso do que muita gente supõe pelo inglês. "
+            "Localizar é Ctrl+L; Negrito é Ctrl+N; Itálico é Ctrl+I."
+        ),
+        armadilha=(
+            "Ctrl+Y ou Ctrl+R refazem — a banca troca desfazer por refazer. E cuidado com "
+            "os atalhos do Office em português: Ctrl+S é sublinhar, não salvar."
+        ),
     ),
     Questao(
         id="inf-008",
@@ -156,13 +164,13 @@ QUESTOES: list[Questao] = [
         nivel="facil",
         enunciado="São exemplos, respectivamente, de hardware e software:",
         alternativas=(
-            ("A", "memória RAM e sistema operacional."),
+            ("A", "navegador e antivírus."),
             ("B", "planilha eletrônica e processador."),
-            ("C", "navegador e antivírus."),
+            ("C", "memória RAM e sistema operacional."),
             ("D", "teclado e mouse."),
             ("E", "editor de texto e aplicativo de mensagens."),
         ),
-        correta="A",
+        correta="C",
         comentario=(
             "Hardware é a parte física (memória RAM); software é o conjunto de programas (sistema "
             "operacional). As demais alternativas trazem dois itens da mesma categoria ou invertidos."
@@ -176,14 +184,14 @@ QUESTOES: list[Questao] = [
         nivel="medio",
         enunciado="Em uma rede de computadores, a função do endereço IP é:",
         alternativas=(
-            ("A", "identificar unicamente um dispositivo na rede para permitir o envio e recebimento "
-                  "de dados."),
+            ("A", "impedir o acesso de dispositivos externos."),
             ("B", "armazenar os arquivos do usuário na nuvem."),
             ("C", "criptografar todo o tráfego automaticamente."),
-            ("D", "impedir o acesso de dispositivos externos."),
+            ("D", "identificar unicamente um dispositivo na rede para permitir o envio e recebimento "
+                  "de dados."),
             ("E", "converter texto em imagem."),
         ),
-        correta="A",
+        correta="D",
         comentario=(
             "O IP é o endereço lógico do dispositivo na rede. Quem bloqueia acessos indevidos é o "
             "firewall; quem traduz nomes de sites em IPs é o DNS."
@@ -199,13 +207,13 @@ QUESTOES: list[Questao] = [
             "Ao enviar um e-mail com vários destinatários, o campo Cco (cópia oculta) serve para:"
         ),
         alternativas=(
-            ("A", "enviar cópia sem que os demais destinatários vejam esse endereço."),
+            ("A", "converter o e-mail em PDF."),
             ("B", "dar prioridade máxima à mensagem."),
             ("C", "agendar o envio da mensagem."),
             ("D", "assinar digitalmente a mensagem."),
-            ("E", "converter o e-mail em PDF."),
+            ("E", "enviar cópia sem que os demais destinatários vejam esse endereço."),
         ),
-        correta="A",
+        correta="E",
         comentario=(
             "Cco preserva a privacidade dos endereços. É a forma correta de enviar comunicados a "
             "muitos destinatários sem expor a lista — inclusive por exigência da LGPD."
@@ -219,13 +227,13 @@ QUESTOES: list[Questao] = [
         nivel="facil",
         enunciado="A extensão de arquivo que indica um documento de texto formatado é:",
         alternativas=(
-            ("A", ".xlsx"),
-            ("B", ".docx"),
+            ("A", ".docx"),
+            ("B", ".xlsx"),
             ("C", ".pptx"),
             ("D", ".mp4"),
             ("E", ".exe"),
         ),
-        correta="B",
+        correta="A",
         comentario=(
             ".docx é documento de texto; .xlsx é planilha; .pptx é apresentação; .mp4 é vídeo; "
             ".exe é executável — extensão que exige atenção redobrada quando vem por e-mail."
@@ -263,13 +271,13 @@ QUESTOES: list[Questao] = [
             "No MS-Windows 10, a área de transferência é utilizada para:"
         ),
         alternativas=(
-            ("A", "armazenar temporariamente o conteúdo copiado ou recortado, para posterior colagem."),
+            ("A", "aumentar a memória RAM do equipamento."),
             ("B", "exibir os programas instalados no computador."),
-            ("C", "aumentar a memória RAM do equipamento."),
+            ("C", "armazenar temporariamente o conteúdo copiado ou recortado, para posterior colagem."),
             ("D", "organizar automaticamente os arquivos por data."),
             ("E", "proteger o computador contra vírus."),
         ),
-        correta="A",
+        correta="C",
         comentario=(
             "A área de transferência guarda temporariamente o que foi copiado (Ctrl+C) ou "
             "recortado (Ctrl+X) até ser colado (Ctrl+V). Não se confunde com a área de trabalho, "
@@ -287,13 +295,13 @@ QUESTOES: list[Questao] = [
             "todas as páginas do documento é:"
         ),
         alternativas=(
-            ("A", "o cabeçalho."),
+            ("A", "o sumário automático."),
             ("B", "a nota de rodapé."),
             ("C", "a quebra de seção."),
-            ("D", "o sumário automático."),
+            ("D", "o cabeçalho."),
             ("E", "a caixa de texto."),
         ),
-        correta="A",
+        correta="D",
         comentario=(
             "Cabeçalho é a área superior repetida em todas as páginas; rodapé é a inferior. "
             "Quebra de seção divide o documento em partes com formatações diferentes."
@@ -307,14 +315,14 @@ QUESTOES: list[Questao] = [
         nivel="medio",
         enunciado="No MS-PowerPoint 2016, a diferença entre animação e transição é que:",
         alternativas=(
-            ("A", "animação é o efeito aplicado a um objeto dentro do slide; transição é o efeito "
-                  "de passagem de um slide para outro."),
+            ("A", "animação altera o tema do slide e transição altera a fonte."),
             ("B", "animação só funciona em vídeos e transição só em imagens."),
             ("C", "transição é aplicada a textos e animação, a planilhas."),
             ("D", "as duas são a mesma coisa, com nomes diferentes."),
-            ("E", "animação altera o tema do slide e transição altera a fonte."),
+            ("E", "animação é o efeito aplicado a um objeto dentro do slide; transição é o efeito "
+                  "de passagem de um slide para outro."),
         ),
-        correta="A",
+        correta="E",
         comentario=(
             "Animação atua em elementos do slide (texto, imagem, gráfico). Transição atua na "
             "mudança entre slides. É uma das distinções mais cobradas do programa."
@@ -330,18 +338,131 @@ QUESTOES: list[Questao] = [
             "No Google Workspace, o aplicativo destinado ao armazenamento de arquivos na nuvem é o:"
         ),
         alternativas=(
-            ("A", "Gmail"),
+            ("A", "Drive"),
             ("B", "Meet"),
-            ("C", "Drive"),
+            ("C", "Gmail"),
             ("D", "Agenda"),
             ("E", "Formulários"),
         ),
-        correta="C",
+        correta="A",
         comentario=(
             "Drive armazena arquivos; Gmail é e-mail; Meet é videochamada; Agenda é calendário; "
             "Formulários cria questionários. No Microsoft Teams, o equivalente de colaboração "
             "reúne chat, chamadas e edição compartilhada de arquivos do Office."
         ),
         armadilha="Saber o nome de cada aplicativo é meio ponto garantido — é decoreba barata.",
+    ),
+    Questao(
+        id="inf-017",
+        materia="informatica",
+        tema="MS-Word 2016: legendas e referências",
+        nivel="medio",
+        enunciado=(
+            "Um policial monta um relatório fotográfico no MS-Word 2016, em português, e precisa que "
+            "as figuras sejam numeradas automaticamente e que essa numeração se ajuste sozinha "
+            "quando uma imagem for inserida no meio do documento. O recurso adequado é:"
+        ),
+        alternativas=(
+            ("A", "digitar o número manualmente abaixo de cada figura."),
+            ("B", "Inserir Legenda, na guia Referências."),
+            ("C", "Cabeçalho e Rodapé, na guia Inserir."),
+            ("D", "Marcador, na guia Página Inicial."),
+            ("E", "Hiperlink, na guia Inserir."),
+        ),
+        correta="B",
+        comentario=(
+            "Guia <strong>Referências → Inserir Legenda</strong> cria um rótulo numerado "
+            "(Figura 1, Figura 2…) que o Word renumera sozinho a cada inclusão ou exclusão. "
+            "Depois, <strong>Referência Cruzada</strong> permite citar essas figuras no texto e "
+            "manter a citação atualizada."
+        ),
+        armadilha=(
+            "Numerar à mão funciona até a primeira imagem inserida no meio — e aí toda a numeração "
+            "seguinte fica errada. A banca gosta de descrever exatamente esse cenário."
+        ),
+    ),
+    Questao(
+        id="inf-018",
+        materia="informatica",
+        tema="MS-Outlook 2016",
+        nivel="facil",
+        enunciado=(
+            "No MS-Outlook 2016, em sua configuração padrão, para incluir uma foto em uma mensagem "
+            "nova de modo que o destinatário receba o arquivo original, o usuário deve utilizar, na "
+            "guia Mensagem, o comando:"
+        ),
+        alternativas=(
+            ("A", "Assinatura."),
+            ("B", "Acompanhamento."),
+            ("C", "Anexar Arquivo."),
+            ("D", "Catálogo de Endereços."),
+            ("E", "Verificar Nomes."),
+        ),
+        correta="C",
+        comentario=(
+            "<strong>Anexar Arquivo</strong> envia o arquivo original junto da mensagem. Colar a "
+            "imagem no corpo do e-mail a incorpora como conteúdo, e o destinatário nem sempre "
+            "consegue salvar o arquivo com a qualidade e os metadados originais — o que importa em "
+            "registro de ocorrência."
+        ),
+        armadilha=(
+            "Anexar não é o mesmo que inserir no corpo. A banca descreve a necessidade "
+            "('receber o arquivo original') para forçar essa distinção."
+        ),
+    ),
+    Questao(
+        id="inf-019",
+        materia="informatica",
+        tema="Impressão e layout",
+        nivel="facil",
+        enunciado=(
+            "Antes de imprimir um documento, o usuário quer conferir como as páginas ficarão no "
+            "papel, sem gastar tinta. Nos aplicativos do MS-Office 2016, em português, isso é feito:"
+        ),
+        alternativas=(
+            ("A", "pela guia Revisão, opção Controlar Alterações."),
+            ("B", "pela guia Inserir, opção Quebra de Página."),
+            ("C", "pela guia Exibir, opção Régua."),
+            ("D", "pelo menu Arquivo, opção Imprimir, que exibe a visualização de impressão "
+                  "(atalho Ctrl + P)."),
+            ("E", "pela guia Página Inicial, opção Localizar."),
+        ),
+        correta="D",
+        comentario=(
+            "No Office 2016 a visualização de impressão foi integrada à tela "
+            "<strong>Arquivo → Imprimir</strong>, junto das opções de impressora, intervalo de "
+            "páginas e orientação. O atalho é Ctrl + P."
+        ),
+        armadilha=(
+            "Quebra de página e régua alteram o layout, mas não mostram o resultado impresso. "
+            "Conferir antes de imprimir é sempre a tela de impressão."
+        ),
+    ),
+    Questao(
+        id="inf-020",
+        materia="informatica",
+        tema="MS-PowerPoint 2016",
+        nivel="medio",
+        enunciado=(
+            "Em uma apresentação no MS-PowerPoint 2016, o usuário quer que os itens de uma lista "
+            "apareçam um a um, a cada clique, dentro do mesmo slide. Ele deve usar:"
+        ),
+        alternativas=(
+            ("A", "a guia Transições, escolhendo um efeito de passagem."),
+            ("B", "a guia Design, alterando o tema do slide."),
+            ("C", "a guia Animações, aplicando um efeito de entrada aos itens."),
+            ("D", "a guia Exibir, ativando o modo de classificação de slides."),
+            ("E", "a guia Inserir, adicionando um vídeo."),
+        ),
+        correta="C",
+        comentario=(
+            "<strong>Animação</strong> atua sobre objetos dentro do slide — texto, imagem, gráfico. "
+            "<strong>Transição</strong> atua na passagem de um slide para o outro. Para revelar "
+            "itens um a um, o recurso é animação de entrada, com início 'ao clicar'."
+        ),
+        armadilha=(
+            "Animação x transição é uma das distinções mais cobradas de PowerPoint. Dentro do "
+            "slide, animação; entre slides, transição."
+        ),
     ),
 ]
