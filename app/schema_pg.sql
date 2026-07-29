@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS alunos (
     lembretes_email   INTEGER NOT NULL DEFAULT 1,
     plano             TEXT    NOT NULL DEFAULT 'recruta',
     plano_ate         TEXT,
+    senha_temporaria  INTEGER NOT NULL DEFAULT 0,
     criado_em         TEXT    NOT NULL DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
     ativado_em        TEXT,
     ultimo_login      TEXT,

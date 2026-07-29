@@ -238,17 +238,34 @@ def test_modulo_avancado_exige_upgrade(cliente):
 # --- terreno pronto para os links de checkout da Cakto ---------------------
 
 
-def test_cada_plano_tem_seu_link_de_checkout(monkeypatch, cliente):
-    monkeypatch.setenv("CAKTO_CHECKOUT_RECRUTA", "https://pay.cakto.com.br/recruta")
-    monkeypatch.setenv("CAKTO_CHECKOUT_ELITE", "https://pay.cakto.com.br/elite")
-    links = servico.checkouts()
-    assert links["recruta"] == "https://pay.cakto.com.br/recruta"
-    assert links["elite"] == "https://pay.cakto.com.br/elite"
-    # sem link próprio, cai no checkout geral em vez de apontar para lugar nenhum
-    from app.config import config
+def test_todo_plano_tem_link_de_checkout_proprio():
+    """Botão de compra sem destino é venda perdida — e todo plano precisa do seu.
 
-    assert links["operacao"] == config.cakto_checkout_url
+    Um link único por plano também é o que permite ao webhook saber qual oferta
+    foi comprada, já que a Cakto identifica o produto pelo link.
+    """
+    links = servico.checkouts()
+    assert set(links) == {p.id for p in catalogo.PLANOS}
+    for plano, url in links.items():
+        assert url.startswith("https://"), f"{plano} sem link válido: {url!r}"
+    assert len(set(links.values())) == len(links), "dois planos dividindo o mesmo checkout"
+
+
+def test_variavel_de_ambiente_sobrepoe_o_link_do_catalogo(monkeypatch, cliente):
+    """Trocar um checkout em produção não pode depender de deploy."""
+    catalogo_url = catalogo.plano("recruta").checkout_url
+    assert catalogo_url  # o link do catálogo é o padrão
+
+    monkeypatch.setenv("CAKTO_CHECKOUT_RECRUTA", "https://pay.cakto.com.br/promo-de-lancamento")
+    assert servico.checkouts()["recruta"] == "https://pay.cakto.com.br/promo-de-lancamento"
+    # os outros seguem com o link do catálogo
+    assert servico.checkouts()["elite"] == catalogo.plano("elite").checkout_url
 
     html = cliente.get("/").text
-    assert "https://pay.cakto.com.br/recruta" in html
-    assert "https://pay.cakto.com.br/elite" in html
+    assert "https://pay.cakto.com.br/promo-de-lancamento" in html
+
+
+def test_pagina_de_vendas_leva_para_os_checkouts_reais(cliente):
+    html = cliente.get("/").text
+    for plano, url in servico.checkouts().items():
+        assert url in html, f"o botão do plano {plano} não aponta para o checkout"

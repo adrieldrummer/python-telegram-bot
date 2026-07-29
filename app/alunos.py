@@ -12,6 +12,7 @@ from .security import (
     conferir_senha,
     criar_token,
     gerar_hash_senha,
+    gerar_senha_temporaria,
     normalizar_email,
     revogar_sessoes_do_aluno,
 )
@@ -59,21 +60,36 @@ def criar(
 
 
 def aprovar_acesso(con: sqlite3.Connection, aluno: sqlite3.Row, reenvio: bool = False) -> str:
-    """Envia (ou reenvia) o e-mail de aprovação com o link de criação de senha."""
+    """Libera o acesso e manda o e-mail com login e senha.
+
+    A conta já sai ativa, com uma senha gerada: o comprador entra direto, sem
+    depender de clicar num link — que é o passo em que mais gente se perde
+    entre pagar e usar. A senha nasce marcada como temporária, e a plataforma
+    cobra a troca no primeiro acesso.
+
+    O e-mail traz também um link de criação de senha, para quem preferir
+    definir a sua já de cara ou perder o e-mail com a senha.
+    """
+    senha = gerar_senha_temporaria()
     token = criar_token(con, int(aluno["id"]), "ativacao", horas=168)
-    if aluno["status"] == STATUS_SUSPENSO:
-        executar(
-            con, "UPDATE alunos SET status=? WHERE id=?", (STATUS_PENDENTE, aluno["id"])
-        )
-        aluno = por_id(con, int(aluno["id"]))
-    mailer.enviar_aprovacao(con, aluno, token)
+    executar(
+        con,
+        """UPDATE alunos SET senha_hash=?, senha_temporaria=1, status=?,
+                             ativado_em=COALESCE(ativado_em, ?)
+           WHERE id=?""",
+        (gerar_hash_senha(senha), STATUS_ATIVO, agora_txt(), aluno["id"]),
+    )
+    aluno = por_id(con, int(aluno["id"]))
+    mailer.enviar_aprovacao(con, aluno, token, senha)
     return token
 
 
 def ativar(con: sqlite3.Connection, aluno_id: int, senha: str) -> Optional[sqlite3.Row]:
     executar(
         con,
-        "UPDATE alunos SET senha_hash=?, status=?, ativado_em=COALESCE(ativado_em, ?) WHERE id=?",
+        """UPDATE alunos SET senha_hash=?, senha_temporaria=0, status=?,
+                             ativado_em=COALESCE(ativado_em, ?)
+           WHERE id=?""",
         (gerar_hash_senha(senha), STATUS_ATIVO, agora_txt(), aluno_id),
     )
     aluno = por_id(con, aluno_id)
@@ -83,6 +99,10 @@ def ativar(con: sqlite3.Connection, aluno_id: int, senha: str) -> Optional[sqlit
 
 
 def definir_senha(con: sqlite3.Connection, aluno_id: int, senha: str) -> None:
+    # senha escolhida pelo aluno deixa de ser temporária
+    executar(
+        con, "UPDATE alunos SET senha_temporaria=0 WHERE id=?", (aluno_id,)
+    )
     executar(
         con,
         "UPDATE alunos SET senha_hash=?, status=? WHERE id=?",

@@ -133,6 +133,27 @@ def _prazo_da_prova() -> list[Aviso]:
     return avisos
 
 
+def _conta(aluno) -> list[Aviso]:
+    if not _valor(aluno, "senha_temporaria"):
+        return []
+    return [
+        Aviso(
+            chave="senha-temporaria",
+            tipo="plano",
+            icone="🔑",
+            titulo="Sua senha ainda é a que veio por e-mail",
+            texto=(
+                "Ela é temporária e fica guardada na sua caixa de entrada. Defina uma "
+                "senha sua — leva dez segundos."
+            ),
+            url="/conta#senha",
+            acao="Criar minha senha",
+            urgencia=85,
+            fixo=True,
+        )
+    ]
+
+
 def _habito(con: sqlite3.Connection, aluno) -> list[Aviso]:
     aluno_id = int(_valor(aluno, "id", 0))
     avisos: list[Aviso] = []
@@ -350,6 +371,7 @@ def gerar(
         return []
 
     avisos: list[Aviso] = []
+    avisos.extend(_conta(aluno))
     avisos.extend(_prazo_da_prova())
     avisos.extend(_habito(con, aluno))
     avisos.extend(_estudo(con, aluno))

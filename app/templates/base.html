@@ -116,6 +116,24 @@
 </header>
 {% endblock %}
 
+{% if aluno and aluno['senha_temporaria'] and caminho != '/conta' %}
+{# A senha gerada fica guardada na caixa de entrada do aluno para sempre.
+   Enquanto ele não trocar, o aviso acompanha ele em todas as telas. #}
+<div class="container">
+  <div class="cartao mt-2" style="border-color:rgba(240,169,43,.5);background:rgba(240,169,43,.08)">
+    <div class="flex-entre" style="gap:1rem;flex-wrap:wrap">
+      <div style="flex:1;min-width:240px">
+        <strong>🔑 Troque a senha que veio por e-mail</strong>
+        <p class="suave mb-0" style="font-size:.88rem">
+          Ela é temporária e continua visível na sua caixa de entrada. Leva dez segundos.
+        </p>
+      </div>
+      <a class="btn btn-principal btn-pequeno" href="/conta#senha">Criar minha senha</a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 {% block corpo %}
 <main class="container">
   {% block conteudo %}{% endblock %}

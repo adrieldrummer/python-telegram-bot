@@ -87,6 +87,28 @@ def conferir_senha(senha: str, armazenado: str) -> bool:
 FORCA_MINIMA = 8
 
 
+# Palavras curtas e sem ambiguidade sonora, para a senha ser ditada por
+# telefone sem confusão. Sem I, O, 0 e 1 nos números pelo mesmo motivo.
+_PALAVRAS_SENHA = (
+    "Alfa", "Bravo", "Charlie", "Delta", "Eco", "Fox", "Golf", "Hotel",
+    "India", "Julieta", "Kilo", "Lima", "Mike", "Novembro", "Oscar", "Papa",
+    "Quebec", "Romeu", "Sierra", "Tango", "Uniforme", "Victor", "Whisky",
+    "Xerife", "Yankee", "Zulu",
+)
+
+
+def gerar_senha_temporaria() -> str:
+    """Senha inicial legível, enviada por e-mail depois da compra.
+
+    Formato palavra + quatro dígitos (ex.: Sierra-4783). A entropia é menor
+    que a de uma senha aleatória, e é por isso que ela nasce marcada como
+    temporária: serve para o primeiro acesso e a plataforma cobra a troca.
+    """
+    palavra = secrets.choice(_PALAVRAS_SENHA)
+    numero = "".join(secrets.choice("23456789") for _ in range(4))
+    return f"{palavra}-{numero}"
+
+
 def validar_senha(senha: str) -> Optional[str]:
     """Retorna a mensagem de erro, ou None se a senha for aceitável."""
     if len(senha) < FORCA_MINIMA:

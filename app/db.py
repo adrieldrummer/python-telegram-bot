@@ -193,6 +193,8 @@ COLUNAS_NOVAS: tuple[tuple[str, str, str], ...] = (
     # completo por omissão entregaria de graça o que é vendido no upgrade
     ("alunos", "plano", "TEXT NOT NULL DEFAULT 'recruta'"),
     ("alunos", "plano_ate", "TEXT"),
+    # senha gerada na compra: o aluno entra com ela e a plataforma cobra a troca
+    ("alunos", "senha_temporaria", "INTEGER NOT NULL DEFAULT 0"),
 )
 
 

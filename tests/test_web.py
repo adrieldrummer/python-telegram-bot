@@ -177,7 +177,9 @@ def test_admin_libera_acesso_manual(cliente):
     assert resposta.status_code == 200
     with sessao() as con:
         novo = servico_alunos.por_email(con, "convidado@teste.com")
-        assert novo is not None and novo["status"] == "pendente"
+        # liberação manual usa o mesmo fluxo da compra: conta ativa e senha por e-mail
+        assert novo is not None and novo["status"] == "ativo"
+        assert novo["senha_temporaria"] == 1
 
 
 def test_simulado_corrigido_explica_cada_erro(cliente):

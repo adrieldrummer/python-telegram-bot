@@ -62,18 +62,26 @@ def test_webhook_com_assinatura_errada_e_recusado(cliente):
     assert resposta.status_code == 401
 
 
-def test_compra_aprovada_cria_aluno_pendente_e_envia_email(cliente):
+def test_compra_aprovada_ativa_a_conta_e_envia_login_e_senha(cliente):
     com_segredo(SEGREDO)
     resposta = enviar(cliente, payload_compra())
     assert resposta.status_code == 200
     with sessao() as con:
         aluno = servico_alunos.por_email(con, "comprador@teste.com")
         assert aluno is not None
-        assert aluno["status"] == "pendente"
-        assert not aluno["senha_hash"]
+        # a conta já sai ativa, com senha gerada: o comprador entra direto, sem
+        # depender de clicar num link — o passo em que mais gente se perde
+        assert aluno["status"] == "ativo"
+        assert aluno["senha_hash"], "a compra deveria gerar uma senha"
+        assert aluno["senha_temporaria"] == 1
+
         email = buscar_um(con, "SELECT * FROM emails WHERE aluno_id=?", (aluno["id"],))
         assert email is not None
-        assert "/ativar/" in email["corpo_html"]
+        corpo = email["corpo_html"]
+        assert aluno["email"] in corpo, "o e-mail precisa dizer qual é o login"
+        assert "Senha:" in corpo, "o e-mail precisa trazer a senha gerada"
+        # e o link de criar a própria senha continua disponível para quem preferir
+        assert "/ativar/" in corpo
         assert valor(con, "SELECT COUNT(*) FROM compras WHERE status='aprovada'") == 1
 
 
@@ -126,3 +134,57 @@ def test_ativacao_pelo_link_do_email(cliente):
         aluno = servico_alunos.por_email(con, "comprador@teste.com")
         assert aluno["status"] == "ativo"
         assert aluno["senha_hash"]
+
+
+def test_comprador_entra_direto_com_a_senha_do_email(cliente):
+    """O caminho completo: compra → e-mail com senha → login sem clicar em link.
+
+    É o passo que a plataforma passou a cobrir: antes o comprador precisava
+    abrir o e-mail, clicar, criar senha e só então entrar. Cada etapa a mais
+    entre pagar e usar é gente que some pelo caminho.
+    """
+    import re
+
+    com_segredo(SEGREDO)
+    enviar(cliente, payload_compra(email="novato@teste.com"))
+
+    with sessao() as con:
+        aluno = servico_alunos.por_email(con, "novato@teste.com")
+        corpo = buscar_um(
+            con, "SELECT corpo_html FROM emails WHERE aluno_id=?", (aluno["id"],)
+        )["corpo_html"]
+
+    achou = re.search(r"Senha:.*?>([A-Z][a-z]+-\d{4})<", corpo, re.S)
+    assert achou, "a senha gerada não apareceu no e-mail"
+    senha = achou.group(1)
+
+    cliente.get("/entrar")
+    resposta = cliente.post(
+        "/entrar",
+        data={
+            "email": "novato@teste.com",
+            "senha": senha,
+            "csrf_token": cliente.cookies.get("map_csrf"),
+        },
+        follow_redirects=True,
+    )
+    assert resposta.status_code == 200
+    painel = cliente.get("/painel")
+    assert painel.status_code == 200
+    # e a plataforma cobra a troca enquanto a senha for a do e-mail
+    assert "Troque a senha que veio por e-mail" in painel.text
+
+    # depois de trocar, o aviso some
+    cliente.post(
+        "/conta/senha",
+        data={
+            "atual": senha,
+            "nova": "minhasenhaforte9",
+            "confirmacao": "minhasenhaforte9",
+            "csrf_token": cliente.cookies.get("map_csrf"),
+        },
+        follow_redirects=True,
+    )
+    with sessao() as con:
+        aluno = servico_alunos.por_email(con, "novato@teste.com")
+        assert aluno["senha_temporaria"] == 0

@@ -210,12 +210,18 @@ def distribuicao(con: sqlite3.Connection) -> list[dict]:
 def checkout_do_plano(plano_id: str, padrao: str = "") -> str:
     """Onde o botão de compra desse plano leva.
 
-    Ordem: link fixo no catálogo → variável de ambiente do plano → checkout geral.
+    Ordem: variável de ambiente do plano → link do catálogo → checkout geral.
+    A variável vem primeiro de propósito: trocar um link de checkout em
+    produção (promoção, produto novo na Cakto) não pode depender de deploy.
     """
+    import os
+
     from .config import config
 
     p = catalogo.plano(plano_id)
-    return p.checkout_url or config.checkout_do_plano(p.id) or padrao
+    chave = f"CAKTO_CHECKOUT_{p.id.upper().replace('-', '_')}"
+    do_ambiente = (os.getenv(chave, "") or "").strip()
+    return do_ambiente or p.checkout_url or config.cakto_checkout_url or padrao
 
 
 def checkouts() -> dict[str, str]:

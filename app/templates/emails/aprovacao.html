@@ -1,15 +1,46 @@
 {% import "emails/base_email.html" as e with context %}
 {% set corpo %}
 <p>Olá, {{ nome }}.</p>
-<p><strong>Seu acesso foi aprovado.</strong> Falta só um passo: criar a sua senha.</p>
-<p>Seu login será o e-mail <strong>{{ email }}</strong>. O link abaixo vale por 7 dias e só pode ser usado uma vez.</p>
-<p>Assim que entrar, comece pelo <strong>Dia 1 — o diagnóstico</strong>: 24 questões que definem
+<p><strong>Sua compra foi aprovada e seu acesso já está liberado.</strong></p>
+
+{% if senha %}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+       style="margin:18px 0;border:1px solid #2a2a34;border-radius:10px;background:#111116">
+  <tr><td style="padding:18px 20px">
+    <p style="margin:0 0 10px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8c93a1">
+      Seus dados de acesso
+    </p>
+    <p style="margin:0 0 6px;font-size:15px;color:#e6e8ec">
+      Login: <strong style="color:#fff">{{ email }}</strong>
+    </p>
+    <p style="margin:0;font-size:15px;color:#e6e8ec">
+      Senha: <strong style="color:#4d8bff;font-size:19px;letter-spacing:.04em">{{ senha }}</strong>
+    </p>
+  </td></tr>
+</table>
+<p style="font-size:14px;color:#a7acb6">
+  Essa senha é <strong>temporária</strong>. No primeiro acesso a plataforma vai pedir que você
+  troque por uma sua — leva dez segundos e é o que mantém sua conta protegida, já que esta
+  mensagem fica guardada na sua caixa de entrada.
+</p>
+{% else %}
+<p>Seu login será o e-mail <strong>{{ email }}</strong>. Use o botão abaixo para criar sua senha.
+   O link vale por 7 dias e só pode ser usado uma vez.</p>
+{% endif %}
+
+<p>Assim que entrar, comece pelo <strong>Dia 1 — o diagnóstico</strong>: 20 questões que definem
    a sua trilha inteira. Sem consultar nada; é o resultado real que faz o método funcionar.</p>
+{% if senha %}
+<p style="font-size:13px;color:#8c93a1">
+  Prefere já definir a sua própria senha? <a href="{{ link }}" style="color:#4d8bff">Clique aqui</a> —
+  esse link vale por 7 dias.
+</p>
+{% endif %}
 {% endset %}
 {{ e.layout(
-     'Acesso aprovado ✅',
+     'Acesso liberado ✅',
      corpo,
-     'Criar minha senha e começar',
-     link,
-     'Se você não comprou este curso, ignore este e-mail — nenhuma conta será ativada sem esta confirmação.'
+     'Entrar na plataforma' if senha else 'Criar minha senha e começar',
+     entrar if senha else link,
+     'Se você não comprou este curso, ignore este e-mail e escreva para o suporte.'
    ) }}

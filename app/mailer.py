@@ -138,14 +138,18 @@ def processar_fila(limite: int = 30) -> dict[str, int]:
 # --- e-mails do produto ----------------------------------------------------
 
 
-def enviar_aprovacao(con: sqlite3.Connection, aluno: sqlite3.Row, token: str) -> None:
-    """E-mail de APROVAÇÃO: confirma a compra e abre o cadastro de senha."""
+def enviar_aprovacao(
+    con: sqlite3.Connection, aluno: sqlite3.Row, token: str, senha: str = ""
+) -> None:
+    """E-mail de APROVAÇÃO: confirma a compra e entrega login e senha."""
     link = f"{config.app_url}/ativar/{token}"
     corpo = renderizar(
         "aprovacao",
         nome=primeiro_nome(aluno["nome"]),
         link=link,
         email=aluno["email"],
+        senha=senha,
+        entrar=f"{config.app_url}/entrar",
     )
     enfileirar(
         con,

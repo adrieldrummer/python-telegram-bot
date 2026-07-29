@@ -33,6 +33,13 @@ RECURSOS = {
 LIMITE_QUESTOES_DIA_PADRAO = 30
 
 
+# Links de checkout da Cakto. Ficam aqui, versionados, porque são endereços
+# públicos — vão para a página de vendas de qualquer forma. Um link por plano:
+# a Cakto identifica o produto pelo link, e é o que faz o webhook devolver a
+# oferta certa. `app.planos.checkout_do_plano` ainda permite sobrescrever por
+# variável de ambiente (CAKTO_CHECKOUT_<PLANO>) sem tocar no código.
+
+
 @dataclass(frozen=True)
 class Plano:
     id: str
@@ -63,6 +70,7 @@ PLANOS: tuple[Plano, ...] = (
         duracao_dias=31,
         recursos=("trilha", "questoes", "erros"),
         limite_questoes_dia=LIMITE_QUESTOES_DIA_PADRAO,
+        checkout_url="https://pay.cakto.com.br/3b55ibi_1009316",
         codigos_cakto=("recruta", "mensal", "47"),
         para_quem="Para quem está começando e precisa entender o que estudar.",
         beneficios=(
@@ -93,6 +101,7 @@ PLANOS: tuple[Plano, ...] = (
             "ranking",
         ),
         destaque=True,
+        checkout_url="https://pay.cakto.com.br/yqm8hs9",
         codigos_cakto=("operacao", "completa", "completo", "97"),
         para_quem="Para quem vai fazer a prova de 20 de setembro e quer chegar pronto.",
         beneficios=(
@@ -112,6 +121,7 @@ PLANOS: tuple[Plano, ...] = (
         ciclo="mensal",
         duracao_dias=31,
         recursos=tuple(RECURSOS),
+        checkout_url="https://pay.cakto.com.br/y8zqtwu",
         codigos_cakto=("elite", "197", "vip"),
         para_quem="Para quem quer preparação completa, incluindo as etapas pós-objetiva.",
         beneficios=(
