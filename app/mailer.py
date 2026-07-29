@@ -89,10 +89,14 @@ def processar_fila(limite: int = 30) -> dict[str, int]:
         return resumo
 
     with sessao() as con:
+        # `caixa_saida` entra aqui de propósito: são os e-mails gravados
+        # enquanto o SMTP ainda não existia. Sem isso eles ficariam presos para
+        # sempre, e justamente os primeiros — o de quem comprou antes de o
+        # envio estar de pé é o que mais precisa sair.
         pendentes = buscar_todos(
             con,
             """SELECT * FROM emails
-               WHERE status IN ('na_fila','erro') AND tentativas < ?
+               WHERE status IN ('na_fila','erro','caixa_saida') AND tentativas < ?
                ORDER BY id LIMIT ?""",
             (MAX_TENTATIVAS_ENVIO, limite),
         )

@@ -1056,3 +1056,6 @@ details.filtros > summary span { font-weight: 600; font-size: 0.84rem; }
   body { background: #fff; color: #000; }
   .cartao { border-color: #ccc; box-shadow: none; background: #fff; }
 }
+
+/* botões de ação lado a lado, quebrando para baixo no celular */
+.linha-acoes { display: flex; flex-wrap: wrap; gap: 0.6rem; }

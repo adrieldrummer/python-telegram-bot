@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from urllib.parse import quote_plus
+
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
 
 from conteudo import TOTAL_QUESTOES, planos as catalogo_planos, simulados as conteudo_simulados, trilha
@@ -248,7 +250,55 @@ async def processar_emails(request: Request, csrf_token: str = Form(""), admin=D
     aviso = f"Enviados: {resumo['enviados']} · Erros: {resumo['erros']}"
     if config.modo_caixa_saida:
         aviso = "SMTP não configurado — os e-mails ficam na caixa de saída."
-    return redirecionar(f"/admin/emails?aviso={aviso.replace(' ', '+')}")
+    return redirecionar(f"/admin/emails?aviso={quote_plus(aviso)}")
+
+
+@router.post("/emails/teste")
+async def testar_email(request: Request, csrf_token: str = Form(""), admin=Depends(exigir_admin)):
+    """Manda um e-mail de verdade para o próprio administrador.
+
+    Existe porque "as variáveis estão salvas" e "o e-mail chega" são duas
+    afirmações diferentes, e só a segunda importa. Senha errada, porta
+    bloqueada ou remetente de domínio não verificado só aparecem no momento do
+    envio — e a primeira vez que isso pode acontecer não deve ser na compra de
+    um cliente.
+    """
+    validar_csrf(request, csrf_token)
+    if not config.smtp_configurado:
+        return redirecionar(
+            "/admin/emails?aviso=" + quote_plus("SMTP não configurado — não há para onde enviar.")
+        )
+
+    corpo = (
+        "<p>Se você está lendo isto, o envio de e-mail da "
+        f"{config.app_nome} está funcionando.</p>"
+        f"<p>Remetente: {config.email_remetente}<br>"
+        f"Servidor: {config.smtp_host}:{config.smtp_porta}</p>"
+        "<p>Confira se esta mensagem chegou na caixa de entrada e não no spam. "
+        "Se caiu no spam, falta verificar o domínio no provedor de envio.</p>"
+    )
+    with sessao() as con:
+        mailer.enfileirar(
+            con,
+            admin["email"],
+            f"Teste de envio — {config.app_nome}",
+            corpo,
+            tipo="teste",
+            aluno_id=int(admin["id"]),
+        )
+    resumo = mailer.processar_fila(limite=5)
+
+    if resumo["enviados"]:
+        aviso = f"E-mail de teste enviado para {admin['email']}. Confira a caixa de entrada e o spam."
+    else:
+        with sessao() as con:
+            falha = buscar_um(
+                con, "SELECT erro FROM emails WHERE tipo='teste' ORDER BY id DESC"
+            )
+        # o texto cru do servidor é o que resolve: "535 authentication failed"
+        # e "domain not verified" pedem consertos completamente diferentes
+        aviso = f"Falhou: {(falha['erro'] if falha else '') or 'sem detalhe do servidor'}"
+    return redirecionar(f"/admin/emails?aviso={quote_plus(aviso)}")
 
 
 @router.get("/conteudo")

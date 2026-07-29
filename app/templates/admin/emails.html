@@ -12,10 +12,18 @@
 {% endif %}
 {% if aviso %}<div class="aviso mb-3">{{ aviso }}</div>{% endif %}
 
-<form method="post" action="/admin/emails/processar" class="mb-3">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <button class="btn btn-principal btn-pequeno" type="submit">Processar fila agora</button>
-</form>
+<div class="linha-acoes mb-3">
+  <form method="post" action="/admin/emails/processar">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button class="btn btn-principal btn-pequeno" type="submit">Processar fila agora</button>
+  </form>
+  {% if not modo_caixa %}
+  <form method="post" action="/admin/emails/teste">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button class="btn btn-secundario btn-pequeno" type="submit">Enviar e-mail de teste para mim</button>
+  </form>
+  {% endif %}
+</div>
 
 <div class="cartao">
   <div class="tabela-rolagem">
