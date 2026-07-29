@@ -9,6 +9,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from . import demo, mailer
 from .config import config
@@ -42,6 +43,27 @@ app.mount(
 )
 
 
+PREFIXOS_DE_FUNCAO = ("/api/index", "/api/main")
+
+
+@app.middleware("http")
+async def normalizar_caminho(request: Request, call_next):
+    """Aceita o caminho com ou sem o prefixo da função serverless.
+
+    Dependendo de como a hospedagem roteia (rewrite para `/api/index`), a
+    aplicação recebe o caminho da função em vez do caminho que o visitante
+    pediu. Sem isso, toda rota responderia 404 em produção e funcionaria no
+    desenvolvimento — o pior tipo de bug.
+    """
+    caminho = request.scope.get("path", "")
+    for prefixo in PREFIXOS_DE_FUNCAO:
+        if caminho == prefixo or caminho.startswith(prefixo + "/"):
+            request.scope["path"] = caminho[len(prefixo) :] or "/"
+            request.scope["raw_path"] = request.scope["path"].encode()
+            break
+    return await call_next(request)
+
+
 @app.middleware("http")
 async def escoar_fila_de_email(request: Request, call_next):
     """Envia e-mails pendentes no máximo uma vez por minuto, sem travar a resposta."""
@@ -56,6 +78,7 @@ async def escoar_fila_de_email(request: Request, call_next):
     return resposta
 
 
+@app.exception_handler(StarletteHTTPException)
 @app.exception_handler(HTTPException)
 async def tratar_http(request: Request, exc: HTTPException):
     destino = (exc.headers or {}).get("Location")
