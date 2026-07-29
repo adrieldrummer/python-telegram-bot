@@ -32,7 +32,7 @@ fazia à mão (diagnóstico, caderno de erros e revisão espaçada).
 ## Como rodar (2 minutos)
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 cp .env.example .env          # ajuste o que quiser; funciona sem editar nada
 python scripts/seed.py --demo # cria as contas de teste e simula progresso
 python run.py                 # http://localhost:8000
@@ -54,7 +54,9 @@ python -m pytest tests/ -q                      # 89 testes, SQLite
 DATABASE_URL="postgres://..." python -m pytest  # mesma suíte, Postgres
 ```
 
-## Subir online em 2 minutos
+## Subir online em 5 minutos
+
+Passo a passo clique a clique: [`docs/SUBIR-AGORA.md`](docs/SUBIR-AGORA.md)
 
 [**→ Importar na Vercel**](https://vercel.com/new/import?s=https://github.com/adrieldrummer/python-telegram-bot)
 (branch `claude/cakto-course-platform-xfepzk`)

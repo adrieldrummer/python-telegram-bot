@@ -1,0 +1,6 @@
+# Dependências de desenvolvimento (não vão para produção serverless).
+-r requirements.txt
+
+uvicorn[standard]>=0.27   # recarregamento automático no dev
+pytest>=8.0
+pillow>=10.0              # otimização das artes (scripts/otimizar_imagens.py)
