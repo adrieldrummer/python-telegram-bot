@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from urllib.parse import quote_plus
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
@@ -11,6 +12,7 @@ from conteudo.questoes import total_por_materia
 
 from .. import alunos as servico_alunos
 from .. import mailer
+from .. import marketing
 from .. import planos as servico_planos
 from ..config import config
 from ..db import buscar_todos, buscar_um, executar, sessao, valor
@@ -301,6 +303,35 @@ async def testar_email(request: Request, csrf_token: str = Form(""), admin=Depen
     return redirecionar(f"/admin/emails?aviso={quote_plus(aviso)}")
 
 
+@router.post("/rastreio/teste")
+async def testar_rastreio(request: Request, csrf_token: str = Form(""), admin=Depends(exigir_admin)):
+    """Dispara um Purchase de teste pela API de Conversões.
+
+    Existe pelo mesmo motivo do e-mail de teste: "o token está salvo" e "o
+    evento chega no Meta" são afirmações diferentes. E aqui a diferença custa
+    caro — campanha otimizando por Purchase que nunca chega gasta o dia
+    inteiro procurando um comportamento que ela não consegue enxergar.
+
+    O evento vai marcado como teste no `content_name` para não se confundir
+    com venda de verdade no relatório.
+    """
+    validar_csrf(request, csrf_token)
+    if not config.capi_ativa:
+        return redirecionar(
+            "/admin/configuracao?aviso=" + quote_plus("API de Conversões não configurada.")
+        )
+
+    referencia = f"teste-{int(time.time())}"
+    resultado = marketing.compra_aprovada(
+        None, admin, referencia, 47.0, "TESTE — ignore no relatório"
+    )
+    if resultado.get("enviado"):
+        aviso = f"Purchase de teste aceito pelo Meta (ref {referencia}). Confira no Events Manager."
+    else:
+        aviso = f"Falhou: {resultado.get('resposta') or resultado.get('erro') or resultado.get('motivo')}"
+    return redirecionar(f"/admin/configuracao?aviso={quote_plus(aviso)}")
+
+
 @router.get("/conteudo")
 async def conteudo(request: Request, admin=Depends(exigir_admin)):
     return responder_template(
@@ -318,7 +349,7 @@ async def conteudo(request: Request, admin=Depends(exigir_admin)):
 
 
 @router.get("/configuracao")
-async def configuracao(request: Request, admin=Depends(exigir_admin)):
+async def configuracao(request: Request, admin=Depends(exigir_admin), aviso: str = ""):
     # (nome, valor mostrado, está ok?, variável de ambiente, impede vender?)
     #
     # O `bloqueia` separa o que é ajuste fino do que faz um comprador pagar e
@@ -368,5 +399,6 @@ async def configuracao(request: Request, admin=Depends(exigir_admin)):
             "checagens": checagens,
             "bloqueios": [c for c in checagens if c[4] and not c[2]],
             "webhook_url": f"{config.app_url}/webhooks/cakto",
+            "aviso": aviso,
         },
     )

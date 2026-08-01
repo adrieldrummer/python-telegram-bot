@@ -3,6 +3,7 @@
 {% block titulo_admin %}Configuração e diagnóstico{% endblock %}
 
 {% block admin %}
+{% if aviso %}<div class="aviso mb-3">{{ aviso }}</div>{% endif %}
 {% if bloqueios %}
 <div class="aviso aviso-atencao mb-3">
   <strong>{{ bloqueios | length }} item(ns) impedem uma venda de funcionar.</strong>
@@ -39,6 +40,20 @@
   </div>
 
   <div class="pilha">
+    <div class="cartao">
+      <h3>Rastreamento do Meta</h3>
+      <p class="suave" style="font-size:.86rem">
+        Dispara um <span class="mono">Purchase</span> de verdade pela API de Conversões, marcado
+        como teste. Serve para provar que o evento chega — token salvo e evento entregue são
+        coisas diferentes, e campanha otimizando por um evento que nunca chega gasta o dia
+        procurando algo que não consegue ver.
+      </p>
+      <form method="post" action="/admin/rastreio/teste" class="mb-0">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn btn-secundario btn-pequeno" type="submit">Disparar Purchase de teste</button>
+      </form>
+    </div>
+
     <div class="cartao">
       <h3>Webhook da Cakto</h3>
       <p class="mono" style="background:rgba(255,255,255,.06);padding:.7rem 1rem;border-radius:var(--raio-p);word-break:break-all">
