@@ -160,7 +160,26 @@ def compra_aprovada(
     referencia: str,
     valor: float,
     plano_nome: str = "",
+    rastreio: Optional[dict] = None,
 ) -> dict:
+    """Purchase server-side.
+
+    `rastreio` traz o que voltou da Cakto: `fbc`, `fbp` e as UTMs que saíram
+    daqui na URL do checkout. É o que liga a venda ao anúncio — sem eles o
+    evento chega, conta como conversão, mas fica sem dono, e a campanha
+    aprende com metade da informação.
+    """
+    rastreio = rastreio or {}
+    custom: dict[str, Any] = {
+        "currency": "BRL",
+        "value": round(float(valor or 0), 2),
+        "content_name": plano_nome or config.app_nome,
+        "content_type": "product",
+    }
+    for chave in ("utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"):
+        if rastreio.get(chave):
+            custom[chave] = rastreio[chave]
+
     return enviar_evento(
         "Purchase",
         event_id=f"compra-{referencia}",
@@ -169,13 +188,10 @@ def compra_aprovada(
             telefone=aluno["telefone"] or "",
             nome=aluno["nome"],
             aluno_id=int(aluno["id"]),
+            fbp=rastreio.get("fbp", ""),
+            fbc=rastreio.get("fbc", ""),
         ),
-        custom_data={
-            "currency": "BRL",
-            "value": round(float(valor or 0), 2),
-            "content_name": plano_nome or config.app_nome,
-            "content_type": "product",
-        },
+        custom_data=custom,
         origem="website",
         url=f"{config.app_url}/",
         con=con,

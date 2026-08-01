@@ -70,3 +70,44 @@ def test_evento_de_compra_tem_id_estavel(con, aluno, monkeypatch):
     assert enviados[0]["event_id"] == "compra-tx-123"
     assert enviados[0]["custom"]["value"] == 197.0
     assert enviados[0]["custom"]["currency"] == "BRL"
+
+
+def test_webhook_leva_fbc_fbp_e_utm_para_o_purchase(cliente, monkeypatch):
+    """A venda precisa chegar ao Meta com o identificador do clique.
+
+    Sem `fbc`/`fbp` o evento conta como conversão mas fica sem dono: o Meta
+    não liga a compra ao anúncio, e a campanha aprende com metade da
+    informação — que é o mesmo que otimizar no escuro pagando por isso.
+    """
+    import json as _json
+
+    from app import marketing
+    from app.config import config as cfg
+    from tests.test_webhook import PAYLOAD_CAKTO, com_segredo, enviar_bruto
+
+    capturado = {}
+
+    def falso(nome, event_id, user_data, custom_data=None, **resto):
+        capturado.update(
+            {"nome": nome, "user_data": user_data, "custom_data": custom_data or {}}
+        )
+        return {"enviado": True}
+
+    monkeypatch.setattr(marketing, "enviar_evento", falso)
+    com_segredo("chave-do-painel-da-cakto")
+
+    corpo = _json.loads(_json.dumps(PAYLOAD_CAKTO))
+    corpo["data"]["id"] = "tx-rastreio"
+    corpo["data"]["customer"]["email"] = "rastreio@example.com"
+    corpo["data"]["fbc"] = "fb.1.1750000000.IwAR123"
+    corpo["data"]["fbp"] = "fb.1.1750000000.987654321"
+    corpo["data"]["utm_source"] = "ig"
+    corpo["data"]["utm_campaign"] = "opaprova-vendas"
+
+    assert enviar_bruto(cliente, corpo).status_code == 200
+
+    assert capturado["nome"] == "Purchase"
+    assert capturado["user_data"]["fbc"] == "fb.1.1750000000.IwAR123"
+    assert capturado["user_data"]["fbp"] == "fb.1.1750000000.987654321"
+    assert capturado["custom_data"]["utm_source"] == "ig"
+    assert capturado["custom_data"]["utm_campaign"] == "opaprova-vendas"

@@ -236,6 +236,45 @@
 {% endblock %}
 
 <script src="/static/js/app.js?v={{ config.versao_estaticos }}"></script>
+<script>
+  // Leva o identificador do clique do anúncio até o checkout.
+  //
+  // O Meta só consegue dizer "esta venda veio deste anúncio" se `fbc` (o
+  // clique) e `fbp` (o navegador) chegarem junto com o pagamento. A Cakto
+  // devolve os dois — e as UTMs — dentro do webhook, e é de lá que a API de
+  // Conversões monta o evento Purchase. Sem isso a campanha otimiza no
+  // escuro: o Meta vê o gasto, não vê o retorno.
+  (function () {
+    function cookie(nome) {
+      var achou = document.cookie.match('(^|;)\\s*' + nome + '\\s*=\\s*([^;]+)');
+      return achou ? achou.pop() : '';
+    }
+    var url = new URL(window.location.href);
+    var fbclid = url.searchParams.get('fbclid') || '';
+    // o cookie _fbc só existe depois que o pixel roda; na primeira visita
+    // vinda do anúncio ele ainda não foi gravado, então montamos na mão
+    var extras = {};
+    var fbc = cookie('_fbc') || (fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : '');
+    var fbp = cookie('_fbp');
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'sck'].forEach(function (chave) {
+      var valor = url.searchParams.get(chave);
+      if (valor) extras[chave] = valor;
+    });
+    if (fbc) extras.fbc = fbc;
+    if (fbp) extras.fbp = fbp;
+    if (!Object.keys(extras).length) return;
+
+    document.querySelectorAll('a[data-checkout][href]').forEach(function (link) {
+      var destino;
+      try { destino = new URL(link.href, window.location.origin); } catch (erro) { return; }
+      if (destino.hostname.indexOf('cakto') === -1) return;
+      Object.keys(extras).forEach(function (chave) {
+        if (!destino.searchParams.has(chave)) destino.searchParams.set(chave, extras[chave]);
+      });
+      link.href = destino.toString();
+    });
+  })();
+</script>
 {% if config.pixel_ativo %}
 <script>
   // Todo botão de compra avisa o Meta que a pessoa foi para o checkout.

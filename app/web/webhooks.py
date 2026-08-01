@@ -136,7 +136,17 @@ def extrair(payload: dict) -> dict:
     if valor_pago > 10000:
         valor_pago = valor_pago / 100
 
+    # rastreamento: a Cakto devolve o que foi levado na URL do checkout. `fbc`
+    # e `fbp` são o que permite ao Meta ligar esta venda ao anúncio que a
+    # gerou — sem eles a campanha otimiza vendo só o gasto.
+    rastreio = {
+        chave: _buscar(payload, f"data.{chave}", chave)
+        for chave in ("fbc", "fbp", "utm_source", "utm_medium", "utm_campaign",
+                      "utm_content", "utm_term", "sck")
+    }
+
     return {
+        "rastreio": {k: v for k, v in rastreio.items() if v},
         "email": normalizar_email(email),
         "nome": nome or "Candidato",
         "telefone": telefone,
@@ -277,6 +287,7 @@ async def cakto(request: Request):
                     dados["referencia"] or f"aluno-{aluno['id']}",
                     dados["valor"],
                     plano.nome,
+                    rastreio=dados["rastreio"],
                 )
                 if aluno["status"] != "ativo":
                     servico_alunos.aprovar_acesso(con, aluno)
