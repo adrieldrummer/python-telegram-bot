@@ -21,10 +21,26 @@ from .web import admin, aluno, publico, webhooks
 _ultimo_flush = 0.0
 
 
+_falha_do_banco = ""
+
+
 @asynccontextmanager
 async def ciclo_de_vida(app: FastAPI):
-    criar_esquema()
-    if config.modo_demo:
+    """Sobe a aplicação sem deixar o banco derrubar tudo.
+
+    Antes, um Postgres inacessível estourava aqui e a Vercel devolvia
+    FUNCTION_INVOCATION_FAILED em **todas** as páginas — inclusive a de vendas,
+    que nem precisa de banco. Pior: a mensagem do erro morria junto, então não
+    dava para saber se era senha, endereço ou driver. Agora a falha fica
+    guardada e aparece em /saude, e o resto do site continua de pé.
+    """
+    global _falha_do_banco
+    try:
+        criar_esquema()
+        _falha_do_banco = ""
+    except Exception as erro:  # noqa: BLE001 - qualquer falha aqui precisa virar texto
+        _falha_do_banco = f"{type(erro).__name__}: {erro}"[:500]
+    if config.modo_demo and not _falha_do_banco:
         demo.preparar()
     yield
 
@@ -146,4 +162,5 @@ async def saude():
         "webhook_protegido": bool(config.cakto_webhook_segredo),
         "email_configurado": config.smtp_configurado,
         "email_credencial_plausivel": config.smtp_senha_plausivel,
+        "banco_erro": _falha_do_banco,
     }
