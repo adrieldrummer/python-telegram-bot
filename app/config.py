@@ -112,7 +112,14 @@ class Config:
     meta_capi_token: str = os.getenv("META_CAPI_TOKEN", "").strip()
     meta_test_event_code: str = os.getenv("META_TEST_EVENT_CODE", "").strip()
     meta_api_versao: str = os.getenv("META_API_VERSAO", "v21.0").strip()
-    meta_verificacao_dominio: str = os.getenv("META_VERIFICACAO_DOMINIO", "").strip()
+    # O código de verificação de domínio do Meta é público por natureza: ele é
+    # publicado numa meta tag lida por qualquer visitante do site. Fica aqui
+    # como padrão para não depender de variável de ambiente — perder essa
+    # verificação custa atribuição de venda no iOS, e ela é o tipo de coisa
+    # que some num deploy e ninguém percebe.
+    meta_verificacao_dominio: str = os.getenv(
+        "META_VERIFICACAO_DOMINIO", "2weeeqmpolfisxw5vahq414ugzt9qe"
+    ).strip()
 
     # Jornada
     jornada_drip_diario: bool = _bool("JORNADA_DRIP_DIARIO", True)
