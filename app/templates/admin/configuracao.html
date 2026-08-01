@@ -3,14 +3,30 @@
 {% block titulo_admin %}Configuração e diagnóstico{% endblock %}
 
 {% block admin %}
+{% if bloqueios %}
+<div class="aviso aviso-atencao mb-3">
+  <strong>{{ bloqueios | length }} item(ns) impedem uma venda de funcionar.</strong>
+  Um comprador que pagar agora pode não conseguir entrar. Cada linha abaixo diz
+  qual variável falta na hospedagem:
+  <ul class="mb-0 mt-2">
+    {% for nome, valor, ok, variavel, bloqueia in bloqueios %}
+    <li><span class="mono">{{ variavel }}</span> — {{ nome | lower }}: {{ valor }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
 <div class="grade grade-2" style="align-items:start">
   <div class="cartao">
     <h3>Checagem de ambiente</h3>
     <table class="tabela">
       <tbody>
-        {% for nome, valor, ok in checagens %}
+        {% for nome, valor, ok, variavel, bloqueia in checagens %}
         <tr>
-          <td>{{ '✅' if ok else '⚠️' }} {{ nome }}</td>
+          <td>
+            {{ '✅' if ok else ('⛔' if bloqueia else '⚠️') }} {{ nome }}
+            <br><span class="mono apagado" style="font-size:.72rem">{{ variavel }}</span>
+          </td>
           <td class="suave mono" style="font-size:.8rem;word-break:break-all">{{ valor }}</td>
         </tr>
         {% endfor %}

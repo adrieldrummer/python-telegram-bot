@@ -319,18 +319,54 @@ async def conteudo(request: Request, admin=Depends(exigir_admin)):
 
 @router.get("/configuracao")
 async def configuracao(request: Request, admin=Depends(exigir_admin)):
+    # (nome, valor mostrado, está ok?, variável de ambiente, impede vender?)
+    #
+    # O `bloqueia` separa o que é ajuste fino do que faz um comprador pagar e
+    # não conseguir entrar. Uma lista de dezoito avisos com o mesmo peso é uma
+    # lista que ninguém lê — e o item que derruba a venda fica no meio.
     checagens = [
-        ("Domínio configurado", config.app_url, not config.app_url.startswith("http://localhost")),
-        ("Cookies seguros (HTTPS)", "ativado" if config.cookie_seguro else "desativado", config.cookie_seguro),
-        ("Chave secreta trocada", "ok" if len(config.secret_key) > 30 and "desenvolvimento" not in config.secret_key else "usando padrão", "desenvolvimento" not in config.secret_key),
-        ("SMTP", config.smtp_host or "não configurado (modo caixa de saída)", config.smtp_configurado),
-        ("Checkout Cakto", config.cakto_checkout_url, config.cakto_checkout_url.startswith("http")),
-        ("Segredo do webhook Cakto", "configurado" if config.cakto_webhook_segredo else "ausente", bool(config.cakto_webhook_segredo)),
-        ("Webhook sem assinatura", "permitido" if config.cakto_permitir_sem_assinatura else "bloqueado", not config.cakto_permitir_sem_assinatura),
-        ("Liberação diária (drip)", "ativa" if config.jornada_drip_diario else "ritmo livre", True),
+        ("Banco de dados persistente",
+         "PostgreSQL" if config.database_url else "TEMPORÁRIO — os dados somem a cada reinício",
+         bool(config.database_url), "DATABASE_URL", True),
+        ("Envio de e-mail (SMTP)",
+         config.smtp_host or "modo caixa de saída — nada é entregue",
+         config.smtp_configurado, "SMTP_HOST", True),
+        ("Credencial de e-mail",
+         "com cara de chave válida" if config.smtp_senha_plausivel else "vazia ou colada errado",
+         config.smtp_senha_plausivel, "SMTP_SENHA", True),
+        ("Segredo do webhook Cakto",
+         "configurado" if config.cakto_webhook_segredo else "ausente — nenhuma venda libera acesso",
+         bool(config.cakto_webhook_segredo), "CAKTO_WEBHOOK_SEGREDO", True),
+        ("Domínio público",
+         config.app_url,
+         not config.app_url.startswith("http://localhost"), "APP_URL", True),
+
+        ("Pixel do Meta",
+         config.meta_pixel_id or "ausente — a campanha otimiza sem sinal",
+         config.pixel_ativo, "META_PIXEL_ID", False),
+        ("API de Conversões (server-side)",
+         "ativa" if config.capi_ativa else "inativa — o Purchase não sai do servidor",
+         config.capi_ativa, "META_CAPI_TOKEN", False),
+        ("Verificação de domínio no Meta",
+         "configurada" if config.meta_verificacao_dominio else "ausente — o iOS derruba a atribuição",
+         bool(config.meta_verificacao_dominio), "META_VERIFICACAO_DOMINIO", False),
+        ("Cookies presos ao HTTPS",
+         "ativado" if config.cookie_seguro else "desativado",
+         config.cookie_seguro, "COOKIE_SEGURO", False),
+        ("Chave de sessão trocada",
+         "ok" if "desenvolvimento" not in config.secret_key else "usando a padrão do repositório",
+         "desenvolvimento" not in config.secret_key, "SECRET_KEY", False),
+        ("Webhook sem assinatura",
+         "permitido" if config.cakto_permitir_sem_assinatura else "bloqueado",
+         not config.cakto_permitir_sem_assinatura, "CAKTO_PERMITIR_SEM_ASSINATURA", False),
     ]
     return responder_template(
         request,
         "admin/configuracao.html",
-        {"aluno": admin, "checagens": checagens, "webhook_url": f"{config.app_url}/webhooks/cakto"},
+        {
+            "aluno": admin,
+            "checagens": checagens,
+            "bloqueios": [c for c in checagens if c[4] and not c[2]],
+            "webhook_url": f"{config.app_url}/webhooks/cakto",
+        },
     )

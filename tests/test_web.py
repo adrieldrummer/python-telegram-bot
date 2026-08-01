@@ -330,3 +330,27 @@ def test_estaticos_carregam_com_a_versao_do_deploy(cliente):
     sw = cliente.get("/sw.js").text
     assert "__VERSAO__" not in sw, "o marcador de versão não foi substituído"
     assert versao in sw
+
+
+def test_configuracao_separa_o_que_impede_vender(cliente, banco):
+    """A tela de configuração precisa dizer o que quebra uma venda de verdade.
+
+    Dezoito avisos com o mesmo peso é uma lista que ninguém lê — e o item que
+    faz o comprador pagar e não conseguir entrar fica no meio dos outros.
+    """
+    from app import alunos as servico_alunos
+    from app.db import sessao
+    from tests.conftest import entrar
+
+    with sessao() as con:
+        servico_alunos.criar(
+            con, "Chefe", "chefe@teste.com", admin=True, senha="segura12345", origem="teste"
+        )
+    entrar(cliente, "chefe@teste.com", "segura12345")
+
+    pagina = cliente.get("/admin/configuracao")
+    assert pagina.status_code == 200
+    # sem Postgres e sem SMTP nos testes, os dois têm de aparecer como bloqueio
+    assert "impedem uma venda de funcionar" in pagina.text
+    assert "DATABASE_URL" in pagina.text
+    assert "META_PIXEL_ID" in pagina.text, "o rastreamento também precisa estar visível"
